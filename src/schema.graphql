@@ -1,0 +1,51 @@
+scalar Void
+
+enum MetaKey {
+  title
+  type
+  collection
+  description
+  material
+}
+
+type Metadata {
+  key: MetaKey!
+  value: String!
+  lang: String
+}
+
+input MetadataInput {
+  key: MetaKey!
+  value: String!
+  lang: String
+}
+
+type Entity {
+  id: String!
+  type: String!
+  metadata(key: [MetaKey]): [Metadata]!
+  mediafiles: [MediaFile]
+}
+
+type MediaFile {
+  _id: String!
+  location: String
+  entities: [String]
+}
+
+type EntitiesResults {
+  results: [Entity]
+  count: Int
+  limit: Int
+}
+
+type Query {
+  Entity(id: String!): Entity
+  Entities(limit: Int, skip: Int): EntitiesResults
+}
+
+type Mutation {
+  addMetadata(id: String!, metadata: MetadataInput!): Entity
+  replaceMetadata(id: String!, metadata: [MetadataInput!]!): Entity
+  deleteMetadata(id: String!, key: MetaKey!): Void
+}
