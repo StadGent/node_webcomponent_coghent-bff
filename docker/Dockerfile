@@ -17,4 +17,4 @@ COPY ./webpack.*.js ./
 
 CMD npm run build:dev
 
-EXPOSE 4001
+EXPOSE 4002

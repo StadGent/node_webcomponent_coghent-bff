@@ -1,4 +1,4 @@
-const defaultPort = 4000;
+const defaultPort = 4002;
 
 interface Environment {
   apollo: {

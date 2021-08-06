@@ -28,7 +28,7 @@ const app = express();
 app.use(express.json());
 app.use(cors({
   credentials: false,
-  origin: 'http://localhost:8090',
+  origin: 'http://localhost:8070',
 }));
 app.use(session({
   secret: environment.sessionSecret,
