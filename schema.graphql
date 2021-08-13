@@ -8,6 +8,18 @@ enum MetaKey {
   material
 }
 
+enum JSPatchOp {
+  add
+  replace
+  remove
+}
+
+input JSPatch {
+  op: JSPatchOp!
+  path: [String!]!
+  value: String!
+}
+
 type Metadata {
   key: MetaKey!
   value: String!
@@ -29,7 +41,7 @@ type Entity {
 
 type MediaFile {
   _id: String!
-  location: String
+  original_file_location: String
   entities: [String]
 }
 
@@ -41,11 +53,9 @@ type EntitiesResults {
 
 type Query {
   Entity(id: String!): Entity
-  Entities(limit: Int, skip: Int): EntitiesResults
+  Entities(limit: Int, skip: Int, searchQuery: String): EntitiesResults
 }
 
 type Mutation {
-  addMetadata(id: String!, metadata: MetadataInput!): Entity
-  replaceMetadata(id: String!, metadata: [MetadataInput!]!): Entity
-  deleteMetadata(id: String!, key: MetaKey!): Void
+  replaceMetadata(id: String!, metadata: [MetadataInput!]!): [Metadata!]!
 }
