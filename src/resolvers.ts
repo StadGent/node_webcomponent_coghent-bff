@@ -6,8 +6,8 @@ export const resolvers: Resolvers<Context> = {
     Entity: async (_source, { id }, { dataSources }) => {
       return dataSources.EntitiesAPI.getEntity(id);
     },
-    Entities: async (_source, { limit, skip, searchQuery }, { dataSources }) => {
-      return dataSources.SearchAPI.getEntities(limit || 20, skip || 0, searchQuery || '');
+    Entities: async (_source, { limit, skip, searchQuery, fetchPolicy }, { dataSources }) => {
+      return dataSources.SearchAPI.getEntities(limit || 20, skip || 0, searchQuery || '', fetchPolicy || '');
     },
   },
   Mutation: {

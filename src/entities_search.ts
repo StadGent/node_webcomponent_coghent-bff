@@ -15,8 +15,8 @@ export class SearchAPI extends RESTDataSource<Context> {
     return entityRaw;
   }
 
-  async getEntities(limit: number, skip: number, query?: string): Promise<EntitiesResults> {
-    const data = await this.get(`collection`, { limit, skip, query });
+  async getEntities(limit: number, skip: number, query?: string, fetchPolicy?: string): Promise<EntitiesResults> {
+    const data = await this.get(`collection`, { limit, skip, query, fetchPolicy, errorPolicy: 'all' });
     data.results.forEach((element: any) => this.setId(element));
     return data;
   }

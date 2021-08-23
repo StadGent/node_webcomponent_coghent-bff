@@ -1,4 +1,4 @@
-import { Entity, Metadata, MetadataInput, MetaKey, MediaFile } from './type-defs';
+import { Entity, Metadata, MetadataInput, MetaKey, MediaFile, Relation } from './type-defs';
 import { RESTDataSource } from 'apollo-datasource-rest';
 import { Context } from './types';
 
@@ -18,6 +18,11 @@ export class EntitiesAPI extends RESTDataSource<Context> {
     this.setId(data);
     return data;
   }
+
+  async getRelations(id: string): Promise<Relation[]> {
+    return await this.get(`entities/${id}/relations`);
+  }
+
 
   async getMediafiles(id: string): Promise<MediaFile[]> {
     return await this.get(`entities/${id}/mediafiles`);
