@@ -24,9 +24,17 @@ export class EntitiesAPI extends RESTDataSource<Context> {
   }
 
 
-  async getMediafiles(id: string): Promise<MediaFile[]> {
+  /*async getMediafiles(id: string): Promise<MediaFile[]> {
     return await this.get(`entities/${id}/mediafiles`);
-  }
+  }*/
+
+  async getMediafiles(id: string): Promise<MediaFile[]> {
+    if(id !== 'noid' ) {
+     return await this.get(`entities/${id}/mediafiles`);
+   } else{
+     return []
+   }
+ }
 
   async replaceMetadata(id: String, metadata: MetadataInput[]): Promise<Metadata[]> {
     return await this.put(`entities/${id}/metadata`, metadata);

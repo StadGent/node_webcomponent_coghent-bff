@@ -43,7 +43,8 @@ type Entity {
   type: String!
   metadata(key: [MetaKey]): [Metadata]!
   mediafiles: [MediaFile],
-  relations: [Relation]
+  relations: [Relation],
+  title: [Metadata]
 }
 
 type MediaFile {
@@ -56,7 +57,6 @@ type Relation {
   key: String!
   type: RelationType!
 }
-
 
 type EntitiesResults {
   results: [Entity]
