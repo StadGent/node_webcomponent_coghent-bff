@@ -14,12 +14,6 @@ enum JSPatchOp {
   remove
 }
 
-enum RelationType {
-  authoredBy
-  isIn
-  contains
-}
-
 input JSPatch {
   op: JSPatchOp!
   path: [String!]!
@@ -42,20 +36,14 @@ type Entity {
   id: String!
   type: String!
   metadata(key: [MetaKey]): [Metadata]!
-  mediafiles: [MediaFile],
-  relations: [Relation],
-  title: [Metadata]
+  mediafiles: [MediaFile]
 }
 
 type MediaFile {
   _id: String!
   original_file_location: String
+  thumbnail_file_location: String
   entities: [String]
-}
-
-type Relation {
-  key: String!
-  type: RelationType!
 }
 
 type EntitiesResults {
@@ -64,9 +52,15 @@ type EntitiesResults {
   limit: Int
 }
 
+input SearchFilter{
+  value: String
+  isAsc: Boolean
+  key: String
+}
+
 type Query {
   Entity(id: String!): Entity
-  Entities(limit: Int, skip: Int, searchQuery: String, fetchPolicy: String): EntitiesResults
+  Entities(limit: Int, skip: Int, searchValue: SearchFilter): EntitiesResults
 }
 
 type Mutation {

@@ -1,23 +1,19 @@
 import {
-  EntitiesResults,
-} from './type-defs';
-import { RESTDataSource } from 'apollo-datasource-rest';
+  EntitiesResults, SearchFilter,
+} from './type-defs'
+import { setId } from './common'
+import { AuthRESTDataSource } from 'inuits-apollo-server-auth';
 import { Context } from './types';
+import { getQuery } from './templateQueries';
 
-export class SearchAPI extends RESTDataSource<Context> {
+export class SearchAPI extends AuthRESTDataSource<Context> {
   public baseURL = 'http://search-api:8002/search/';
 
-  private setId(entityRaw: any) {
-    const filterdId = entityRaw.identifiers.filter(
-      (id: string) => id.length === 9
-    );
-    entityRaw.id = filterdId.length === 1 ? filterdId[0] : 'noid';
-    return entityRaw;
-  }
-
-  async getEntities(limit: number, skip: number, query?: string, fetchPolicy?: string): Promise<EntitiesResults> {
-    const data = await this.get(`collection`, { limit, skip, query, fetchPolicy, errorPolicy: 'all' });
-    data.results.forEach((element: any) => this.setId(element));
+  async getEntities(limit: number, skip: number, searchValue: SearchFilter): Promise<EntitiesResults> {
+    let body = JSON.parse(getQuery(searchValue));
+    
+    const data = await this.post(`collection?limit=${limit}&skip=${skip}`, body);
+    data.results.forEach((element: any) => setId(element));
     return data;
   }
 }

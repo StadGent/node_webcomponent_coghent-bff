@@ -6,15 +6,16 @@ ARG NPM_AUTH_TOKEN
 ENV NPM_AUTH_TOKEN=$NPM_AUTH_TOKEN
 
 WORKDIR /app
-
+RUN apk add --no-cache git
+RUN git --version
 RUN npm install -g webpack webpack-cli
 
-COPY ./package*.json  package-lock.json ./
+COPY ./package*.json ./
 RUN npm install
 
 COPY ./src ./src
 COPY ./webpack.*.js ./
 
-CMD npm run build:dev
+CMD npm run dev
 
-EXPOSE 4002
+EXPOSE 4001
