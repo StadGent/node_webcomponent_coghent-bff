@@ -9,6 +9,7 @@ WORKDIR /app
 RUN apk add --no-cache git
 RUN git --version
 RUN npm install -g webpack webpack-cli
+RUN npm install -g concurrently
 
 COPY ./package*.json ./
 RUN npm install
