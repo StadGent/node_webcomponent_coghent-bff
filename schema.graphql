@@ -72,7 +72,7 @@ input SearchFilter{
 
 type Query {
   Entity(id: String!): Entity
-  Entities(limit: Int, skip: Int, searchValue: SearchFilter): EntitiesResults
+  Entities(limit: Int, skip: Int, searchValue: SearchFilter!, fetchPolicy: String): EntitiesResults
 }
 
 type Mutation {

@@ -9,7 +9,7 @@ import { getQuery } from './templateQueries';
 export class SearchAPI extends AuthRESTDataSource<Context> {
   public baseURL = 'http://search-api:8002/search/';
 
-  async getEntities(limit: number, skip: number, searchValue: SearchFilter): Promise<EntitiesResults> {
+  async getEntities(limit: number, skip: number, searchValue: SearchFilter, fetchPolicy: string): Promise<EntitiesResults> {
     let body = JSON.parse(getQuery(searchValue));
     
     const data = await this.post(`collection?limit=${limit}&skip=${skip}`, body);
