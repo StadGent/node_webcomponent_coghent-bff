@@ -8,6 +8,12 @@ enum MetaKey {
   material
 }
 
+enum RelationType {
+  authoredBy
+  isIn
+  contains
+}
+
 enum JSPatchOp {
   add
   replace
@@ -36,6 +42,7 @@ type Entity {
   id: String!
   type: String!
   metadata(key: [MetaKey]): [Metadata]!
+  relations: [Relation]
   mediafiles: [MediaFile]
 }
 
@@ -44,6 +51,11 @@ type MediaFile {
   original_file_location: String
   thumbnail_file_location: String
   entities: [String]
+}
+
+type Relation {
+  key: String!
+  type: RelationType!
 }
 
 type EntitiesResults {
