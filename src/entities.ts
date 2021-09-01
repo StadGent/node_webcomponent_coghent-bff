@@ -14,7 +14,7 @@ export class EntitiesAPI extends RESTDataSource<Context> {
   }
 
   async getEntity(id: string): Promise<Entity> {
-    const data = await this.get<Entity>(`entities/${id}`);
+    const data = await this.get<Entity>('entities' + (id ? '/' + id : ''));
     this.setId(data);
     return data;
   }

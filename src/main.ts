@@ -3,6 +3,7 @@ import { readFileSync } from 'fs';
 import express from 'express';
 import cors from 'cors';
 
+import { applyAuthEndpoints, applyAuthSession } from 'inuits-apollo-server-auth';
 import { environment } from './environment';
 import { EntitiesAPI } from './entities';
 import { resolvers } from './resolvers';
@@ -35,7 +36,11 @@ app.use(
   })
 );
 
+applyAuthSession(app, environment.sessionSecret);
+
 apolloServer.applyMiddleware({ app, path: '/api/graphql', cors: false });
+
+applyAuthEndpoints(app, environment.oauthBaseUrl, environment.clientSecret);
 
 const httpServer = app.listen(environment.port, () => {
   console.log(`🚀 Server is running at http://localhost:${environment.port}`);
