@@ -2,11 +2,11 @@ import {
   EntitiesResults, SearchFilter,
 } from './type-defs'
 import { setId } from './common'
-import { AuthRESTDataSource } from 'inuits-apollo-server-auth';
+import { RESTDataSource } from 'apollo-datasource-rest';
 import { Context } from './types';
 import { getQuery } from './templateQueries';
 
-export class SearchAPI extends AuthRESTDataSource<Context> {
+export class SearchAPI extends RESTDataSource<Context> {
   public baseURL = 'http://search-api:8002/search/';
 
   async getEntities(limit: number, skip: number, searchValue: SearchFilter, fetchPolicy: string): Promise<EntitiesResults> {

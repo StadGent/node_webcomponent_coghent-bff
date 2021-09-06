@@ -71,6 +71,10 @@ function sortOnQuery(searchValue: SearchFilter) {
   }
 
   export function getQuery(searchValue: SearchFilter) {
+    if(searchValue.raw === true && searchValue.value){
+      return searchValue.value
+    }
+
     if (searchValue.value != "") {
       if (searchValue.key) {
         return sortOnQuery(searchValue);
