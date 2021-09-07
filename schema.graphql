@@ -68,6 +68,7 @@ input SearchFilter{
   value: String
   isAsc: Boolean
   key: String
+  raw: Boolean
 }
 
 type Query {
