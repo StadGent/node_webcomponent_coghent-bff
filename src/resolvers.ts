@@ -1,5 +1,6 @@
 import { Metadata, Resolvers } from './type-defs';
 import { Context } from './types';
+import { AuthenticationError } from "apollo-server"
 
 export const resolvers: Resolvers<Context> = {
   Query: {
@@ -8,6 +9,12 @@ export const resolvers: Resolvers<Context> = {
     },
     Entities: async (_source, { limit, skip, searchValue, fetchPolicy }, { dataSources }) => {
       return dataSources.SearchAPI.getEntities(limit || 20, skip || 0, searchValue, fetchPolicy || '');
+    },
+    User: async (_source, { }, { dataSources, session }) => {
+      if(!session.auth.accessToken){
+        throw new AuthenticationError("Not authenticated")
+      }
+      return dataSources.UserAPI.getMe(session.auth.accessToken);
     },
   },
   Mutation: {

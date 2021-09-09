@@ -71,9 +71,18 @@ input SearchFilter{
   raw: Boolean
 }
 
+type User {
+  email: String!
+  family_name: String!
+  given_name: String!
+  name: String!
+  preferred_username: String!
+}
+
 type Query {
   Entity(id: String!): Entity
   Entities(limit: Int, skip: Int, searchValue: SearchFilter!, fetchPolicy: String): EntitiesResults
+  User: User
 }
 
 type Mutation {

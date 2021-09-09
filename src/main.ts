@@ -8,6 +8,7 @@ import { environment } from './environment';
 import { EntitiesAPI } from './entities';
 import { resolvers } from './resolvers';
 import { SearchAPI } from './entities_search';
+import { UserAPI } from './user';
 
 const apolloServer = new ApolloServer({
   typeDefs: readFileSync('./schema.graphql').toString('utf-8'),
@@ -15,14 +16,17 @@ const apolloServer = new ApolloServer({
   dataSources: () => ({
     EntitiesAPI: new EntitiesAPI(),
     SearchAPI: new SearchAPI(),
+    UserAPI: new UserAPI()
   }),
-  /*context: ({ req, res }) => {
-    if (!req.session.auth) {
+  context: ({ req, res }) => {
+    console.log(req.session.auth)
+    /*if (!req.session.auth) {
+      console.log(req.session)
       res.status(401);
       res.end('You must be logged in.');
-    }
+    }*/
     return { session: req.session };
-  },*/
+  },
   introspection: environment.apollo.introspection,
   playground: environment.apollo.playground,
 });
