@@ -72,6 +72,7 @@ input SearchFilter{
 }
 
 type User {
+  id: String!
   email: String!
   family_name: String!
   given_name: String!

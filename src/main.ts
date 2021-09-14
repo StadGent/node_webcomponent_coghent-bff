@@ -19,7 +19,7 @@ const apolloServer = new ApolloServer({
     UserAPI: new UserAPI()
   }),
   context: ({ req, res }) => {
-    console.log(req.session.auth)
+    console.log(req.session)
     /*if (!req.session.auth) {
       console.log(req.session)
       res.status(401);

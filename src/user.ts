@@ -11,6 +11,7 @@ export class UserAPI extends AuthRESTDataSource<Context> {
   getMe(accessToken: string): User {
     const data: any = getMe(accessToken)
     const user: User = {
+      id: data.sub,
       email: data.email,
       family_name: data.family_name,
       given_name: data.given_name,

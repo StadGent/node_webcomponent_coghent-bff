@@ -6,17 +6,19 @@ ARG NPM_AUTH_TOKEN
 ENV NPM_AUTH_TOKEN=$NPM_AUTH_TOKEN
 
 WORKDIR /app
+
+ENTRYPOINT ["/entrypoint.sh"]
+COPY docker/entrypoint*.sh /
+COPY package*.json ./
+
 RUN apk add --no-cache git
 RUN git --version
 RUN npm install -g webpack webpack-cli
 RUN npm install -g concurrently
 
-COPY ./package*.json ./
 RUN npm install
 
 COPY ./src ./src
 COPY ./webpack.*.js ./
-
-CMD npm run dev
 
 EXPOSE 4001
