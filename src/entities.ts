@@ -1,9 +1,16 @@
-import { Entity, Metadata, MetadataInput, MetaKey, MediaFile, Relation } from './type-defs';
+import {
+  Entity,
+  Metadata,
+  MetadataInput,
+  MetaKey,
+  MediaFile,
+  Relation,
+} from './type-defs';
 import { RESTDataSource } from 'apollo-datasource-rest';
 import { Context } from './types';
 
 export class EntitiesAPI extends RESTDataSource<Context> {
-  public baseURL = 'http://collection-api:8000/';
+  public baseURL = 'http://localhost:8000/';
 
   private setId(entityRaw: any) {
     const filterdId = entityRaw.identifiers.filter(
@@ -23,20 +30,22 @@ export class EntitiesAPI extends RESTDataSource<Context> {
     return await this.get(`entities/${id}/relations`);
   }
 
-
   /*async getMediafiles(id: string): Promise<MediaFile[]> {
     return await this.get(`entities/${id}/mediafiles`);
   }*/
 
   async getMediafiles(id: string): Promise<MediaFile[]> {
-    if(id !== 'noid' ) {
-     return await this.get(`entities/${id}/mediafiles`);
-   } else{
-     return []
-   }
- }
+    if (id !== 'noid') {
+      return await this.get(`entities/${id}/mediafiles`);
+    } else {
+      return [];
+    }
+  }
 
-  async replaceMetadata(id: String, metadata: MetadataInput[]): Promise<Metadata[]> {
+  async replaceMetadata(
+    id: String,
+    metadata: MetadataInput[]
+  ): Promise<Metadata[]> {
     return await this.put(`entities/${id}/metadata`, metadata);
   }
 }
