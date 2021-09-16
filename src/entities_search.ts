@@ -1,5 +1,7 @@
-import { EntitiesResults, SearchFilter } from './type-defs';
-import { setId } from './common';
+import {
+  EntitiesResults, RelationsResults, SearchFilter,
+} from './type-defs'
+import { setId } from './common'
 import { RESTDataSource } from 'apollo-datasource-rest';
 import { Context } from './types';
 import { getQuery } from './templateQueries';
@@ -19,6 +21,14 @@ export class SearchAPI extends RESTDataSource<Context> {
       `collection?limit=${limit}&skip=${skip}`,
       body
     );
+    data.results.forEach((element: any) => setId(element));
+    return data;
+  }
+
+  async getRelations(searchValue: SearchFilter, fetchPolicy: string): Promise<RelationsResults> {
+    let body = JSON.parse(getQuery(searchValue));
+    
+    const data = await this.post(`relations?`, body);
     data.results.forEach((element: any) => setId(element));
     return data;
   }

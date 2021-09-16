@@ -64,6 +64,12 @@ type EntitiesResults {
   limit: Int
 }
 
+type RelationsResults {
+  results: [Relation]
+  count: Int
+  limit: Int
+}
+
 input SearchFilter{
   value: String
   isAsc: Boolean
@@ -83,6 +89,7 @@ type User {
 type Query {
   Entity(id: String!): Entity
   Entities(limit: Int, skip: Int, searchValue: SearchFilter!, fetchPolicy: String): EntitiesResults
+  Relations(searchValue: SearchFilter!, fetchPolicy: String): RelationsResults
   User: User
 }
 

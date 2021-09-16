@@ -10,6 +10,9 @@ export const resolvers: Resolvers<Context> = {
     Entities: async (_source, { limit, skip, searchValue, fetchPolicy }, { dataSources }) => {
       return dataSources.SearchAPI.getEntities(limit || 20, skip || 0, searchValue, fetchPolicy || '');
     },
+    Relations: async (_source, { searchValue, fetchPolicy }, { dataSources }) => {
+      return dataSources.SearchAPI.getRelations(searchValue, fetchPolicy || '');
+    },
     User: async (_source, { }, { dataSources, session }) => {
       if(!session.auth.accessToken){
         throw new AuthenticationError("Not authenticated")
