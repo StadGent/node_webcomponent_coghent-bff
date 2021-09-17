@@ -10,7 +10,7 @@ import { RESTDataSource } from 'apollo-datasource-rest';
 import { Context } from './types';
 
 export class EntitiesAPI extends RESTDataSource<Context> {
-  public baseURL = 'http://localhost:8000/';
+  public baseURL = 'http://collection-api:8000/';
 
   private setId(entityRaw: any) {
     const filterdId = entityRaw.identifiers.filter(

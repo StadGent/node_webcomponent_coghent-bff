@@ -7,7 +7,7 @@ import { Context } from './types';
 import { getQuery } from './templateQueries';
 
 export class SearchAPI extends RESTDataSource<Context> {
-  public baseURL = 'http://localhost:8002/search/';
+  public baseURL = 'http://search-api:8002/search/';
 
   async getEntities(
     limit: number,
@@ -15,7 +15,7 @@ export class SearchAPI extends RESTDataSource<Context> {
     searchValue: SearchFilter,
     fetchPolicy: string
   ): Promise<EntitiesResults> {
-    let body = JSON.parse(getQuery(searchValue));
+    let body = searchValue;
 
     const data = await this.post(
       `collection?limit=${limit}&skip=${skip}`,
@@ -26,7 +26,7 @@ export class SearchAPI extends RESTDataSource<Context> {
   }
 
   async getRelations(searchValue: SearchFilter, fetchPolicy: string): Promise<RelationsResults> {
-    let body = JSON.parse(getQuery(searchValue));
+    let body = searchValue;
     
     const data = await this.post(`relations?`, body);
     data.results.forEach((element: any) => setId(element));
