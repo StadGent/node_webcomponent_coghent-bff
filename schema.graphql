@@ -70,7 +70,7 @@ type RelationsResults {
   limit: Int
 }
 
-input SearchFilter{
+input SearchFilter {
   value: String
   isAsc: Boolean
   key: String
@@ -88,7 +88,12 @@ type User {
 
 type Query {
   Entity(id: String!): Entity
-  Entities(limit: Int, skip: Int, searchValue: SearchFilter!, fetchPolicy: String): EntitiesResults
+  Entities(
+    limit: Int
+    skip: Int
+    searchValue: SearchFilter!
+    fetchPolicy: String
+  ): EntitiesResults
   Relations(searchValue: SearchFilter!, fetchPolicy: String): RelationsResults
   User: User
 }
