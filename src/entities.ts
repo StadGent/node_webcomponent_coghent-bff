@@ -2,26 +2,26 @@ import {
   Entity,
   Metadata,
   MetadataInput,
-  MetaKey,
   MediaFile,
   Relation,
-} from './type-defs';
-import { RESTDataSource } from 'apollo-datasource-rest';
-import { Context } from './types';
+} from "./type-defs";
+import { RESTDataSource } from "apollo-datasource-rest";
+import { Context } from "./types";
+import { environment as env } from "./environment";
 
 export class EntitiesAPI extends RESTDataSource<Context> {
-  public baseURL = 'http://collection-api:8000/';
+  public baseURL = `http://${env.entities.hostname}:${env.entities.port}/`;
 
   private setId(entityRaw: any) {
     const filterdId = entityRaw.identifiers.filter(
       (id: string) => id.length === 9
     );
-    entityRaw.id = filterdId.length === 1 ? filterdId[0] : 'noid';
+    entityRaw.id = filterdId.length === 1 ? filterdId[0] : "noid";
     return entityRaw;
   }
 
   async getEntity(id: string): Promise<Entity> {
-    const data = await this.get<Entity>('entities' + (id ? '/' + id : ''));
+    const data = await this.get<Entity>("entities" + (id ? "/" + id : ""));
     this.setId(data);
     return data;
   }
@@ -35,7 +35,7 @@ export class EntitiesAPI extends RESTDataSource<Context> {
   }*/
 
   async getMediafiles(id: string): Promise<MediaFile[]> {
-    if (id !== 'noid') {
+    if (id !== "noid") {
       return await this.get(`entities/${id}/mediafiles`);
     } else {
       return [];
