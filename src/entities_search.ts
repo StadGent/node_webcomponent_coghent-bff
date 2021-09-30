@@ -14,6 +14,7 @@ export class SearchAPI extends RESTDataSource<Context> {
     fetchPolicy: string
   ): Promise<EntitiesResults> {
     let body = searchValue;
+    console.log("BODY", body);
     const data = await this.post(
       `collection?limit=${limit}&skip=${skip}`,
       body

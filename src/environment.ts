@@ -31,11 +31,11 @@ export const environment: Environment = {
   oauthBaseUrl:
     process.env.OAUTH_BASE_URL || "http://localhost:8080/auth/realms/dams/",
   entities: {
-    hostname: process.env.ENTITIES_HOSTNAME || "localhost",
+    hostname: process.env.ENTITIES_HOSTNAME || "collection-api",
     port: process.env.ENTITIES_PORT || "8000",
   },
   search_entities: {
-    hostname: process.env.SEARCH_ENTITIES_HOSTNAME || "localhost",
+    hostname: process.env.SEARCH_ENTITIES_HOSTNAME || "search-api",
     port: process.env.SEARCH_ENTITIES_PORT || "8002",
     prefix: process.env.SEARCH_ENTITIES_PREFIX || "search",
   },
