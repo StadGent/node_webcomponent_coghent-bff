@@ -12,6 +12,7 @@ enum RelationType {
   authoredBy
   isIn
   contains
+  isTypeOf
 }
 
 enum JSPatchOp {
@@ -56,6 +57,7 @@ type MediaFile {
 type Relation {
   key: String!
   type: RelationType!
+  label: String
 }
 
 type EntitiesResults {
