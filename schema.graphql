@@ -13,6 +13,7 @@ enum RelationType {
   isIn
   contains
   isTypeOf
+  isUsedIn
 }
 
 enum JSPatchOp {
@@ -62,6 +63,7 @@ type Relation {
 
 type EntitiesResults {
   results: [Entity]
+  relations: [Relation]
   count: Int
   limit: Int
 }
@@ -76,7 +78,7 @@ input SearchFilter {
   value: String
   isAsc: Boolean
   key: String
-  raw: Boolean
+  relation_filter: [String]
 }
 
 type User {

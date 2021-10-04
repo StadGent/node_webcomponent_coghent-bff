@@ -1,8 +1,8 @@
-import { EntitiesResults, RelationsResults, SearchFilter } from "./type-defs";
-import { setId } from "./common";
-import { RESTDataSource } from "apollo-datasource-rest";
-import { Context } from "./types";
-import { environment as env } from "./environment";
+import { EntitiesResults, RelationsResults, SearchFilter } from './type-defs';
+import { setId } from './common';
+import { RESTDataSource } from 'apollo-datasource-rest';
+import { Context } from './types';
+import { environment as env } from './environment';
 
 export class SearchAPI extends RESTDataSource<Context> {
   public baseURL = `http://${env.search_entities.hostname}:${env.search_entities.port}/${env.search_entities.prefix}/`;
@@ -14,7 +14,6 @@ export class SearchAPI extends RESTDataSource<Context> {
     fetchPolicy: string
   ): Promise<EntitiesResults> {
     let body = searchValue;
-    console.log("BODY", body);
     const data = await this.post(
       `collection?limit=${limit}&skip=${skip}`,
       body
