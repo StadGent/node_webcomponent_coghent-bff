@@ -6,6 +6,8 @@ enum MetaKey {
   collection
   description
   material
+  diameter
+  hoogte
 }
 
 enum RelationType {
