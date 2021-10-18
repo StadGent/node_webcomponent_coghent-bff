@@ -5,7 +5,7 @@ import { Context } from './types';
 import { environment as env } from './environment';
 
 export class SearchAPI extends RESTDataSource<Context> {
-  public baseURL = `http://${env.search_entities.hostname}:${env.search_entities.port}/${env.search_entities.prefix}/`;
+  public baseURL = `${env.api.searchAPIUrl}/search/`;
 
   async getEntities(
     limit: number,

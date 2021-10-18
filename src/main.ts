@@ -1,20 +1,20 @@
-import { ApolloServer } from "apollo-server-express";
-import { readFileSync } from "fs";
-import express from "express";
-import cors from "cors";
+import { ApolloServer } from 'apollo-server-express';
+import { readFileSync } from 'fs';
+import express from 'express';
+import cors from 'cors';
 
 import {
   applyAuthEndpoints,
   applyAuthSession,
-} from "inuits-apollo-server-auth";
-import { environment } from "./environment";
-import { EntitiesAPI } from "./entities";
-import { resolvers } from "./resolvers";
-import { SearchAPI } from "./entities_search";
-import { UserAPI } from "./user";
+} from 'inuits-apollo-server-auth';
+import { environment } from './environment';
+import { EntitiesAPI } from './entities';
+import { resolvers } from './resolvers';
+import { SearchAPI } from './entities_search';
+import { UserAPI } from './user';
 
 const apolloServer = new ApolloServer({
-  typeDefs: readFileSync("./schema.graphql").toString("utf-8"),
+  typeDefs: readFileSync('./schema.graphql').toString('utf-8'),
   resolvers,
   dataSources: () => ({
     EntitiesAPI: new EntitiesAPI(),
@@ -39,18 +39,20 @@ app.use(express.json());
 app.use(
   cors({
     credentials: false,
-    origin: ["http://localhost:8070", "http://localhost:8071", "*"],
+    origin: [environment.webPortal, environment.boxFrontend],
   })
 );
 
 applyAuthSession(app, environment.sessionSecret);
 
-apolloServer.applyMiddleware({ app, path: "/api/graphql", cors: false });
+apolloServer.applyMiddleware({ app, path: '/api/graphql', cors: false });
 
 applyAuthEndpoints(app, environment.oauthBaseUrl, environment.clientSecret);
 
 const httpServer = app.listen(environment.port, () => {
-  console.log(`🚀 Server is running at http://localhost:${environment.port}`);
+  console.log(
+    `🚀 Server is running at ${environment.httpServer}:${environment.port}`
+  );
 });
 
 if (module.hot) {
