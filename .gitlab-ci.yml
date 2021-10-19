@@ -7,7 +7,7 @@ include:
   - project: 'inuits/gitlab-ci/pipeline-templates'
     file:
       - 'common-pipeline.yml'
-   ref: 'v1.3.0'
+    ref: 'v1.3.0'
 
 variables:
   CUSTOMER: 'coghent'
