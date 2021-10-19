@@ -1,6 +1,4 @@
 schema: schema.graphql
-watch:
-  - schema.graphql
 generates:
   src/type-defs.ts:
     plugins:
