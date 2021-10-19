@@ -2,23 +2,38 @@
 FROM node:14.17.6-alpine3.12 as development-stage
 
 ARG NPM_AUTH_TOKEN
-# We need to set NPM_AUTH_TOKEN build ARG to ENV because we need valid .npmrc file for development aswell
-ENV NPM_AUTH_TOKEN=$NPM_AUTH_TOKEN
-
-WORKDIR /app
-
-ENTRYPOINT ["/entrypoint.sh"]
-COPY docker/entrypoint*.sh /
-COPY package*.json ./
 
 RUN apk add --no-cache git
-RUN git --version
-RUN npm install -g webpack webpack-cli
-RUN npm install -g concurrently
 
+RUN adduser --disabled-password --home /app --shell /bin/bash app
+WORKDIR /app
+
+COPY .npmrc ./package*.json ./codegen.yml ./tsconfig.json ./schema.graphql ./
+RUN npm install -g webpack webpack-cli
 RUN npm install
 
 COPY ./src ./src
 COPY ./webpack.*.js ./
 
-EXPOSE 4001
+CMD npm run dev
+
+EXPOSE 4000
+
+### Production stage
+FROM node:14.17.6-alpine3.12 as production-stage
+
+ARG NPM_AUTH_TOKEN
+ENV NODE_ENV=production
+
+RUN adduser --disabled-password --home /app --shell /bin/bash app
+USER app
+WORKDIR /app
+
+COPY --from=development-stage --chown=app:app /app /app
+
+RUN npm run generate
+RUN npm run build
+
+CMD npm start
+
+EXPOSE 4000
