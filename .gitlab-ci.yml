@@ -1,12 +1,12 @@
 ---
 ###############################################################################
-# COMMON APPLICATION PIPELINE
+# NPM APPLICATION PIPELINE
 ###############################################################################
 
 include:
   - project: 'inuits/gitlab-ci/pipeline-templates'
     file:
-      - 'common-pipeline.yml'
+      - 'npm-pipeline.yml'
     ref: 'v1.3.0'
 
 variables:
