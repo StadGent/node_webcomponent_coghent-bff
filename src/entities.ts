@@ -4,25 +4,24 @@ import {
   MetadataInput,
   MediaFile,
   Relation,
+  EntitiesResults,
 } from './type-defs';
 import { RESTDataSource } from 'apollo-datasource-rest';
 import { Context } from './types';
 import { environment as env } from './environment';
+import { setId } from './common';
 
 export class EntitiesAPI extends RESTDataSource<Context> {
   public baseURL = `${env.api.collectionAPIUrl}/`;
 
-  private setId(entityRaw: any) {
-    const filterdId = entityRaw.identifiers.filter(
-      (id: string) => id.length === 9
-    );
-    entityRaw.id = filterdId.length === 1 ? filterdId[0] : 'noid';
-    return entityRaw;
+  async getStories(): Promise<EntitiesResults> {
+    const data = await this.get(`entities?type=story&limit=20&skip=0`);
+    return data;
   }
 
   async getEntity(id: string): Promise<Entity> {
     const data = await this.get<Entity>('entities' + (id ? '/' + id : ''));
-    this.setId(data);
+    setId(data);
     return data;
   }
 

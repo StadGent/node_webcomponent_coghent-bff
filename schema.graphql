@@ -16,6 +16,7 @@ enum RelationType {
   contains
   isTypeOf
   isUsedIn
+  components
 }
 
 enum JSPatchOp {
@@ -81,6 +82,7 @@ input SearchFilter {
   isAsc: Boolean
   key: String
   relation_filter: [String]
+  type: String
 }
 
 type User {
