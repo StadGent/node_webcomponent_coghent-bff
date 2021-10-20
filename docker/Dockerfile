@@ -9,7 +9,7 @@ WORKDIR /app
 
 ENTRYPOINT ["/entrypoint.sh"]
 COPY docker/entrypoint*.sh /
-COPY package*.json ./
+COPY .npmrc package*.json ./
 
 RUN apk add --no-cache git
 RUN git --version
