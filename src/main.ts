@@ -50,7 +50,7 @@ applyAuthEndpoints(app, environment.oauthBaseUrl, environment.clientSecret);
 
 const httpServer = app.listen(environment.port, () => {
   console.log(
-    `🚀 Server is running at ${environment.httpServer}:${environment.port}`
+    `🚀 Server is running at port ${environment.port}`
   );
 });
 

@@ -5,7 +5,6 @@ interface Environment {
     introspection: boolean;
     playground: boolean;
   };
-  httpServer: string;
   port: number | string;
   sessionSecret: string;
   clientSecret: string;
@@ -23,7 +22,6 @@ export const environment: Environment = {
     introspection: process.env.APOLLO_INTROSPECTION === 'true',
     playground: process.env.APOLLO_PLAYGROUND === 'true',
   },
-  httpServer: process.env.HTTP_SERVER || 'http://localhost',
   port: process.env.PORT || defaultPort,
   sessionSecret: process.env.APOLLO_SESSION_SECRET || 'heelgeheim',
   clientSecret:
