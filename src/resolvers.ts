@@ -12,9 +12,6 @@ export const resolvers: Resolvers<Context> = {
       { limit, skip, searchValue, fetchPolicy },
       { dataSources }
     ) => {
-      if (searchValue.type == 'story')
-        return dataSources.EntitiesAPI.getStories();
-      else
         return dataSources.SearchAPI.getEntities(
           limit || 20,
           skip || 0,
