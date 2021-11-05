@@ -1,6 +1,9 @@
+.devcontainer.json
 node_modules
 .DS_Store
 .env
 dist
 src/type-defs.ts
+inuits-apollo-server-auth
+.idea
 *.local
