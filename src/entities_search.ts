@@ -1,10 +1,10 @@
 import { EntitiesResults, RelationsResults, SearchFilter } from './type-defs';
 import { setId } from './common';
-import { RESTDataSource } from 'apollo-datasource-rest';
 import { Context } from './types';
 import { environment as env } from './environment';
+import { RESTDataSourceWithStaticToken } from './RESTDataSourceWithStaticToken';
 
-export class SearchAPI extends RESTDataSource<Context> {
+export class SearchAPI extends RESTDataSourceWithStaticToken<Context> {
   public baseURL = `${env.api.searchAPIUrl}/search/`;
 
   async getEntities(

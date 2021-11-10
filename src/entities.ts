@@ -6,12 +6,12 @@ import {
   Relation,
   EntitiesResults,
 } from './type-defs';
-import { RESTDataSource } from 'apollo-datasource-rest';
+import { RESTDataSourceWithStaticToken } from './RESTDataSourceWithStaticToken';
 import { Context } from './types';
 import { environment as env } from './environment';
 import { setId } from './common';
 
-export class EntitiesAPI extends RESTDataSource<Context> {
+export class EntitiesAPI extends RESTDataSourceWithStaticToken<Context> {
   public baseURL = `${env.api.collectionAPIUrl}/`;
 
   async getStories(): Promise<EntitiesResults> {
