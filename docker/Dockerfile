@@ -34,6 +34,8 @@ COPY --from=development-stage --chown=app:app /app /app
 RUN npm run generate
 RUN npm run build
 
+RUN rm .npmrc
+
 CMD npm start
 
 EXPOSE 4000
