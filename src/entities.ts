@@ -6,7 +6,7 @@ import {
   Relation,
   EntitiesResults,
 } from './type-defs';
-import { RESTDataSourceWithStaticToken } from './RESTDataSourceWithStaticToken';
+import { RESTDataSourceWithStaticToken } from './RestDataSourceWithStaticToken';
 import { Context } from './types';
 import { environment as env } from './environment';
 import { setId } from './common';
