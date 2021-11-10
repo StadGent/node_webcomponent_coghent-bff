@@ -2,6 +2,7 @@ const defaultPort = 4000;
 
 interface Environment {
   apollo: {
+    graphqlPath: string;
     introspection: boolean;
     playground: boolean;
   };
@@ -19,6 +20,7 @@ interface Environment {
 
 export const environment: Environment = {
   apollo: {
+    graphqlPath: process.env.APOLLO_GRAPHQL_PATH || '/api/graphql',
     introspection: process.env.APOLLO_INTROSPECTION === 'true',
     playground: process.env.APOLLO_PLAYGROUND === 'true',
   },
@@ -27,7 +29,7 @@ export const environment: Environment = {
   clientSecret:
     process.env.APOLLO_CLIENT_SECRET || '445cac0c-101f-4916-8cb2-dade093d38a7',
   oauthBaseUrl:
-    process.env.OAUTH_BASE_URL || 'http://localhost:8080/auth/realms/dams/',
+    process.env.OAUTH_BASE_URL || 'http://localhost:8080/auth/realms/dams',
   api: {
     collectionAPIUrl:
       process.env.COLLECTION_API_URL || 'http://collection-api:8000',

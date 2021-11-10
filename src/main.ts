@@ -44,13 +44,13 @@ app.use(
 
 applyAuthSession(app, environment.sessionSecret);
 
-apolloServer.applyMiddleware({ app, path: '/api/graphql', cors: false });
+apolloServer.applyMiddleware({ app, path: environment.apollo.graphqlPath, cors: false });
 
 applyAuthEndpoints(app, environment.oauthBaseUrl, environment.clientSecret);
 
 const httpServer = app.listen(environment.port, () => {
   console.log(
-    `🚀 Server is running at port ${environment.port}`
+    `🚀 Server is running on port ${environment.port}`
   );
 });
 
