@@ -50,6 +50,9 @@ type Entity {
   metadata(key: [MetaKey]): [Metadata]!
   title: [Metadata]!
   relations: [Relation]
+  components: [Entity]
+  assets: [Entity]
+  frames: [Entity]
   mediafiles: [MediaFile]
 }
 

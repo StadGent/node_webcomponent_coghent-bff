@@ -1,5 +1,5 @@
-import { Metadata, Resolvers } from './type-defs';
-import { Context } from './types';
+import { Entity, Metadata, Relation, RelationType, Resolvers } from './type-defs';
+import { Context, DataSources } from './types';
 import { AuthenticationError } from 'apollo-server';
 
 export const resolvers: Resolvers<Context> = {
@@ -48,5 +48,33 @@ export const resolvers: Resolvers<Context> = {
     relations(parent, _args, { dataSources }) {
       return dataSources.EntitiesAPI.getRelations(parent.id);
     },
-  },
+    components: async (parent, _args, { dataSources }) => {
+      let data = await dataSources.EntitiesAPI.getRelations(parent.id);
+      let components = await getComponents(dataSources, data)
+      return components
+    },
+    assets: async (parent, _args, { dataSources }) => {
+      let data = await dataSources.EntitiesAPI.getRelations(parent.id);
+      let frames = await getComponents(dataSources, data)
+      return frames
+    },    
+    frames: async (parent, _args, { dataSources }) => {
+      let data = await dataSources.EntitiesAPI.getRelations(parent.id);
+      let frames = await getComponents(dataSources, data)
+      return frames
+    },    
+  }
 };
+const getComponents = async (dataSources: DataSources, data : Relation[]) : Promise<Entity[]> => {
+      if(data.length > 0){
+        const components : Entity[] = []
+        const componentsRelations: Relation[] = data.filter((relation: Relation) => relation && [RelationType.Components].includes(relation.type))
+        for (const relation of componentsRelations) {
+          const entity = await dataSources.EntitiesAPI.getEntity(relation.key.replace('entities/', ''))
+          components.push(entity)
+        }
+        return components
+      }else{
+        return []
+      }
+}
