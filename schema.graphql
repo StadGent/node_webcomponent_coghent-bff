@@ -49,6 +49,8 @@ type Entity {
   type: String!
   metadata(key: [MetaKey]): [Metadata]!
   title: [Metadata]!
+  collections: [Metadata]!
+  dimensions: [Metadata]!
   relations: [Relation]
   components: [Entity]
   assets: [Entity]
