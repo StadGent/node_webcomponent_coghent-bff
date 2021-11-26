@@ -8,6 +8,7 @@ enum MetaKey {
   material
   diameter
   hoogte
+  timestamp
 }
 
 enum RelationType {
@@ -49,6 +50,7 @@ type Entity {
   type: String!
   metadata(key: [MetaKey]): [Metadata]!
   title: [Metadata]!
+  timestamps: [Metadata]!
   collections: [Metadata]!
   dimensions: [Metadata]!
   relations: [Relation]
