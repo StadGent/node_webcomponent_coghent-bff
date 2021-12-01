@@ -8,7 +8,6 @@ enum MetaKey {
   material
   diameter
   hoogte
-  timestamp
 }
 
 enum RelationType {
@@ -50,7 +49,6 @@ type Entity {
   type: String!
   metadata(key: [MetaKey]): [Metadata]!
   title: [Metadata]!
-  timestamps: [Metadata]!
   collections: [Metadata]!
   dimensions: [Metadata]!
   relations: [Relation]
@@ -68,12 +66,20 @@ type MediaFile {
   entities: [String]
 }
 
+type Position {
+  x: Int
+  y: Int
+  z: Int
+}
+
 type Relation {
   key: String!
   type: RelationType!
   label: String
   timestamp_start: Int
   timestamp_end: Int
+  position: Position
+  scale: Int
 }
 
 type EntitiesResults {
