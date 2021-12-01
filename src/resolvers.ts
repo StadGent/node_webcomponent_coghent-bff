@@ -48,6 +48,9 @@ export const resolvers: Resolvers<Context> = {
     relations(parent, _args, { dataSources }) {
       return dataSources.EntitiesAPI.getRelations(parent.id);
     },
+    relationMetadata: async (parent, _args, { dataSources }) => {
+      return await dataSources.EntitiesAPI.getComponents(parent.id)
+    },
     components: async (parent, _args, { dataSources }) => {
       let data = await dataSources.EntitiesAPI.getRelations(parent.id);
       let components = await getComponents(dataSources, data)

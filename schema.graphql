@@ -54,6 +54,7 @@ type Entity {
   collections: [Metadata]!
   dimensions: [Metadata]!
   relations: [Relation]
+  relationMetadata: [Relation]
   components: [Entity]
   assets: [Entity]
   frames: [Entity]
@@ -71,6 +72,8 @@ type Relation {
   key: String!
   type: RelationType!
   label: String
+  timestamp_start: Int
+  timestamp_end: Int
 }
 
 type EntitiesResults {
