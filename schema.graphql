@@ -76,10 +76,10 @@ type Relation {
   key: String!
   type: RelationType!
   label: String
-  timestamp_start: Int
-  timestamp_end: Int
+  timestamp_start: Float
+  timestamp_end: Float
   position: Position
-  scale: Int
+  scale: Float
 }
 
 type EntitiesResults {
