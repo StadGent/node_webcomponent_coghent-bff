@@ -13,6 +13,7 @@ interface Environment {
   api: {
     collectionAPIUrl: string;
     searchAPIUrl: string;
+    IiifAPIUrl: string;
   };
   webPortal: string;
   boxFrontend: string;
@@ -35,6 +36,7 @@ export const environment: Environment = {
     collectionAPIUrl:
       process.env.COLLECTION_API_URL || 'http://collection-api:8000',
     searchAPIUrl: process.env.SEARCH_API_URL || 'http://search-api:8002',
+    IiifAPIUrl: process.env.IIIF_API_URL || 'http://cantaloupe:8182',
   },
   webPortal: process.env.WEB_PORTAL_URL || 'http://localhost:8070',
   boxFrontend: process.env.BOX_FRONTEND_URL || 'http://localhost:8071',

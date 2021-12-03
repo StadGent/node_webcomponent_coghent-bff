@@ -1,4 +1,10 @@
-import { Entity, Metadata, Relation, RelationType, Resolvers } from './type-defs';
+import {
+  Entity,
+  Metadata,
+  Relation,
+  RelationType,
+  Resolvers,
+} from './type-defs';
 import { Context, DataSources } from './types';
 import { AuthenticationError } from 'apollo-server';
 
@@ -12,12 +18,12 @@ export const resolvers: Resolvers<Context> = {
       { limit, skip, searchValue, fetchPolicy },
       { dataSources }
     ) => {
-        return dataSources.SearchAPI.getEntities(
-          limit || 20,
-          skip || 0,
-          searchValue,
-          fetchPolicy || ''
-        );
+      return dataSources.SearchAPI.getEntities(
+        limit || 20,
+        skip || 0,
+        searchValue,
+        fetchPolicy || ''
+      );
     },
     User: async (_source, {}, { dataSources, session }) => {
       if (!session.auth.accessToken) {
@@ -53,31 +59,46 @@ export const resolvers: Resolvers<Context> = {
     },
     components: async (parent, _args, { dataSources }) => {
       let data = await dataSources.EntitiesAPI.getRelations(parent.id);
-      let components = await getComponents(dataSources, data)
-      return components
+      let components = await getComponents(dataSources, data);
+      return components;
     },
     assets: async (parent, _args, { dataSources }) => {
       let data = await dataSources.EntitiesAPI.getRelations(parent.id);
-      let frames = await getComponents(dataSources, data)
-      return frames
-    },    
+      let frames = await getComponents(dataSources, data);
+      return frames;
+    },
     frames: async (parent, _args, { dataSources }) => {
       let data = await dataSources.EntitiesAPI.getRelations(parent.id);
-      let frames = await getComponents(dataSources, data)
-      return frames
-    },    
+      let frames = await getComponents(dataSources, data);
+      return frames;
+    },
+  },
+  MediaFile: {
+    mediainfo: async (parent, _args, { dataSources }) => {
+      return await dataSources.IiifAPI.getInfo(
+        parent.filename ? parent.filename : ''
+      );
+    },
+  },
+};
+const getComponents = async (
+  dataSources: DataSources,
+  data: Relation[]
+): Promise<Entity[]> => {
+  if (data.length > 0) {
+    const components: Entity[] = [];
+    const componentsRelations: Relation[] = data.filter(
+      (relation: Relation) =>
+        relation && [RelationType.Components].includes(relation.type)
+    );
+    for (const relation of componentsRelations) {
+      const entity = await dataSources.EntitiesAPI.getEntity(
+        relation.key.replace('entities/', '')
+      );
+      components.push(entity);
+    }
+    return components;
+  } else {
+    return [];
   }
 };
-const getComponents = async (dataSources: DataSources, data : Relation[]) : Promise<Entity[]> => {
-      if(data.length > 0){
-        const components : Entity[] = []
-        const componentsRelations: Relation[] = data.filter((relation: Relation) => relation && [RelationType.Components].includes(relation.type))
-        for (const relation of componentsRelations) {
-          const entity = await dataSources.EntitiesAPI.getEntity(relation.key.replace('entities/', ''))
-          components.push(entity)
-        }
-        return components
-      }else{
-        return []
-      }
-}

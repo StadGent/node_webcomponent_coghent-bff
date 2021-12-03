@@ -14,6 +14,8 @@ export class SearchAPI extends RESTDataSourceWithStaticToken<Context> {
     fetchPolicy: string
   ): Promise<EntitiesResults> {
     let body = searchValue;
+    console.log(`collection?limit=${limit}&skip=${skip}`);
+    console.log(body);
     const data = await this.post(
       `collection?limit=${limit}&skip=${skip}`,
       body

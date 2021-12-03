@@ -59,11 +59,18 @@ type Entity {
   mediafiles: [MediaFile]
 }
 
+type MediaInfo {
+  width: String!
+  height: String!
+}
+
 type MediaFile {
   _id: String!
   original_file_location: String
   thumbnail_file_location: String
+  filename: String
   entities: [String]
+  mediainfo: MediaInfo
 }
 
 type Position {

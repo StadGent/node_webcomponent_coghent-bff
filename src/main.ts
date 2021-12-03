@@ -12,12 +12,14 @@ import { EntitiesAPI } from './entities';
 import { resolvers } from './resolvers';
 import { SearchAPI } from './entities_search';
 import { UserAPI } from './user';
+import { IiifAPI } from './iiif';
 
 const apolloServer = new ApolloServer({
   typeDefs: readFileSync('./schema.graphql').toString('utf-8'),
   resolvers,
   dataSources: () => ({
     EntitiesAPI: new EntitiesAPI(),
+    IiifAPI: new IiifAPI(),
     SearchAPI: new SearchAPI(),
     UserAPI: new UserAPI(),
   }),
@@ -44,14 +46,16 @@ app.use(
 
 applyAuthSession(app, environment.sessionSecret);
 
-apolloServer.applyMiddleware({ app, path: environment.apollo.graphqlPath, cors: false });
+apolloServer.applyMiddleware({
+  app,
+  path: environment.apollo.graphqlPath,
+  cors: false,
+});
 
 applyAuthEndpoints(app, environment.oauthBaseUrl, environment.clientSecret);
 
 const httpServer = app.listen(environment.port, () => {
-  console.log(
-    `🚀 Server is running on port ${environment.port}`
-  );
+  console.log(`🚀 Server is running on port ${environment.port}`);
 });
 
 if (module.hot) {
