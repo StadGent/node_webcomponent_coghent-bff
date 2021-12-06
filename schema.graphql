@@ -87,6 +87,8 @@ type Relation {
   timestamp_end: Float
   position: Position
   scale: Float
+  audioFile: String
+  subtitleFile: String
 }
 
 type EntitiesResults {
