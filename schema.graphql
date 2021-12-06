@@ -6,8 +6,10 @@ enum MetaKey {
   collection
   description
   material
-  diameter
-  hoogte
+  height
+  width
+  depth
+  unMapped
 }
 
 enum RelationType {
@@ -36,6 +38,7 @@ type Metadata {
   key: MetaKey!
   value: String!
   lang: String
+  unMappedKey: String
 }
 
 input MetadataInput {
@@ -47,7 +50,7 @@ input MetadataInput {
 type Entity {
   id: String!
   type: String!
-  metadata(key: [MetaKey]): [Metadata]!
+  metadata(key: [MetaKey], exclude: Boolean): [Metadata]!
   title: [Metadata]!
   collections: [Metadata]!
   dimensions: [Metadata]!

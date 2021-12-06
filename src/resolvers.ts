@@ -4,6 +4,7 @@ import {
   Relation,
   RelationType,
   Resolvers,
+  MetaKey,
 } from './type-defs';
 import { Context, DataSources } from './types';
 import { AuthenticationError } from 'apollo-server';
@@ -46,6 +47,23 @@ export const resolvers: Resolvers<Context> = {
         const data = parent.metadata.filter(
           (meta) => meta && key.includes(meta.key)
         ) as Metadata[];
+
+        if (key.includes('unMapped' as MetaKey.UnMapped)) {
+          const other = parent.metadata.filter(
+            (meta) => meta && !Object.values(MetaKey).includes(meta.key)
+          ) as Metadata[];
+
+          other.forEach((meta) => {
+            if (meta.value)
+              data.push({
+                key: 'unMapped' as MetaKey.UnMapped,
+                value: meta.value,
+                unMappedKey: meta.key,
+                lang: meta.lang,
+              });
+          });
+        }
+
         data.sort((x, y) => key.indexOf(x.key) - key.indexOf(y.key));
         return data;
       }
@@ -55,7 +73,7 @@ export const resolvers: Resolvers<Context> = {
       return dataSources.EntitiesAPI.getRelations(parent.id);
     },
     relationMetadata: async (parent, _args, { dataSources }) => {
-      return await dataSources.EntitiesAPI.getComponents(parent.id)
+      return await dataSources.EntitiesAPI.getComponents(parent.id);
     },
     components: async (parent, _args, { dataSources }) => {
       let data = await dataSources.EntitiesAPI.getRelations(parent.id);
