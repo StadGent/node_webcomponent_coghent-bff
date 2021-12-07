@@ -20,6 +20,7 @@ export class SearchAPI extends RESTDataSourceWithStaticToken<Context> {
       `collection?limit=${limit}&skip=${skip}`,
       body
     );
+    console.log(data.results);
     data.results.forEach((element: any) => setId(element));
     return data;
   }
