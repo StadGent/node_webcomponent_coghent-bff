@@ -115,7 +115,7 @@ input SearchFilter {
   isAsc: Boolean
   key: String
   relation_filter: [String]
-  randomization: Boolean
+  randomize: Boolean
   seed: String
 }
 
