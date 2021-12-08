@@ -13,4 +13,3 @@ variables:
   APPLICATION: 'coghent-bff'
   TERRAFORM_IMAGE: 'web-terraform'
   TERRAFORM_TAG: 'latest'
-  SKIP_DEPLOY: 'true'
