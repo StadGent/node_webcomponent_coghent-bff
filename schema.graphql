@@ -56,7 +56,6 @@ type Entity {
   metadata(key: [MetaKey], exclude: Boolean): [Metadata]!
   title: [Metadata]!
   collections: [Metadata]!
-  dimensions: [Metadata]!
   relations: [Relation]
   relationMetadata: [Relation]
   components: [Entity]
