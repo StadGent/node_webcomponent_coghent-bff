@@ -63,6 +63,7 @@ type Entity {
   assets: [Entity]
   frames: [Entity]
   mediafiles: [MediaFile]
+  primary_mediafile: String
 }
 
 type MediaInfo {
