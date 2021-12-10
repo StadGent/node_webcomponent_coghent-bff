@@ -118,6 +118,7 @@ input SearchFilter {
   relation_filter: [String]
   randomize: Boolean
   seed: String
+  has_mediafile: Boolean
 }
 
 type User {
