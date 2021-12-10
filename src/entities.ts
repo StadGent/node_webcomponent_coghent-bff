@@ -49,7 +49,13 @@ export class EntitiesAPI extends RESTDataSourceWithStaticToken<Context> {
         // add the current brand to the Set
         seen.add(mediafile.filename);
         // filter() returns the brand when isDuplicate is false
-        return !isDuplicate;
+        return (
+          !isDuplicate &&
+          mediafile.filename &&
+          !mediafile.filename.endsWith('CR1') &&
+          !mediafile.filename.endsWith('CR2') &&
+          !mediafile.filename.endsWith('CR3')
+        );
       });
 
       return filtered;
