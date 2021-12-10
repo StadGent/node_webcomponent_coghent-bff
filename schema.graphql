@@ -25,6 +25,11 @@ enum RelationType {
   carriedOutBy
 }
 
+enum ComponentType {
+  frame
+  audio
+}
+
 enum JSPatchOp {
   add
   replace
@@ -59,6 +64,7 @@ type Entity {
   relations: [Relation]
   relationMetadata: [Relation]
   components: [Entity]
+  componentsOfType(key: String): [Entity]
   assets: [Entity]
   frames: [Entity]
   mediafiles: [MediaFile]

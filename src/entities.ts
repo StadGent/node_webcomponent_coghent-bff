@@ -64,6 +64,16 @@ export class EntitiesAPI extends RESTDataSourceWithStaticToken<Context> {
     }
   }
 
+  async getMediafilesById(id: string): Promise<MediaFile> {
+    let mediafile: MediaFile = {} as MediaFile;
+    try {
+      return mediafile = await this.get(`mediafiles/${id}`);
+    } catch (error) {
+      console.log(error);
+    }
+    return mediafile;
+  }
+
   async replaceMetadata(
     id: String,
     metadata: MetadataInput[]

@@ -5,6 +5,8 @@ import {
   RelationType,
   Resolvers,
   MetaKey,
+  ComponentType,
+  MediaFile,
 } from './type-defs';
 import { Context, DataSources } from './types';
 import { AuthenticationError } from 'apollo-server';
@@ -37,6 +39,19 @@ export const resolvers: Resolvers<Context> = {
     replaceMetadata: async (_source, { id, metadata }, { dataSources }) => {
       return dataSources.EntitiesAPI.replaceMetadata(id, metadata);
     },
+  },
+  Relation: {
+    async audioFile(parent, _args, { dataSources }){
+      let audio = 'No audio';
+      let mediafile: MediaFile = {} as MediaFile;
+      if(parent.key.includes('mediafiles')){
+        mediafile = await dataSources.EntitiesAPI.getMediafilesById(parent.key.replace('mediafiles/', '')); 
+        if(mediafile.original_file_location){
+          audio = mediafile.original_file_location as string;
+        } 
+      }
+      return audio;
+    }
   },
   Entity: {
     mediafiles(parent, _args, { dataSources }) {
@@ -80,6 +95,22 @@ export const resolvers: Resolvers<Context> = {
       let components = await getComponents(dataSources, data);
       return components;
     },
+    componentsOfType: async (parent, { key }, { dataSources }) => {
+      let data = await dataSources.EntitiesAPI.getRelations(parent.id);
+      let components: Array<Entity> = [];
+
+      if(!key || !Object.values(ComponentType).includes(key as ComponentType)){
+        components = await getComponents(dataSources, data);
+      }else {
+        const allComponents = await getComponents(dataSources, data);
+        allComponents.map(component => {
+          if(component.metadata.filter(meta => meta?.key === 'type' && meta.value === key).length > 0)
+            components.push(component)
+        })
+      }
+      
+      return components;
+    },
     assets: async (parent, _args, { dataSources }) => {
       let data = await dataSources.EntitiesAPI.getRelations(parent.id);
       let frames = await getComponents(dataSources, data);
@@ -120,3 +151,12 @@ const getComponents = async (
     return [];
   }
 };
+
+const updateRelationMetadataWhenAudio = async (dataSources: DataSources, allRelations: Array<Relation>, fromComponent: Entity, relation: Relation) => {
+  if(relation.key.includes('mediafiles/')){
+    const mediafile = await dataSources.EntitiesAPI.getMediafilesById(relation.key.replace('mediafiles/', ''));
+    const newRelationObject: Relation = allRelations.filter(singleRelation => singleRelation.key.replace('entities/','') == fromComponent.id)[0];
+    newRelationObject['audioFile'] = mediafile.original_file_location;
+    return newRelationObject;
+  }
+}
