@@ -97,6 +97,7 @@ type Relation {
   label: String
   timestamp_start: Float
   timestamp_end: Float
+  timestamp_zoom: Float
   position: Position
   scale: Float
   audioFile: String
