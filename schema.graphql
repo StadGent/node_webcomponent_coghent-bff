@@ -44,9 +44,11 @@ input JSPatch {
 
 type Metadata {
   key: MetaKey!
-  value: String!
+  value: String! 
+  nestedMetaData: [Metadata]
   lang: String
   unMappedKey: String
+  label: String
 }
 
 input MetadataInput {
