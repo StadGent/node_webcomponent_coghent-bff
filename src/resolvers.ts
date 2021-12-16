@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import {
   Entity,
   Metadata,
@@ -41,48 +43,30 @@ export const resolvers: Resolvers<Context> = {
     },
   },
   Relation: {
-    async audioFile(parent, _args, { dataSources }){
+    async audioFile(parent, _args, { dataSources }) {
       let audio = 'No audio';
       let mediafile: MediaFile = {} as MediaFile;
-      if(parent.key.includes('mediafiles')){
-        mediafile = await dataSources.EntitiesAPI.getMediafilesById(parent.key.replace('mediafiles/', '')); 
-        if(mediafile.original_file_location){
+      if (parent.key.includes('mediafiles')) {
+        mediafile = await dataSources.EntitiesAPI.getMediafilesById(
+          parent.key.replace('mediafiles/', '')
+        );
+        if (mediafile.original_file_location) {
           audio = mediafile.original_file_location as string;
-        } 
+        }
       }
       return audio;
-    }
+    },
   },
   Entity: {
     mediafiles(parent, _args, { dataSources }) {
       return dataSources.EntitiesAPI.getMediafiles(parent.id);
     },
-    metadata(parent, { key }) {
+    metadata(parent, { key }, { dataSources }) {
       if (key) {
-        const data = parent.metadata.filter(
-          (meta) => meta && key.includes(meta.key)
-        ) as Metadata[];
-
-        if (key.includes('unMapped' as MetaKey.UnMapped)) {
-          const other = parent.metadata.filter(
-            (meta) => meta && !Object.values(MetaKey).includes(meta.key)
-          ) as Metadata[];
-
-          other.forEach((meta) => {
-            if (meta.value)
-              data.push({
-                key: 'unMapped' as MetaKey.UnMapped,
-                value: meta.value,
-                unMappedKey: meta.key,
-                lang: meta.lang,
-              });
-          });
-        }
-
-        data.sort((x, y) => key.indexOf(x.key) - key.indexOf(y.key));
-        return data;
+        return filterMetaData(parent.metadata, key, dataSources);
+      } else {
+        return parent.metadata;
       }
-      return parent.metadata;
     },
     relations(parent, _args, { dataSources }) {
       return dataSources.EntitiesAPI.getRelations(parent.id);
@@ -99,21 +83,28 @@ export const resolvers: Resolvers<Context> = {
       let data = await dataSources.EntitiesAPI.getRelations(parent.id);
       let components: Array<Entity> = [];
 
-      if(!key || !Object.values(ComponentType).includes(key as ComponentType)){
+      if (
+        !key ||
+        !Object.values(ComponentType).includes(key as ComponentType)
+      ) {
         components = await getComponents(dataSources, data);
-      }else {
+      } else {
         const allComponents = await getComponents(dataSources, data);
-        allComponents.map(component => {
-          if(component.metadata.filter(meta => meta?.key === 'type' && meta.value === key).length > 0)
-            components.push(component)
-        })
+        allComponents.map((component) => {
+          if (
+            component.metadata.filter(
+              (meta) => meta?.key === 'type' && meta.value === key
+            ).length > 0
+          )
+            components.push(component);
+        });
       }
-      
+
       return components;
     },
     assets: async (parent, _args, { dataSources }) => {
       let data = await dataSources.EntitiesAPI.getRelations(parent.id);
-      let frames = await getComponents(dataSources, data);
+      let frames = await getComponents(dataSources, data, dataSources);
       return frames;
     },
     frames: async (parent, _args, { dataSources }) => {
@@ -152,11 +143,73 @@ const getComponents = async (
   }
 };
 
-const updateRelationMetadataWhenAudio = async (dataSources: DataSources, allRelations: Array<Relation>, fromComponent: Entity, relation: Relation) => {
-  if(relation.key.includes('mediafiles/')){
-    const mediafile = await dataSources.EntitiesAPI.getMediafilesById(relation.key.replace('mediafiles/', ''));
-    const newRelationObject: Relation = allRelations.filter(singleRelation => singleRelation.key.replace('entities/','') == fromComponent.id)[0];
+const updateRelationMetadataWhenAudio = async (
+  dataSources: DataSources,
+  allRelations: Array<Relation>,
+  fromComponent: Entity,
+  relation: Relation
+) => {
+  if (relation.key.includes('mediafiles/')) {
+    const mediafile = await dataSources.EntitiesAPI.getMediafilesById(
+      relation.key.replace('mediafiles/', '')
+    );
+    const newRelationObject: Relation = allRelations.filter(
+      (singleRelation) =>
+        singleRelation.key.replace('entities/', '') == fromComponent.id
+    )[0];
     newRelationObject['audioFile'] = mediafile.original_file_location;
     return newRelationObject;
   }
-}
+};
+
+const filterMetaData = async (
+  metadata: any,
+  key: any,
+  dataSources: DataSources
+) => {
+  const data = metadata.filter(
+    (meta) => meta && key.includes(meta.key)
+  ) as Metadata[];
+
+  if (key.includes('unMapped' as MetaKey.UnMapped)) {
+    const other = metadata.filter(
+      (meta) => meta && !Object.values(MetaKey).includes(meta.key)
+    ) as Metadata[];
+    for (const meta of other) {
+      // other.forEach(async (meta) => {
+      if (meta.type === 'components') {
+        const entity = await dataSources.EntitiesAPI.getEntity(
+          meta.key.replace('entities/', '')
+        );
+
+        const nestedMetaData = await filterMetaData(
+          entity.metadata,
+          key,
+          dataSources
+        );
+        console.log(nestedMetaData);
+        data.push({
+          key: 'unMapped' as MetaKey.UnMapped,
+          value: 'nested',
+          nestedMetaData,
+          unMappedKey: meta.key,
+          lang: meta.lang,
+          label: meta.label,
+        });
+      }
+
+      if (meta.value && meta.type !== 'components')
+        data.push({
+          key: 'unMapped' as MetaKey.UnMapped,
+          value: meta.value,
+          unMappedKey: meta.key,
+          lang: meta.lang,
+          label: meta.label,
+        });
+      // });
+    }
+  }
+
+  data.sort((x, y) => key.indexOf(x.key) - key.indexOf(y.key));
+  return data;
+};
