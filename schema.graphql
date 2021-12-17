@@ -44,11 +44,12 @@ input JSPatch {
 
 type Metadata {
   key: MetaKey!
-  value: String! 
-  nestedMetaData: [Metadata]
+  value: String
+  nestedMetaData: Entity
   lang: String
   unMappedKey: String
   label: String
+  type: RelationType
 }
 
 input MetadataInput {
@@ -57,10 +58,17 @@ input MetadataInput {
   lang: String
 }
 
+type MetadataCollection {
+  label: String!
+  data: [Metadata]
+  nested: Boolean
+}
+
 type Entity {
   id: String!
   type: String!
-  metadata(key: [MetaKey], exclude: Boolean): [Metadata]!
+  metadata(key: [MetaKey]): [Metadata]!
+  metadataCollection(key: [MetaKey]): [MetadataCollection]
   title: [Metadata]!
   collections: [Metadata]!
   relations: [Relation]
@@ -97,6 +105,7 @@ type Relation {
   key: String!
   type: RelationType!
   label: String
+  value: String
   timestamp_start: Float
   timestamp_end: Float
   timestamp_zoom: Float

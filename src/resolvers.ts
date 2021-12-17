@@ -1,4 +1,4 @@
-// @ts-nocheck
+// @ts-nocheck 
 
 import {
   Entity,
@@ -9,6 +9,7 @@ import {
   MetaKey,
   ComponentType,
   MediaFile,
+  Maybe,
 } from './type-defs';
 import { Context, DataSources } from './types';
 import { AuthenticationError } from 'apollo-server';
@@ -65,8 +66,32 @@ export const resolvers: Resolvers<Context> = {
       if (key) {
         return filterMetaData(parent.metadata, key, dataSources);
       } else {
-        return parent.metadata;
+        return []
       }
+    },
+    metadataCollection: async (parent, { key }, { dataSources }) => {
+      const data = []
+      const metaData = await exlcudeMetaData(parent.metadata, key)
+      metaData.forEach(element => {
+        if(element.value){
+          const label = element.label ? element.label : element.key
+          if(data.some((collectionItem) => collectionItem.label === label)){
+            data.map((collectionItem) => {
+              if(collectionItem.label === label){
+                collectionItem.data.push(element)
+              }
+            })
+          }else{
+             data.push({
+              label: label, 
+              data: [element],
+              nested: element.type === 'components' ? true : false
+            })
+          }
+        }
+      });
+
+      return data
     },
     relations(parent, _args, { dataSources }) {
       return dataSources.EntitiesAPI.getRelations(parent.id);
@@ -104,7 +129,7 @@ export const resolvers: Resolvers<Context> = {
     },
     assets: async (parent, _args, { dataSources }) => {
       let data = await dataSources.EntitiesAPI.getRelations(parent.id);
-      let frames = await getComponents(dataSources, data, dataSources);
+      let frames = await getComponents(dataSources, data);
       return frames;
     },
     frames: async (parent, _args, { dataSources }) => {
@@ -120,6 +145,16 @@ export const resolvers: Resolvers<Context> = {
       );
     },
   },
+  Metadata: {
+    nestedMetaData: async (parent, _args, { dataSources }) => {
+      if(parent.type) {
+        return await dataSources.EntitiesAPI.getEntity(
+          parent.key.replace('entities/', '')
+        );
+      }
+      return undefined
+    },
+  }
 };
 const getComponents = async (
   dataSources: DataSources,
@@ -163,7 +198,7 @@ const updateRelationMetadataWhenAudio = async (
 };
 
 const filterMetaData = async (
-  metadata: any,
+  metadata: Maybe<Metadata>[],
   key: any,
   dataSources: DataSources
 ) => {
@@ -176,40 +211,30 @@ const filterMetaData = async (
       (meta) => meta && !Object.values(MetaKey).includes(meta.key)
     ) as Metadata[];
     for (const meta of other) {
-      // other.forEach(async (meta) => {
-      if (meta.type === 'components') {
-        const entity = await dataSources.EntitiesAPI.getEntity(
-          meta.key.replace('entities/', '')
-        );
 
-        const nestedMetaData = await filterMetaData(
-          entity.metadata,
-          key,
-          dataSources
-        );
-        console.log(nestedMetaData);
-        data.push({
-          key: 'unMapped' as MetaKey.UnMapped,
-          value: 'nested',
-          nestedMetaData,
-          unMappedKey: meta.key,
-          lang: meta.lang,
-          label: meta.label,
-        });
-      }
-
-      if (meta.value && meta.type !== 'components')
+      if (meta.value)
         data.push({
           key: 'unMapped' as MetaKey.UnMapped,
           value: meta.value,
           unMappedKey: meta.key,
           lang: meta.lang,
           label: meta.label,
+          type: meta.type
         });
-      // });
     }
   }
 
   data.sort((x, y) => key.indexOf(x.key) - key.indexOf(y.key));
+  return data;
+};
+
+const exlcudeMetaData = async (
+  metadata: Maybe<Metadata>[],
+  key: any
+) => {
+  const data = metadata.filter(
+    (meta) => meta && !key.includes(meta.key)
+  ) as Metadata[];
+  console.log(data)
   return data;
 };
