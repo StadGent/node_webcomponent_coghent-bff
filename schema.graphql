@@ -68,7 +68,8 @@ type Entity {
   id: String!
   type: String!
   metadata(key: [MetaKey]): [Metadata]!
-  metadataCollection(key: [MetaKey]): [MetadataCollection]
+  metadataByLabel(key: [String]): [Metadata]!
+  metadataCollection(key: [MetaKey], label: [String]): [MetadataCollection]
   title: [Metadata]!
   collections: [Metadata]!
   relations: [Relation]

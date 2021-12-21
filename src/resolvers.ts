@@ -1,5 +1,3 @@
-// @ts-nocheck 
-
 import {
   Entity,
   Metadata,
@@ -10,6 +8,7 @@ import {
   ComponentType,
   MediaFile,
   Maybe,
+  MetadataCollection,
 } from './type-defs';
 import { Context, DataSources } from './types';
 import { AuthenticationError } from 'apollo-server';
@@ -66,32 +65,49 @@ export const resolvers: Resolvers<Context> = {
       if (key) {
         return filterMetaData(parent.metadata, key, dataSources);
       } else {
-        return []
+        return [];
       }
     },
-    metadataCollection: async (parent, { key }, { dataSources }) => {
-      const data = []
-      const metaData = await exlcudeMetaData(parent.metadata, key)
-      metaData.forEach(element => {
-        if(element.value){
-          const label = element.label ? element.label : element.key
-          if(data.some((collectionItem) => collectionItem.label === label)){
+    metadataByLabel: async (parent, { key }, { dataSources }) => {
+      if (key) {
+        const data = await filterMetaData(
+          parent.metadata,
+          key,
+          dataSources,
+          'label'
+        );
+
+        return data.map((metadata) => {
+          delete metadata.type;
+          return metadata;
+        });
+      } else {
+        return [];
+      }
+    },
+    metadataCollection: async (parent, { key, label }, { dataSources }) => {
+      const data: MetadataCollection[] = [];
+      const metaData = await exlcudeMetaData(parent.metadata, key, label);
+      metaData.forEach((element) => {
+        if (element.value) {
+          const label = element.label ? element.label : element.key;
+          if (data.some((collectionItem) => collectionItem.label === label)) {
             data.map((collectionItem) => {
-              if(collectionItem.label === label){
-                collectionItem.data.push(element)
+              if (collectionItem.label === label) {
+                collectionItem.data && collectionItem.data.push(element);
               }
-            })
-          }else{
-             data.push({
-              label: label, 
+            });
+          } else {
+            data.push({
+              label: label,
               data: [element],
-              nested: element.type === 'components' ? true : false
-            })
+              nested: element.type === 'components' ? true : false,
+            });
           }
         }
       });
 
-      return data
+      return data;
     },
     relations(parent, _args, { dataSources }) {
       return dataSources.EntitiesAPI.getRelations(parent.id);
@@ -147,14 +163,14 @@ export const resolvers: Resolvers<Context> = {
   },
   Metadata: {
     nestedMetaData: async (parent, _args, { dataSources }) => {
-      if(parent.type) {
+      if (parent.type) {
         return await dataSources.EntitiesAPI.getEntity(
           parent.key.replace('entities/', '')
         );
       }
-      return undefined
+      return null;
     },
-  }
+  },
 };
 const getComponents = async (
   dataSources: DataSources,
@@ -200,18 +216,18 @@ const updateRelationMetadataWhenAudio = async (
 const filterMetaData = async (
   metadata: Maybe<Metadata>[],
   key: any,
-  dataSources: DataSources
+  dataSources: DataSources,
+  keyOrLabel: 'key' | 'label' = 'key'
 ) => {
-  const data = metadata.filter(
-    (meta) => meta && key.includes(meta.key)
-  ) as Metadata[];
+  const data = metadata.filter((meta) => {
+    return meta && key.includes(meta[keyOrLabel]);
+  }) as Metadata[];
 
   if (key.includes('unMapped' as MetaKey.UnMapped)) {
     const other = metadata.filter(
       (meta) => meta && !Object.values(MetaKey).includes(meta.key)
     ) as Metadata[];
     for (const meta of other) {
-
       if (meta.value)
         data.push({
           key: 'unMapped' as MetaKey.UnMapped,
@@ -219,7 +235,7 @@ const filterMetaData = async (
           unMappedKey: meta.key,
           lang: meta.lang,
           label: meta.label,
-          type: meta.type
+          type: meta.type,
         });
     }
   }
@@ -230,11 +246,14 @@ const filterMetaData = async (
 
 const exlcudeMetaData = async (
   metadata: Maybe<Metadata>[],
-  key: any
+  key: any,
+  label: any = []
 ) => {
-  const data = metadata.filter(
+  const dataFilterdOnKey = metadata.filter(
     (meta) => meta && !key.includes(meta.key)
   ) as Metadata[];
-  console.log(data)
-  return data;
+  const dataFilterdOnLabel = dataFilterdOnKey.filter(
+    (meta) => meta && !label.includes(meta.label)
+  ) as Metadata[];
+  return dataFilterdOnLabel;
 };
