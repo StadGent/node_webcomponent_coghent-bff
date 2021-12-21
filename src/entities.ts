@@ -10,9 +10,44 @@ import { RESTDataSourceWithStaticToken } from './RestDataSourceWithStaticToken';
 import { Context } from './types';
 import { environment as env } from './environment';
 import { setId } from './common';
+import { GraphQLError } from 'graphql';
+import { UserInputError } from 'apollo-server-errors';
 
 export class EntitiesAPI extends RESTDataSourceWithStaticToken<Context> {
   public baseURL = `${env.api.collectionAPIUrl}/`;
+
+  async createBoxVisitor(): Promise<Entity> {
+    const model = `{
+      "type": "box_visit",
+      "metadata": [
+        {
+          "key": "type",
+          "value": "visitor",
+          "language": "en"
+        },
+        {
+          "key": "QRCode",
+          "value": "7682136782315678231657",
+          "language": "en"
+        }
+      ],
+      "data": {}
+    }`
+    let visiter;
+    try {
+      visiter = await this.post(`entities`,JSON.parse(model));
+      console.log({visiter});
+    } catch (error) {
+      throw new UserInputError(`${error}`);
+    }
+    return visiter;
+  }
+
+  async getBoxVisitors(): Promise<EntitiesResults> {
+    const visiters = await this.get<EntitiesResults>(`entities?type=box_visit`);
+    visiters.results?.forEach(entity => setId(entity));
+    return visiters;
+  }
 
   async getStories(): Promise<EntitiesResults> {
     const data = await this.get(`entities?type=story&limit=20&skip=0`);

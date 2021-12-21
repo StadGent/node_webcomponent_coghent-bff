@@ -12,6 +12,7 @@ enum MetaKey {
   unMapped
   object_number
   object_name
+  QRCode
 }
 
 enum RelationType {
@@ -155,6 +156,7 @@ type User {
 }
 
 type Query {
+  BoxVisitors: EntitiesResults!
   Entity(id: String!): Entity
   Entities(
     limit: Int

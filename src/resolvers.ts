@@ -15,6 +15,10 @@ import { AuthenticationError } from 'apollo-server';
 
 export const resolvers: Resolvers<Context> = {
   Query: {
+    BoxVisitors: async (_source, _args, {dataSources}) => {
+      const visiters = await dataSources.EntitiesAPI.getBoxVisitors();
+      return visiters;
+    },
     Entity: async (_source, { id }, { dataSources }) => {
       return dataSources.EntitiesAPI.getEntity(id);
     },
