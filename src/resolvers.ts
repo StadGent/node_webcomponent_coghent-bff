@@ -12,12 +12,31 @@ import {
 } from './type-defs';
 import { Context, DataSources } from './types';
 import { AuthenticationError } from 'apollo-server';
+import { setId } from './common';
 
 export const resolvers: Resolvers<Context> = {
   Query: {
-    BoxVisitors: async (_source, _args, {dataSources}) => {
+    BoxVisitors: async (_source, _args, { dataSources }) => {
       const visiters = await dataSources.EntitiesAPI.getBoxVisitors();
       return visiters;
+    },
+    BoxVisitorByCode: async (_source, { code }, { dataSources }) => {
+      const visiters = await dataSources.EntitiesAPI.getBoxVisitors();
+      let visiter: Entity = visiters.results?.[0] as Entity;
+      visiters.results?.forEach(_visiter => {
+        if(_visiter?.id === code)
+          visiter = _visiter;
+      });
+      // if(visiter === undefined){
+      //   console.log('UNDEFINED');
+      //   visiter = await dataSources.EntitiesAPI.createBoxVisitor();
+        
+      // }
+
+      return visiter;
+    },
+    Stories: async (_source, _args, { dataSources } ) => {
+      return dataSources.EntitiesAPI.getStories();
     },
     Entity: async (_source, { id }, { dataSources }) => {
       return dataSources.EntitiesAPI.getEntity(id);
@@ -34,7 +53,7 @@ export const resolvers: Resolvers<Context> = {
         fetchPolicy || ''
       );
     },
-    User: async (_source, {}, { dataSources, session }) => {
+    User: async (_source, { }, { dataSources, session }) => {
       if (!session.auth.accessToken) {
         throw new AuthenticationError('Not authenticated');
       }
@@ -44,6 +63,9 @@ export const resolvers: Resolvers<Context> = {
   Mutation: {
     replaceMetadata: async (_source, { id, metadata }, { dataSources }) => {
       return dataSources.EntitiesAPI.replaceMetadata(id, metadata);
+    },
+    AddFrameToVisiter: async (_source, { visiterId, frameId }, { dataSources }) => {
+      return await dataSources.EntitiesAPI.addFrameToVister(visiterId, frameId);
     },
   },
   Relation: {
@@ -156,6 +178,16 @@ export const resolvers: Resolvers<Context> = {
       let data = await dataSources.EntitiesAPI.getRelations(parent.id);
       let frames = await getComponents(dataSources, data);
       return frames;
+    },
+    qrCode: async (parent, _args, { dataSources }) => {
+      let qrCode = null;
+      if (parent.id != 'noid') {
+        const entity = await dataSources.EntitiesAPI.getEntity(parent.id);
+        qrCode = entity.metadata.filter(data => data?.key == MetaKey.QrCode)[0]?.value;
+        if (qrCode == undefined)
+          qrCode = Math.floor(Math.random() * (10000000 - 1 + 1)) + 1
+      }
+      return qrCode as string;
     },
   },
   MediaFile: {

@@ -10,7 +10,6 @@ import { RESTDataSourceWithStaticToken } from './RestDataSourceWithStaticToken';
 import { Context } from './types';
 import { environment as env } from './environment';
 import { setId } from './common';
-import { GraphQLError } from 'graphql';
 import { UserInputError } from 'apollo-server-errors';
 
 export class EntitiesAPI extends RESTDataSourceWithStaticToken<Context> {
@@ -18,25 +17,31 @@ export class EntitiesAPI extends RESTDataSourceWithStaticToken<Context> {
 
   async createBoxVisitor(): Promise<Entity> {
     const model = `{
-      "type": "box_visit",
-      "metadata": [
-        {
-          "key": "type",
-          "value": "visitor",
-          "language": "en"
-        },
-        {
-          "key": "QRCode",
-          "value": "7682136782315678231657",
-          "language": "en"
-        }
+      "data": {},
+      "id": "5c5812e2-7e42-4a28-8791-4cd67318d9ef
+        ",
+        "identifiers": [
+          "5c5812e2-7e42-4a28-8791-4cd67318d9ef"
       ],
-      "data": {}
-    }`
+      "metadata": [
+          {
+              "key": "type",
+              "value": "visitor",
+              "language": "en"
+          },
+          {
+              "key": "QRCode",
+              "value": "23197897832786123",
+              "language": "en"
+          }
+      ],
+      "type": "box_visit",
+  }`;
     let visiter;
     try {
-      visiter = await this.post(`entities`,JSON.parse(model));
-      console.log({visiter});
+      visiter = await this.post(`entities`, JSON.parse(model));
+      visiter = setId(visiter);
+      console.log(`CREATED BOX VISITER`, visiter);
     } catch (error) {
       throw new UserInputError(`${error}`);
     }
@@ -45,12 +50,30 @@ export class EntitiesAPI extends RESTDataSourceWithStaticToken<Context> {
 
   async getBoxVisitors(): Promise<EntitiesResults> {
     const visiters = await this.get<EntitiesResults>(`entities?type=box_visit`);
-    visiters.results?.forEach(entity => setId(entity));
+    visiters.results?.forEach(entity => setId(entity))
     return visiters;
+  }
+
+  async addFrameToVister(visterId: string, frameId: string): Promise<Array<Relation>> {
+    const body = `[
+      {
+        "key": "entities/${frameId}",
+        "type": "components",
+        "date": "${new Date().toLocaleString()}"
+      }
+    ]`;
+    let relations: Array<Relation> = [];
+    try {
+      relations = await this.patch(`entities/${visterId}/components`, JSON.parse(body))
+    } catch (error) {
+      console.log({ error });
+    }
+    return relations;
   }
 
   async getStories(): Promise<EntitiesResults> {
     const data = await this.get(`entities?type=story&limit=20&skip=0`);
+    data.results.forEach((_entity: Entity) => setId(_entity));
     return data;
   }
 

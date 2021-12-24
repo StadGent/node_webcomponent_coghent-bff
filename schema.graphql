@@ -81,6 +81,7 @@ type Entity {
   frames: [Entity]
   mediafiles: [MediaFile]
   primary_mediafile: String
+  qrCode: String
 }
 
 type MediaInfo {
@@ -121,6 +122,7 @@ type Relation {
   scale: Float
   audioFile: String
   subtitleFile: String
+  date: String
 }
 
 type EntitiesResults {
@@ -157,6 +159,8 @@ type User {
 
 type Query {
   BoxVisitors: EntitiesResults!
+  BoxVisitorByCode(code: String!): Entity
+  Stories: EntitiesResults
   Entity(id: String!): Entity
   Entities(
     limit: Int
@@ -172,4 +176,5 @@ type Query {
 
 type Mutation {
   replaceMetadata(id: String!, metadata: [MetadataInput!]!): [Metadata!]!
+  AddFrameToVisiter(visiterId: String!, frameId: String!): [Relation]!
 }
