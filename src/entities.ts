@@ -15,40 +15,28 @@ import { UserInputError } from 'apollo-server-errors';
 export class EntitiesAPI extends RESTDataSourceWithStaticToken<Context> {
   public baseURL = `${env.api.collectionAPIUrl}/`;
 
-  async createBoxVisitor(): Promise<Entity> {
+  async createBoxVisiter(): Promise<Entity> {
     const model = `{
-      "data": {},
-      "id": "5c5812e2-7e42-4a28-8791-4cd67318d9ef
-        ",
-        "identifiers": [
-          "5c5812e2-7e42-4a28-8791-4cd67318d9ef"
-      ],
+      "type": "box_visit",
       "metadata": [
           {
               "key": "type",
               "value": "visitor",
               "language": "en"
-          },
-          {
-              "key": "QRCode",
-              "value": "23197897832786123",
-              "language": "en"
           }
-      ],
-      "type": "box_visit",
+      ]
   }`;
     let visiter;
     try {
       visiter = await this.post(`entities`, JSON.parse(model));
       visiter = setId(visiter);
-      console.log(`CREATED BOX VISITER`, visiter);
     } catch (error) {
       throw new UserInputError(`${error}`);
     }
     return visiter;
   }
 
-  async getBoxVisitors(): Promise<EntitiesResults> {
+  async getBoxVisiters(): Promise<EntitiesResults> {
     const visiters = await this.get<EntitiesResults>(`entities?type=box_visit`);
     visiters.results?.forEach(entity => setId(entity))
     return visiters;

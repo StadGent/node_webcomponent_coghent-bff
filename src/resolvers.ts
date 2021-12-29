@@ -16,26 +16,24 @@ import { setId } from './common';
 
 export const resolvers: Resolvers<Context> = {
   Query: {
-    BoxVisitors: async (_source, _args, { dataSources }) => {
-      const visiters = await dataSources.EntitiesAPI.getBoxVisitors();
+    BoxVisiters: async (_source, _args, { dataSources }) => {
+      const visiters = await dataSources.EntitiesAPI.getBoxVisiters();
       return visiters;
     },
-    BoxVisitorByCode: async (_source, { code }, { dataSources }) => {
-      const visiters = await dataSources.EntitiesAPI.getBoxVisitors();
-      let visiter: Entity = visiters.results?.[0] as Entity;
+    BoxVisiterByCode: async (_source, { code }, { dataSources }) => {
+      const visiters = await dataSources.EntitiesAPI.getBoxVisiters();
+      let visiter = null;
       visiters.results?.forEach(_visiter => {
-        if(_visiter?.id === code)
+        setId(_visiter);
+        if (_visiter?.id == code)
           visiter = _visiter;
       });
-      // if(visiter === undefined){
-      //   console.log('UNDEFINED');
-      //   visiter = await dataSources.EntitiesAPI.createBoxVisitor();
-        
-      // }
-
+      if (visiter == null) {
+        visiter = await dataSources.EntitiesAPI.createBoxVisiter();
+      }
       return visiter;
     },
-    Stories: async (_source, _args, { dataSources } ) => {
+    Stories: async (_source, _args, { dataSources }) => {
       return dataSources.EntitiesAPI.getStories();
     },
     Entity: async (_source, { id }, { dataSources }) => {

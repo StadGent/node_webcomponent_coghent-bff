@@ -158,8 +158,8 @@ type User {
 }
 
 type Query {
-  BoxVisitors: EntitiesResults!
-  BoxVisitorByCode(code: String!): Entity
+  BoxVisiters: EntitiesResults!
+  BoxVisiterByCode(code: String!): Entity
   Stories: EntitiesResults
   Entity(id: String!): Entity
   Entities(
