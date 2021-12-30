@@ -12,7 +12,7 @@ import {
 } from './type-defs';
 import { Context, DataSources } from './types';
 import { AuthenticationError } from 'apollo-server';
-import { setId } from './common';
+import { setIdAs_Key } from './common';
 
 export const resolvers: Resolvers<Context> = {
   Query: {
@@ -24,12 +24,12 @@ export const resolvers: Resolvers<Context> = {
       const visiters = await dataSources.EntitiesAPI.getBoxVisiters();
       let visiter = null;
       visiters.results?.forEach(_visiter => {
-        setId(_visiter);
-        if (_visiter?.id == code)
+        if (_visiter?._key == code)
           visiter = _visiter;
       });
       if (visiter == null) {
         visiter = await dataSources.EntitiesAPI.createBoxVisiter();
+        visiter = setIdAs_Key(visiter);
       }
       return visiter;
     },

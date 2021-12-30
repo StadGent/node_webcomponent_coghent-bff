@@ -9,7 +9,7 @@ import {
 import { RESTDataSourceWithStaticToken } from './RestDataSourceWithStaticToken';
 import { Context } from './types';
 import { environment as env } from './environment';
-import { setId } from './common';
+import { setId, setIdAs_Key, setIdsAs_Key } from './common';
 import { UserInputError } from 'apollo-server-errors';
 
 export class EntitiesAPI extends RESTDataSourceWithStaticToken<Context> {
@@ -29,7 +29,7 @@ export class EntitiesAPI extends RESTDataSourceWithStaticToken<Context> {
     let visiter;
     try {
       visiter = await this.post(`entities`, JSON.parse(model));
-      visiter = setId(visiter);
+      visiter = setIdAs_Key(visiter);
     } catch (error) {
       throw new UserInputError(`${error}`);
     }
@@ -38,8 +38,7 @@ export class EntitiesAPI extends RESTDataSourceWithStaticToken<Context> {
 
   async getBoxVisiters(): Promise<EntitiesResults> {
     const visiters = await this.get<EntitiesResults>(`entities?type=box_visit`);
-    visiters.results?.forEach(entity => setId(entity))
-    return visiters;
+    return setIdsAs_Key(visiters);
   }
 
   async addFrameToVister(visterId: string, frameId: string): Promise<Array<Relation>> {
