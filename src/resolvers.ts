@@ -23,9 +23,8 @@ export const resolvers: Resolvers<Context> = {
     BoxVisiterByCode: async (_source, { code }, { dataSources }) => {
       const visiters = await dataSources.EntitiesAPI.getBoxVisiters();
       let visiter = null;
-      visiters.results?.forEach(_visiter => {
-        if (_visiter?._key == code)
-          visiter = _visiter;
+      visiters.results?.forEach((_visiter) => {
+        if (_visiter?._key == code) visiter = _visiter;
       });
       if (visiter == null) {
         visiter = await dataSources.EntitiesAPI.createBoxVisiter();
@@ -51,7 +50,7 @@ export const resolvers: Resolvers<Context> = {
         fetchPolicy || ''
       );
     },
-    User: async (_source, { }, { dataSources, session }) => {
+    User: async (_source, {}, { dataSources, session }) => {
       if (!session.auth.accessToken) {
         throw new AuthenticationError('Not authenticated');
       }
@@ -62,7 +61,11 @@ export const resolvers: Resolvers<Context> = {
     replaceMetadata: async (_source, { id, metadata }, { dataSources }) => {
       return dataSources.EntitiesAPI.replaceMetadata(id, metadata);
     },
-    AddFrameToVisiter: async (_source, { visiterId, frameId }, { dataSources }) => {
+    AddFrameToVisiter: async (
+      _source,
+      { visiterId, frameId },
+      { dataSources }
+    ) => {
       return await dataSources.EntitiesAPI.addFrameToVister(visiterId, frameId);
     },
   },
@@ -181,9 +184,11 @@ export const resolvers: Resolvers<Context> = {
       let qrCode = null;
       if (parent.id != 'noid') {
         const entity = await dataSources.EntitiesAPI.getEntity(parent.id);
-        qrCode = entity.metadata.filter(data => data?.key == MetaKey.QrCode)[0]?.value;
+        qrCode = entity.metadata.filter(
+          (data) => data?.key == MetaKey.QrCode
+        )[0]?.value;
         if (qrCode == undefined)
-          qrCode = Math.floor(Math.random() * (10000000 - 1 + 1)) + 1
+          qrCode = Math.floor(Math.random() * (10000000 - 1 + 1)) + 1;
       }
       return qrCode as string;
     },
@@ -197,7 +202,7 @@ export const resolvers: Resolvers<Context> = {
   },
   Metadata: {
     nestedMetaData: async (parent, _args, { dataSources }) => {
-      if (parent.type) {
+      if (parent.type && parent.type !== 'isIn') {
         return await dataSources.EntitiesAPI.getEntity(
           parent.key.replace('entities/', '')
         );
