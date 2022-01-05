@@ -13,6 +13,11 @@ enum MetaKey {
   object_number
   object_name
   QRCode
+  fullName
+  date_of_birth
+  place_of_birth
+  date_of_death
+  place_of_death
 }
 
 enum RelationType {
