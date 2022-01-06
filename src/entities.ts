@@ -59,14 +59,15 @@ export class EntitiesAPI extends RESTDataSourceWithStaticToken<Context> {
   }
 
   async getStories(): Promise<EntitiesResults> {
-    const data = await this.get(`entities?type=story&limit=20&skip=0`);
-    data.results.forEach((_entity: Entity) => setId(_entity));
+    let data = await this.get(`entities?type=story&limit=20&skip=0`);
+    data = setIdsAs_Key(data)
     return data;
   }
 
   async getEntity(id: string): Promise<Entity> {
-    const data = await this.get<Entity>('entities' + (id ? '/' + id : ''));
-    setId(data);
+    let data = await this.get<Entity>('entities' + (id ? '/' + id : ''));
+    // setId(data);
+    data = setIdAs_Key(data);
     return data;
   }
 
