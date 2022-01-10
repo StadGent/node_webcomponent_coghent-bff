@@ -6,9 +6,9 @@ import {
   Resolvers,
   MetaKey,
   ComponentType,
-  MediaFile,
   Maybe,
   MetadataCollection,
+  MediaInfo,
 } from './type-defs';
 import { Context, DataSources } from './types';
 import { AuthenticationError } from 'apollo-server';
@@ -50,7 +50,7 @@ export const resolvers: Resolvers<Context> = {
         fetchPolicy || ''
       );
     },
-    User: async (_source, {}, { dataSources, session }) => {
+    User: async (_source, { }, { dataSources, session }) => {
       if (!session.auth.accessToken) {
         throw new AuthenticationError('Not authenticated');
       }
@@ -67,21 +67,6 @@ export const resolvers: Resolvers<Context> = {
       { dataSources }
     ) => {
       return await dataSources.EntitiesAPI.addFrameToVister(visiterId, frameId);
-    },
-  },
-  Relation: {
-    async audioFile(parent, _args, { dataSources }) {
-      let audio = 'No audio';
-      let mediafile: MediaFile = {} as MediaFile;
-      if (parent.key.includes('mediafiles')) {
-        mediafile = await dataSources.EntitiesAPI.getMediafilesById(
-          parent.key.replace('mediafiles/', '')
-        );
-        if (mediafile.original_file_location) {
-          audio = mediafile.original_file_location as string;
-        }
-      }
-      return audio;
     },
   },
   Entity: {
@@ -140,7 +125,15 @@ export const resolvers: Resolvers<Context> = {
       return dataSources.EntitiesAPI.getRelations(parent.id);
     },
     relationMetadata: async (parent, _args, { dataSources }) => {
-      return await dataSources.EntitiesAPI.getComponents(parent.id);
+      const components = await dataSources.EntitiesAPI.getComponents(parent.id)
+      let firstMediafileRelation = components.filter(_component => _component.key.includes('mediafiles/'))[0];
+      if(firstMediafileRelation != undefined){
+        const mediafile = await dataSources.EntitiesAPI.getMediafilesById(
+          firstMediafileRelation.key.replace('mediafiles/', '')
+        );
+        firstMediafileRelation.audioFile = mediafile.original_file_location;
+      }
+      return components;
     },
     components: async (parent, _args, { dataSources }) => {
       let data = await dataSources.EntitiesAPI.getRelations(parent.id);
@@ -172,7 +165,8 @@ export const resolvers: Resolvers<Context> = {
     },
     assets: async (parent, _args, { dataSources }) => {
       let data = await dataSources.EntitiesAPI.getRelations(parent.id);
-      let frames = await getComponents(dataSources, data);
+      const relationsExcludedMediafiles = data.filter(_relation => _relation.key.includes('entities/'));
+      let frames = await getComponents(dataSources, relationsExcludedMediafiles);
       return frames;
     },
     frames: async (parent, _args, { dataSources }) => {
@@ -195,9 +189,15 @@ export const resolvers: Resolvers<Context> = {
   },
   MediaFile: {
     mediainfo: async (parent, _args, { dataSources }) => {
-      return await dataSources.IiifAPI.getInfo(
-        parent.filename ? parent.filename : ''
-      );
+      let _mediainfo: MediaInfo;
+      if (parent.filename?.includes('.mp3')) {
+        _mediainfo = { width: '0', height: '0' } as MediaInfo;
+      } else {
+        _mediainfo = await dataSources.IiifAPI.getInfo(
+          parent.filename ? parent.filename : ''
+        );
+      }
+      return _mediainfo;
     },
   },
   Metadata: {
@@ -222,10 +222,10 @@ const getComponents = async (
         relation && [RelationType.Components].includes(relation.type)
     );
     for (const relation of componentsRelations) {
-      const entity = await dataSources.EntitiesAPI.getEntity(
-        relation.key.replace('entities/', '')
-      );
-      components.push(entity);
+        const entity = await dataSources.EntitiesAPI.getEntity(
+          relation.key.replace('entities/', '')
+        );
+        components.push(entity);
     }
     return components;
   } else {
