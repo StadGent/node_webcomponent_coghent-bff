@@ -13,12 +13,14 @@ import { resolvers } from './resolvers';
 import { SearchAPI } from './entities_search';
 import { UserAPI } from './user';
 import { IiifAPI } from './iiif';
+import { BoxVisitersAPI } from './boxVisiters';
 
 const apolloServer = new ApolloServer({
   typeDefs: readFileSync('./schema.graphql').toString('utf-8'),
   resolvers,
   dataSources: () => ({
     EntitiesAPI: new EntitiesAPI(),
+    BoxVisitersAPI: new BoxVisitersAPI(),
     IiifAPI: new IiifAPI(),
     SearchAPI: new SearchAPI(),
     UserAPI: new UserAPI(),

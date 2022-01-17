@@ -17,19 +17,11 @@ import { setIdAs_Key } from './common';
 export const resolvers: Resolvers<Context> = {
   Query: {
     BoxVisiters: async (_source, _args, { dataSources }) => {
-      const visiters = await dataSources.EntitiesAPI.getBoxVisiters();
+      const visiters = await dataSources.BoxVisitersAPI.getBoxVisiters();
       return visiters;
     },
-    BoxVisiterByCode: async (_source, { code }, { dataSources }) => {
-      const visiters = await dataSources.EntitiesAPI.getBoxVisiters();
-      let visiter = null;
-      visiters.results?.forEach((_visiter) => {
-        if (_visiter?._key == code) visiter = _visiter;
-      });
-      if (visiter == null) {
-        visiter = await dataSources.EntitiesAPI.createBoxVisiter();
-        visiter = setIdAs_Key(visiter);
-      }
+    BoxVisiterById: async (_source, { id }, { dataSources }) => {
+      let visiter = await dataSources.BoxVisitersAPI.getBoxVisiterById(id);
       return visiter;
     },
     Stories: async (_source, _args, { dataSources }) => {
@@ -66,7 +58,7 @@ export const resolvers: Resolvers<Context> = {
       { visiterId, frameId },
       { dataSources }
     ) => {
-      return await dataSources.EntitiesAPI.addFrameToVister(visiterId, frameId);
+      return await dataSources.BoxVisitersAPI.addFrameToVister(visiterId, frameId);
     },
   },
   Entity: {

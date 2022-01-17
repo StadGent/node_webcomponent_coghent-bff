@@ -10,53 +10,9 @@ import { RESTDataSourceWithStaticToken } from './RestDataSourceWithStaticToken';
 import { Context } from './types';
 import { environment as env } from './environment';
 import { setId, setIdAs_Key, setIdsAs_Key } from './common';
-import { UserInputError } from 'apollo-server-errors';
 
 export class EntitiesAPI extends RESTDataSourceWithStaticToken<Context> {
   public baseURL = `${env.api.collectionAPIUrl}/`;
-
-  async createBoxVisiter(): Promise<Entity> {
-    const model = `{
-      "type": "box_visit",
-      "metadata": [
-          {
-              "key": "type",
-              "value": "visitor",
-              "language": "en"
-          }
-      ]
-  }`;
-    let visiter;
-    try {
-      visiter = await this.post(`entities`, JSON.parse(model));
-      visiter = setIdAs_Key(visiter);
-    } catch (error) {
-      throw new UserInputError(`${error}`);
-    }
-    return visiter;
-  }
-
-  async getBoxVisiters(): Promise<EntitiesResults> {
-    const visiters = await this.get<EntitiesResults>(`entities?type=box_visit`);
-    return setIdsAs_Key(visiters);
-  }
-
-  async addFrameToVister(visterId: string, frameId: string): Promise<Array<Relation>> {
-    const body = `[
-      {
-        "key": "entities/${frameId}",
-        "type": "components",
-        "date": "${new Date().toLocaleString()}"
-      }
-    ]`;
-    let relations: Array<Relation> = [];
-    try {
-      relations = await this.patch(`entities/${visterId}/components`, JSON.parse(body))
-    } catch (error) {
-      console.log({ error });
-    }
-    return relations;
-  }
 
   async getStories(): Promise<EntitiesResults> {
     let data = await this.get(`entities?type=story&limit=20&skip=0`);
