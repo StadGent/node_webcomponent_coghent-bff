@@ -48,7 +48,17 @@ input JSPatch {
 }
 
 type Metadata {
-  key: MetaKey!
+  key: MetaKey
+  value: String
+  nestedMetaData: Entity
+  lang: String
+  unMappedKey: String
+  label: String
+  type: RelationType
+}
+
+type LabelMetadata {
+  key: String
   value: String
   nestedMetaData: Entity
   lang: String
@@ -70,11 +80,10 @@ type MetadataCollection {
 }
 
 type Entity {
-  _key: String
   id: String!
   type: String!
   metadata(key: [MetaKey]): [Metadata]!
-  metadataByLabel(key: [String]): [Metadata]!
+  metadataByLabel(label: [String]): [LabelMetadata]!
   metadataCollection(key: [MetaKey], label: [String]): [MetadataCollection]
   title: [Metadata]!
   collections: [Metadata]!
@@ -163,8 +172,8 @@ type User {
 }
 
 type Query {
-  BoxVisiters: EntitiesResults!
-  BoxVisiterByCode(code: String!): Entity
+  BoxVisiters: EntitiesResults
+  BoxVisiterByCode(code: String!): Entity!
   Stories: EntitiesResults
   Entity(id: String!): Entity
   Entities(
