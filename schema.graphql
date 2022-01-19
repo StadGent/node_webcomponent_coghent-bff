@@ -19,6 +19,11 @@ enum MetaKey {
   nationality
 }
 
+enum CreatorMetaKey {
+  heeftGeboorte
+  heeftOverlijden
+}
+
 enum RelationType {
   authoredBy
   isIn
@@ -48,7 +53,7 @@ input JSPatch {
 }
 
 type Metadata {
-  key: MetaKey
+  key: MetaKey!
   value: String
   nestedMetaData: Entity
   lang: String
@@ -57,13 +62,10 @@ type Metadata {
   type: RelationType
 }
 
-type LabelMetadata {
-  key: String
+type CreatorAdditionalMetadata {
+  key: String!
   value: String
-  nestedMetaData: Entity
-  lang: String
-  unMappedKey: String
-  label: String
+  label: String!
   type: RelationType
 }
 
@@ -83,7 +85,8 @@ type Entity {
   id: String!
   type: String!
   metadata(key: [MetaKey]): [Metadata]!
-  metadataByLabel(label: [String]): [LabelMetadata]!
+  creatorAditionalMetadata(label: [CreatorMetaKey]: [CreatorAdditionalMetadata])
+  metadataByLabel(key: [String]): [Metadata]!
   metadataCollection(key: [MetaKey], label: [String]): [MetadataCollection]
   title: [Metadata]!
   collections: [Metadata]!
