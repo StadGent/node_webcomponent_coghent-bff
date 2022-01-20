@@ -19,11 +19,6 @@ enum MetaKey {
   nationality
 }
 
-enum CreatorMetaKey {
-  heeftGeboorte
-  heeftOverlijden
-}
-
 enum RelationType {
   authoredBy
   isIn
@@ -62,13 +57,6 @@ type Metadata {
   type: RelationType
 }
 
-type CreatorAdditionalMetadata {
-  key: String!
-  value: String
-  label: String!
-  type: RelationType
-}
-
 input MetadataInput {
   key: MetaKey!
   value: String!
@@ -82,10 +70,10 @@ type MetadataCollection {
 }
 
 type Entity {
+  _key: String
   id: String!
   type: String!
   metadata(key: [MetaKey]): [Metadata]!
-  creatorAditionalMetadata(label: [CreatorMetaKey]: [CreatorAdditionalMetadata])
   metadataByLabel(key: [String]): [Metadata]!
   metadataCollection(key: [MetaKey], label: [String]): [MetadataCollection]
   title: [Metadata]!
