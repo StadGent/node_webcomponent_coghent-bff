@@ -164,7 +164,7 @@ type User {
 
 type Query {
   BoxVisiters: EntitiesResults
-  BoxVisiterByCode(code: String!): Entity!
+  BoxVisiterById(id: String!): Entity!
   Stories: EntitiesResults
   Entity(id: String!): Entity
   Entities(
