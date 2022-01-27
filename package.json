@@ -18,12 +18,14 @@
     "apollo": "^2.33.4",
     "apollo-datasource-rest": "^0.14.0",
     "apollo-server": "^2.25.2",
+    "apollo-server-cache-redis": "^3.3.1",
     "apollo-server-express": "^2.25.2",
     "concurrently": "^6.2.0",
     "cors": "^2.8.5",
     "express": "^4.17.1",
     "express-session": "^1.17.2",
     "inuits-apollo-server-auth": "^1.0.2",
+    "ioredis": "^4.28.3",
     "jwt-decode": "^3.1.2"
   },
   "devDependencies": {

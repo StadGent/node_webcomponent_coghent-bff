@@ -18,6 +18,8 @@ interface Environment {
   webPortal: string;
   boxFrontend: string;
   staticToken: string | false;
+  redisHost: string | false;
+  redisPort: string | false;
 }
 
 export const environment: Environment = {
@@ -41,4 +43,6 @@ export const environment: Environment = {
   webPortal: process.env.WEB_PORTAL_URL || 'http://localhost:8070',
   boxFrontend: process.env.BOX_FRONTEND_URL || 'http://localhost:8071',
   staticToken: process.env.STATIC_TOKEN || false,
+  redisHost: process.env.REDIS_HOST || false,
+  redisPort: process.env.REDIS_PORT || false,
 };

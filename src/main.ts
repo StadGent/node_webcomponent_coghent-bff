@@ -15,6 +15,16 @@ import { UserAPI } from './user';
 import { IiifAPI } from './iiif';
 import { BoxVisitersAPI } from './boxVisiters';
 
+import { BaseRedisCache } from 'apollo-server-cache-redis';
+const Redis = require('ioredis');
+
+let redisCache = undefined;
+if (environment.redisHost && environment.redisPort) {
+  redisCache = new Redis({
+    host: `${environment.redisHost}:${environment.redisPort}`,
+  });
+}
+
 const apolloServer = new ApolloServer({
   typeDefs: readFileSync('./schema.graphql').toString('utf-8'),
   resolvers,
@@ -25,6 +35,7 @@ const apolloServer = new ApolloServer({
     SearchAPI: new SearchAPI(),
     UserAPI: new UserAPI(),
   }),
+  cache: redisCache,
   context: ({ req, res }) => {
     /*if (!req.session.auth) {
       console.log(req.session)

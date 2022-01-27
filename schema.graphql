@@ -70,7 +70,7 @@ type MetadataCollection {
   nested: Boolean
 }
 
-type Entity {
+type Entity @cacheControl(maxAge: 3600) {
   _key: String
   id: String!
   object_id: String!
