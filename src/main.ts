@@ -1,3 +1,5 @@
+require('dotenv').config();
+
 import { ApolloServer } from 'apollo-server-express';
 import { readFileSync } from 'fs';
 import express from 'express';
@@ -20,8 +22,10 @@ const Redis = require('ioredis');
 
 let redisCache = undefined;
 if (environment.redisHost && environment.redisPort) {
-  redisCache = new Redis({
-    host: `${environment.redisHost}:${environment.redisPort}`,
+  redisCache = new BaseRedisCache({
+    client: new Redis({
+      host: `${environment.redisHost}:${environment.redisPort}`,
+    }),
   });
 }
 
