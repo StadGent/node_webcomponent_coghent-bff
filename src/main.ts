@@ -25,6 +25,11 @@ if (environment.redisHost && environment.redisPort) {
       host: `${environment.redisHost}:${environment.redisPort}`,
     }),
   });
+  console.log(
+    `Redis cache enabled: ${environment.redisHost}:${environment.redisPort}`
+  );
+} else {
+  console.log('No Redis cache');
 }
 
 const apolloServer = new ApolloServer({
