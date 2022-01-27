@@ -22,7 +22,8 @@ let redisCache = undefined;
 if (environment.redisHost && environment.redisPort) {
   redisCache = new BaseRedisCache({
     client: new Redis({
-      host: `${environment.redisHost}:${environment.redisPort}`,
+      host: environment.redisHost,
+      port: environment.redisPort,
     }),
   });
   console.log(
