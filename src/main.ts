@@ -21,10 +21,7 @@ const Redis = require('ioredis');
 let redisCache = undefined;
 if (environment.redisHost && environment.redisPort) {
   redisCache = new BaseRedisCache({
-    client: new Redis({
-      host: environment.redisHost,
-      port: environment.redisPort,
-    }),
+    client: new Redis(environment.redisPort, environment.redisHost),
   });
   console.log(
     `Redis cache enabled: ${environment.redisHost}:${environment.redisPort}`
