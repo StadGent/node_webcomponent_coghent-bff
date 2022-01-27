@@ -40,7 +40,9 @@ const apolloServer = new ApolloServer({
     SearchAPI: new SearchAPI(),
     UserAPI: new UserAPI(),
   }),
-  cache: redisCache,
+  cache: new BaseRedisCache({
+    client: new Redis(environment.redisPort, environment.redisHost),
+  }),
   context: ({ req, res }) => {
     /*if (!req.session.auth) {
       console.log(req.session)
