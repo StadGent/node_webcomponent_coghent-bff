@@ -21,7 +21,10 @@ const Redis = require('ioredis');
 let redisCache = undefined;
 if (environment.redisHost && environment.redisPort) {
   redisCache = new BaseRedisCache({
-    client: new Redis(environment.redisPort, environment.redisHost),
+    client: new Redis({
+      port: environment.redisPort,
+      host: environment.redisHost,
+    }),
   });
   console.log(
     `Redis cache enabled: ${environment.redisHost}:${environment.redisPort}`
@@ -40,9 +43,7 @@ const apolloServer = new ApolloServer({
     SearchAPI: new SearchAPI(),
     UserAPI: new UserAPI(),
   }),
-  cache: new BaseRedisCache({
-    client: new Redis(environment.redisPort, environment.redisHost),
-  }),
+  cache: redisCache,
   context: ({ req, res }) => {
     /*if (!req.session.auth) {
       console.log(req.session)
