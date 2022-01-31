@@ -13,6 +13,7 @@ import {
 import { Context, DataSources } from './types';
 import { AuthenticationError } from 'apollo-server';
 import { setIdAs_Key } from './common';
+import 'apollo-cache-control';
 
 export const resolvers: Resolvers<Context> = {
   Query: {
