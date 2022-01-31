@@ -113,9 +113,9 @@ type MediaFile {
 }
 
 type Position {
-  x: Int
-  y: Int
-  z: Int
+  x: Float
+  y: Float
+  z: Float
 }
 
 type Relation {
