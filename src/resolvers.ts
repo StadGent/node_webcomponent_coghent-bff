@@ -27,7 +27,8 @@ export const resolvers: Resolvers<Context> = {
     Stories: async (_source, _args, { dataSources }) => {
       return dataSources.EntitiesAPI.getStories();
     },
-    Entity: async (_source, { id }, { dataSources }) => {
+    Entity: async (_source, { id }, { dataSources }, info) => {
+      info.cacheControl.setCacheHint({ maxAge: 3600 });
       return dataSources.EntitiesAPI.getEntity(id);
     },
     Entities: async (
@@ -42,7 +43,7 @@ export const resolvers: Resolvers<Context> = {
         fetchPolicy || ''
       );
     },
-    User: async (_source, { }, { dataSources, session }) => {
+    User: async (_source, {}, { dataSources, session }) => {
       if (!session.auth.accessToken) {
         throw new AuthenticationError('Not authenticated');
       }
@@ -58,7 +59,10 @@ export const resolvers: Resolvers<Context> = {
       { visiterId, frameId },
       { dataSources }
     ) => {
-      return await dataSources.BoxVisitersAPI.addFrameToVister(visiterId, frameId);
+      return await dataSources.BoxVisitersAPI.addFrameToVister(
+        visiterId,
+        frameId
+      );
     },
   },
   Entity: {
@@ -117,9 +121,11 @@ export const resolvers: Resolvers<Context> = {
       return dataSources.EntitiesAPI.getRelations(parent.id);
     },
     relationMetadata: async (parent, _args, { dataSources }) => {
-      const components = await dataSources.EntitiesAPI.getComponents(parent.id)
-      let firstMediafileRelation = components.filter(_component => _component.key.includes('mediafiles/'))[0];
-      if(firstMediafileRelation != undefined){
+      const components = await dataSources.EntitiesAPI.getComponents(parent.id);
+      let firstMediafileRelation = components.filter((_component) =>
+        _component.key.includes('mediafiles/')
+      )[0];
+      if (firstMediafileRelation != undefined) {
         const mediafile = await dataSources.EntitiesAPI.getMediafilesById(
           firstMediafileRelation.key.replace('mediafiles/', '')
         );
@@ -157,8 +163,13 @@ export const resolvers: Resolvers<Context> = {
     },
     assets: async (parent, _args, { dataSources }) => {
       let data = await dataSources.EntitiesAPI.getRelations(parent.id);
-      const relationsExcludedMediafiles = data.filter(_relation => _relation.key.includes('entities/'));
-      let frames = await getComponents(dataSources, relationsExcludedMediafiles);
+      const relationsExcludedMediafiles = data.filter((_relation) =>
+        _relation.key.includes('entities/')
+      );
+      let frames = await getComponents(
+        dataSources,
+        relationsExcludedMediafiles
+      );
       return frames;
     },
     frames: async (parent, _args, { dataSources }) => {
@@ -214,10 +225,10 @@ const getComponents = async (
         relation && [RelationType.Components].includes(relation.type)
     );
     for (const relation of componentsRelations) {
-        const entity = await dataSources.EntitiesAPI.getEntity(
-          relation.key.replace('entities/', '')
-        );
-        components.push(entity);
+      const entity = await dataSources.EntitiesAPI.getEntity(
+        relation.key.replace('entities/', '')
+      );
+      components.push(entity);
     }
     return components;
   } else {
