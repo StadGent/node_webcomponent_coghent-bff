@@ -12,7 +12,6 @@ import {
 } from './type-defs';
 import { Context, DataSources } from './types';
 import { AuthenticationError } from 'apollo-server';
-import { setIdAs_Key } from './common';
 import 'apollo-cache-control';
 
 export const resolvers: Resolvers<Context> = {
@@ -122,16 +121,19 @@ export const resolvers: Resolvers<Context> = {
       return dataSources.EntitiesAPI.getRelations(parent.id);
     },
     relationMetadata: async (parent, _args, { dataSources }) => {
-      const components = await dataSources.EntitiesAPI.getComponents(parent.id);
-      let firstMediafileRelation = components.filter((_component) =>
-        _component.key.includes('mediafiles/')
-      )[0];
-      if (firstMediafileRelation != undefined) {
+      const components = await dataSources.EntitiesAPI.getComponents(parent.id)
+      let mediafileRelations = components.filter(_component => _component.key.includes('mediafiles/'));
+      for(const _relation of mediafileRelations){
         const mediafile = await dataSources.EntitiesAPI.getMediafilesById(
-          firstMediafileRelation.key.replace('mediafiles/', '')
+          _relation.key.replace('mediafiles/', ''),
         );
-        firstMediafileRelation.audioFile = mediafile.original_file_location;
-      }
+        if(mediafile.original_file_location?.includes('.mp3')){
+          _relation['audioFile'] = mediafile.original_file_location;
+        }
+        if(mediafile.original_file_location?.includes('.srt')){
+          _relation['subtitleFile'] = mediafile.original_file_location;
+        }
+      };
       return components;
     },
     components: async (parent, _args, { dataSources }) => {
