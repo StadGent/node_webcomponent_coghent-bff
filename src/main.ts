@@ -19,16 +19,13 @@ import { BaseRedisCache } from 'apollo-server-cache-redis';
 const Redis = require('ioredis');
 
 let redisCache = undefined;
-if (environment.redisHost && environment.redisPort) {
+if (environment.redisHost) {
   redisCache = new BaseRedisCache({
     client: new Redis({
-      port: environment.redisPort,
       host: environment.redisHost,
     }),
   });
-  console.log(
-    `Redis cache enabled: ${environment.redisHost}:${environment.redisPort}`
-  );
+  console.log(`Redis cache enabled: ${environment.redisHost}`);
 } else {
   console.log('No Redis cache');
 }
