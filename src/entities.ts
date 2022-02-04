@@ -28,7 +28,7 @@ export class EntitiesAPI extends RESTDataSourceWithStaticToken<Context> {
   }
 
   async getRelations(id: string): Promise<Relation[]> {
-    return await this.get(`entities/${id}/relations`);
+    return await this.get(`entities/${id}/relations/all`);
   }
 
   async getComponents(id: string): Promise<Relation[]> {
