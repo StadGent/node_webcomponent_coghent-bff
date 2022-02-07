@@ -155,6 +155,7 @@ input SearchFilter {
   randomize: Boolean
   seed: String
   has_mediafile: Boolean
+  skip_relations: Boolean
 }
 
 type User {
