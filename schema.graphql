@@ -89,6 +89,7 @@ type Entity {
   frames: [Entity]
   mediafiles: [MediaFile]
   primary_mediafile: String
+  primary_mediafile_info: MediaInfo
   primary_mediafile_location: String
   qrCode: String
 }

@@ -76,6 +76,17 @@ export const resolvers: Resolvers<Context> = {
         return [];
       }
     },
+    primary_mediafile_info: async (parent, _args, { dataSources }) => {
+      let _mediainfo: MediaInfo;
+      if (parent.primary_mediafile?.includes('.mp3')) {
+        _mediainfo = { width: '0', height: '0' } as MediaInfo;
+      } else {
+        _mediainfo = await dataSources.IiifAPI.getInfo(
+          parent.primary_mediafile ? parent.primary_mediafile : ''
+        );
+      }
+      return _mediainfo;
+    },
     metadataByLabel: async (parent, { key }, { dataSources }) => {
       if (key) {
         const data = await filterMetaData(
@@ -121,19 +132,21 @@ export const resolvers: Resolvers<Context> = {
       return dataSources.EntitiesAPI.getRelations(parent.id);
     },
     relationMetadata: async (parent, _args, { dataSources }) => {
-      const components = await dataSources.EntitiesAPI.getComponents(parent.id)
-      let mediafileRelations = components.filter(_component => _component.key.includes('mediafiles/'));
-      for(const _relation of mediafileRelations){
+      const components = await dataSources.EntitiesAPI.getComponents(parent.id);
+      let mediafileRelations = components.filter((_component) =>
+        _component.key.includes('mediafiles/')
+      );
+      for (const _relation of mediafileRelations) {
         const mediafile = await dataSources.EntitiesAPI.getMediafilesById(
-          _relation.key.replace('mediafiles/', ''),
+          _relation.key.replace('mediafiles/', '')
         );
-        if(mediafile.original_file_location?.includes('.mp3')){
+        if (mediafile.original_file_location?.includes('.mp3')) {
           _relation['audioFile'] = mediafile.original_file_location;
         }
-        if(mediafile.original_file_location?.includes('.srt')){
+        if (mediafile.original_file_location?.includes('.srt')) {
           _relation['subtitleFile'] = mediafile.original_file_location;
         }
-      };
+      }
       return components;
     },
     components: async (parent, _args, { dataSources }) => {
