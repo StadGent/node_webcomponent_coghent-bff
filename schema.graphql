@@ -123,6 +123,7 @@ type Position {
 type Relation {
   key: String!
   type: RelationType!
+  order: Int
   label: String
   value: String
   timestamp_start: Float

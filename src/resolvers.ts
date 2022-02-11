@@ -190,7 +190,16 @@ export const resolvers: Resolvers<Context> = {
     },
     frames: async (parent, _args, { dataSources }) => {
       let data = await dataSources.EntitiesAPI.getRelations(parent.id);
-      let frames = await getComponents(dataSources, data);
+      let sortedData = new Array<Relation>(data.length);
+      for(const _relation of data){
+        if(_relation.order){
+          sortedData[_relation.order] = _relation;
+        }else{
+          sortedData[sortedData.length +1] = _relation;
+        }
+      }
+      sortedData = sortedData.filter(_relation => _relation);
+      let frames = await getComponents(dataSources, sortedData);
       return frames;
     },
     qrCode: async (parent, _args, { dataSources }) => {
