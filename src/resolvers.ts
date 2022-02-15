@@ -13,9 +13,14 @@ import {
 import { Context, DataSources } from './types';
 import { AuthenticationError } from 'apollo-server';
 import 'apollo-cache-control';
+import { environment } from './environment';
 
 export const resolvers: Resolvers<Context> = {
   Query: {
+    ActiveBox: async (_source, args , { dataSources }) => {
+      const boxStories = await dataSources.EntitiesAPI.getRelations(environment.activeBoxEntity);
+      return boxStories.filter(_relation => _relation?.active);
+    },
     BoxVisiters: async (_source, _args, { dataSources }) => {
       const visiters = await dataSources.BoxVisitersAPI.getBoxVisiters();
       return visiters;
@@ -43,7 +48,7 @@ export const resolvers: Resolvers<Context> = {
         fetchPolicy || ''
       );
     },
-    User: async (_source, {}, { dataSources, session }) => {
+    User: async (_source, { }, { dataSources, session }) => {
       if (!session.auth.accessToken) {
         throw new AuthenticationError('Not authenticated');
       }
@@ -191,11 +196,11 @@ export const resolvers: Resolvers<Context> = {
     frames: async (parent, _args, { dataSources }) => {
       let data = await dataSources.EntitiesAPI.getRelations(parent.id);
       let sortedData = new Array<Relation>(data.length);
-      for(const _relation of data){
-        if(_relation.order){
+      for (const _relation of data) {
+        if (_relation.order) {
           sortedData[_relation.order] = _relation;
-        }else{
-          sortedData[sortedData.length +1] = _relation;
+        } else {
+          sortedData[sortedData.length + 1] = _relation;
         }
       }
       sortedData = sortedData.filter(_relation => _relation);

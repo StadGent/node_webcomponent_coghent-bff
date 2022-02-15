@@ -134,6 +134,7 @@ type Relation {
   audioFile: String
   subtitleFile: String
   date: String
+  active: Boolean
 }
 
 type EntitiesResults {
@@ -170,6 +171,7 @@ type User {
 }
 
 type Query {
+  ActiveBox: [Relation]!
   BoxVisiters: EntitiesResults
   BoxVisiterById(id: String!): Entity!
   Stories: EntitiesResults

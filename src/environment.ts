@@ -20,6 +20,7 @@ interface Environment {
   staticToken: string | false;
   redisHost: string | false;
   redisPort: string | false;
+  activeBoxEntity: string;
 }
 
 export const environment: Environment = {
@@ -45,4 +46,5 @@ export const environment: Environment = {
   staticToken: process.env.STATIC_TOKEN || false,
   redisHost: process.env.REDIS_HOST || false,
   redisPort: process.env.REDIS_PORT || false,
+  activeBoxEntity: process.env.BOX_ENTITY || 'efa52d10-ff55-491c-93ed-4607595fdcb0',
 };

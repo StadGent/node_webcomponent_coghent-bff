@@ -14,6 +14,15 @@ import { setId, setIdAs_Key, setIdsAs_Key } from './common';
 export class EntitiesAPI extends RESTDataSourceWithStaticToken<Context> {
   public baseURL = `${env.api.collectionAPIUrl}/`;
 
+  async getBoxEntities(): Promise<EntitiesResults> {
+    let data = await this.get(`entities?type=box`);
+    console.log({data})
+    console.log(this.baseURL);
+    
+    data = setIdsAs_Key(data)
+    return data;
+  }
+
   async getStories(): Promise<EntitiesResults> {
     let data = await this.get(`entities?type=story&limit=20&skip=0`);
     data = setIdsAs_Key(data)
