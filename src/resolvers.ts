@@ -25,10 +25,6 @@ export const resolvers: Resolvers<Context> = {
       const visiters = await dataSources.BoxVisitersAPI.getBoxVisiters();
       return visiters;
     },
-    BoxVisiterById: async (_source, { id }, { dataSources }) => {
-      let visiter = await dataSources.BoxVisitersAPI.getBoxVisiterById(id);
-      return visiter;
-    },
     Stories: async (_source, _args, { dataSources }) => {
       return dataSources.EntitiesAPI.getStories();
     },
@@ -58,17 +54,7 @@ export const resolvers: Resolvers<Context> = {
   Mutation: {
     replaceMetadata: async (_source, { id, metadata }, { dataSources }) => {
       return dataSources.EntitiesAPI.replaceMetadata(id, metadata);
-    },
-    AddFrameToVisiter: async (
-      _source,
-      { visiterId, frameId },
-      { dataSources }
-    ) => {
-      return await dataSources.BoxVisitersAPI.addFrameToVister(
-        visiterId,
-        frameId
-      );
-    },
+    }
   },
   Entity: {
     mediafiles(parent, _args, { dataSources }) {

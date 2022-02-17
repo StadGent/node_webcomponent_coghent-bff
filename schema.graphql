@@ -173,7 +173,6 @@ type User {
 type Query {
   ActiveBox: [Relation]!
   BoxVisiters: EntitiesResults
-  BoxVisiterById(id: String!): Entity!
   Stories: EntitiesResults
   Entity(id: String!): Entity
   Entities(
