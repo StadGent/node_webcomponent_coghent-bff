@@ -32,7 +32,7 @@ export class EntitiesAPI extends RESTDataSourceWithStaticToken<Context> {
   async getEntity(id: string): Promise<Entity> {
     let data = await this.get<Entity>('entities' + (id ? '/' + id : ''));
     // setId(data);
-    data = setIdAs_Key(data);
+    data = setIdAs_Key(data) as Entity;
     return data;
   }
 

@@ -1,4 +1,4 @@
-import { EntitiesResults, Entity } from './type-defs';
+import { BoxVisiter, BoxVisitersResults, EntitiesResults, Entity } from './type-defs';
 
 const regexExp = /^[0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{12}$/gi;
 
@@ -10,10 +10,10 @@ export function setId(entityRaw: any) {
   entityRaw.id = filterdId.length === 1 ? filterdId[0] : 'noid';
   return entityRaw;
 }
-export function setIdsAs_Key(_entities: EntitiesResults) {
-  const entities: Array<Entity> = [];
+export function setIdsAs_Key(_entities: EntitiesResults | BoxVisitersResults) {
+  const entities: Array<Entity | BoxVisiter> = [];
   _entities.results?.forEach((_entity) => {
-    const entity = { id: _entity?._key as string } as Entity;
+    const entity = { id: _entity?._key as string } as Entity | BoxVisiter;
     Object.assign(entity, _entity);
     entities.push(entity);
   });
@@ -21,8 +21,8 @@ export function setIdsAs_Key(_entities: EntitiesResults) {
   return _entities;
 }
 
-export function setIdAs_Key(_entity: Entity){
-  const entity = { id: _entity?._key as string } as Entity;
+export function setIdAs_Key(_entity: Entity | BoxVisiter){
+  const entity = { id: _entity?._key as string } as Entity | BoxVisiter;
   Object.assign(entity, _entity);
   return entity;
 }

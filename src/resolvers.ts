@@ -25,6 +25,10 @@ export const resolvers: Resolvers<Context> = {
       const visiters = await dataSources.BoxVisitersAPI.getBoxVisiters();
       return visiters;
     },
+    BoxVisiterByCode: async (_source, { code }, { dataSources }) => {
+      const visiter = await dataSources.BoxVisitersAPI.getByCode(code);
+      return visiter;
+    },
     Stories: async (_source, _args, { dataSources }) => {
       return dataSources.EntitiesAPI.getStories();
     },
@@ -55,6 +59,11 @@ export const resolvers: Resolvers<Context> = {
     replaceMetadata: async (_source, { id, metadata }, { dataSources }) => {
       return dataSources.EntitiesAPI.replaceMetadata(id, metadata);
     }
+  },
+  BoxVisiter: {
+    relations(parent, _args , { dataSources }) {
+      return dataSources.BoxVisitersAPI.getRelations(parent.code);
+    },
   },
   Entity: {
     mediafiles(parent, _args, { dataSources }) {
@@ -192,18 +201,6 @@ export const resolvers: Resolvers<Context> = {
       sortedData = sortedData.filter(_relation => _relation);
       let frames = await getComponents(dataSources, sortedData);
       return frames;
-    },
-    qrCode: async (parent, _args, { dataSources }) => {
-      let qrCode = null;
-      if (parent.id != 'noid') {
-        const entity = await dataSources.EntitiesAPI.getEntity(parent.id);
-        qrCode = entity.metadata.filter(
-          (data) => data?.key == MetaKey.QrCode
-        )[0]?.value;
-        if (qrCode == undefined)
-          qrCode = Math.floor(Math.random() * (10000000 - 1 + 1)) + 1;
-      }
-      return qrCode as string;
     },
   },
   MediaFile: {
