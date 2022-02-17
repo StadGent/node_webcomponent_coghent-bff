@@ -62,7 +62,10 @@ export const resolvers: Resolvers<Context> = {
   Mutation: {
     replaceMetadata: async (_source, { id, metadata }, { dataSources }) => {
       return dataSources.EntitiesAPI.replaceMetadata(id, metadata);
-    }
+    },
+    AddStoryToBoxVisiter: async (_source, { code, story }, { dataSources }) => {
+      return await dataSources.BoxVisitersAPI.AddStory(code, story)
+    },
   },
   BoxVisiter: {
     relations(parent, _args , { dataSources }) {

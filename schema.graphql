@@ -29,6 +29,7 @@ enum RelationType {
   components
   parent
   carriedOutBy
+  stories
 }
 
 enum ComponentType {
@@ -46,6 +47,12 @@ input JSPatch {
   op: JSPatchOp!
   path: [String!]!
   value: String!
+}
+
+input StoryInput {
+  key: String!
+  active: Boolean!
+  last_frame: String
 }
 
 type Metadata {
@@ -213,5 +220,5 @@ type Query {
 
 type Mutation {
   replaceMetadata(id: String!, metadata: [MetadataInput!]!): [Metadata!]!
-  AddFrameToVisiter(visiterId: String!, frameId: String!): [Relation]!
+  AddStoryToBoxVisiter(code: String!, story: StoryInput!): BoxVisiter
 }
