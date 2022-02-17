@@ -196,6 +196,7 @@ type Query {
   ActiveBox: [Relation]!
   BoxVisiters: BoxVisitersResults
   BoxVisiterByCode(code: String!):BoxVisiter
+  CreateBoxVisiter(storyId: String!):BoxVisiter
   Stories: EntitiesResults
   Entity(id: String!): Entity
   Entities(

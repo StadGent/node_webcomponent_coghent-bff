@@ -25,5 +25,10 @@ export class BoxVisitersAPI extends RESTDataSourceWithStaticToken<Context> {
     return await this.get<Array<Relation>>(`${this.BOX_VISITS}/${_code}/relations`);
   }
 
+  async create(_storyId: string): Promise<BoxVisiter> {
+    const visiter = await this.post(this.BOX_VISITS, { story_id: _storyId })
+    return setIdAs_Key(visiter) as BoxVisiter;
+  }
+
 }
 
