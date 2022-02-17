@@ -138,7 +138,7 @@ type Relation {
 }
 
 type EntitiesResults {
-  results: [BoxVisiter]
+  results: [Entity]
   relations: [Relation]
   count: Int
   limit: Int
