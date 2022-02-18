@@ -55,6 +55,16 @@ input StoryInput {
   last_frame: String
 }
 
+input FrameInput {
+  storyId: String!
+  frameId: String!
+}
+
+type FrameSeen {
+  id: String!
+  date: String!  
+}
+
 type Metadata {
   key: MetaKey!
   value: String
@@ -142,6 +152,7 @@ type Relation {
   date: String
   active: Boolean
   last_frame: String
+  seen_frames: [FrameSeen]
 }
 
 type EntitiesResults {
@@ -221,4 +232,5 @@ type Query {
 type Mutation {
   replaceMetadata(id: String!, metadata: [MetadataInput!]!): [Metadata!]!
   AddStoryToBoxVisiter(code: String!, story: StoryInput!): BoxVisiter
+  AddFrameToStoryBoxVisiter(code: String!, frameInput: FrameInput!): BoxVisiter
 }

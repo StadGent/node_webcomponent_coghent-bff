@@ -66,6 +66,9 @@ export const resolvers: Resolvers<Context> = {
     AddStoryToBoxVisiter: async (_source, { code, story }, { dataSources }) => {
       return await dataSources.BoxVisitersAPI.AddStory(code, story)
     },
+    AddFrameToStoryBoxVisiter: async (_source, { code, frameInput }, { dataSources }) => {
+      return await dataSources.BoxVisitersAPI.AddFrameToStory(code, frameInput)
+    },
   },
   BoxVisiter: {
     relations(parent, _args , { dataSources }) {
