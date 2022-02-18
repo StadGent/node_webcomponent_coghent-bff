@@ -37,8 +37,8 @@ export class BoxVisitersAPI extends RESTDataSourceWithStaticToken<Context> {
       seenFrames.push(this.createSeenFrame(story.last_frame))
     }
     const newStory = {
-      type: 'stories',
-      label: RelationType.Stories,
+      type: RelationType.Stories,
+      label: 'story',
       key: `entities/${story.key}`,
       active: story.active,
       last_frame: `entities/${story.last_frame}`,
