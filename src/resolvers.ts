@@ -69,10 +69,20 @@ export const resolvers: Resolvers<Context> = {
     AddFrameToStoryBoxVisiter: async (_source, { code, frameInput }, { dataSources }) => {
       return await dataSources.BoxVisitersAPI.AddFrameToStory(code, frameInput)
     },
+    AddAssetToBoxVisiter: async (_source, { code, assetId, type }, { dataSources }) => {
+      if(type == RelationType.Visited || type == RelationType.InBasket){
+        await dataSources.BoxVisitersAPI.AddAssetToRelation(code, assetId, type)
+      }
+      return await dataSources.BoxVisitersAPI.getRelations(code)
+    },
   },
   BoxVisiter: {
-    relations(parent, _args , { dataSources }) {
-      return dataSources.BoxVisitersAPI.getRelations(parent.code);
+    async relations(parent, _args , { dataSources }) {
+      return await dataSources.BoxVisitersAPI.getRelations(parent.code);
+    },
+    async relationByType(parent, { type } , { dataSources }) {
+      const relations =  await dataSources.BoxVisitersAPI.getRelations(parent.code);
+      return relations.filter(_relation => _relation.type == type)
     },
   },
   Entity: {

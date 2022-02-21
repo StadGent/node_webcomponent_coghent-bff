@@ -30,6 +30,8 @@ enum RelationType {
   parent
   carriedOutBy
   stories
+  visited
+  inBasket
 }
 
 enum ComponentType {
@@ -199,11 +201,8 @@ type BoxVisiter {
   _key: String
   id: String!
   type: String!
-  metadata(key: [MetaKey]): [Metadata]!
-  metadataByLabel(key: [String]): [Metadata]!
-  collections: [Metadata]!
   relations: [Relation]
-  relationMetadata: [Relation]
+  relationByType(type: RelationType!): [Relation]
   frames_seen_last_visit: Int
   code: String!
   start_time: String
@@ -231,6 +230,7 @@ type Query {
 
 type Mutation {
   replaceMetadata(id: String!, metadata: [MetadataInput!]!): [Metadata!]!
-  AddStoryToBoxVisiter(code: String!, story: StoryInput!): BoxVisiter
-  AddFrameToStoryBoxVisiter(code: String!, frameInput: FrameInput!): BoxVisiter
+  AddStoryToBoxVisiter(code: String!, story: StoryInput!): BoxVisiter!
+  AddFrameToStoryBoxVisiter(code: String!, frameInput: FrameInput!): BoxVisiter!
+  AddAssetToBoxVisiter(code: String!, assetId: String!, type: RelationType!): [Relation]!
 }

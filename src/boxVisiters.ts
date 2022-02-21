@@ -79,5 +79,14 @@ export class BoxVisitersAPI extends RESTDataSourceWithStaticToken<Context> {
     return { id: `entities/${_frameId}`, date: new Date().toUTCString() }
   }
 
+  async AddAssetToRelation(_code: string, _assetId: string, _type: RelationType): Promise<Relation>{
+    const relation: Relation = {
+      key: `entities/${_assetId}`,
+      type: _type,
+      label: 'asset',
+      date: new Date().toUTCString()
+    }
+    const createdRelation = await this.updateRelation(_code,[relation])
+    return createdRelation
+  }
 }
-
