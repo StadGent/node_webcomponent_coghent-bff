@@ -31,7 +31,7 @@ export const resolvers: Resolvers<Context> = {
     },
     BoxVisiterRelationsByType: async (_source, { code, type }, { dataSources }) => {
       const relations = await dataSources.BoxVisitersAPI.getRelations(code);
-      if(relations && relations && relations.length > 1){
+      if(relations && relations.length > 1){
         return relations.filter(_relation => _relation?.type == type).reverse()
       }else return []
     },
