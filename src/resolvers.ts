@@ -82,7 +82,7 @@ export const resolvers: Resolvers<Context> = {
     },
     async relationByType(parent, { type } , { dataSources }) {
       const relations =  await dataSources.BoxVisitersAPI.getRelations(parent.code);
-      return relations.filter(_relation => _relation.type == type)
+      return relations.filter(_relation => _relation.type == type).reverse()
     },
   },
   Entity: {

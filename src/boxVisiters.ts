@@ -84,7 +84,7 @@ export class BoxVisitersAPI extends RESTDataSourceWithStaticToken<Context> {
       key: `entities/${_assetId}`,
       type: _type,
       label: 'asset',
-      date: new Date().toUTCString()
+      order: Math.round(Date.now() / 1000),
     }
     const createdRelation = await this.updateRelation(_code,[relation])
     return createdRelation
