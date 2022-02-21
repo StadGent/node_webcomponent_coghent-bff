@@ -29,6 +29,12 @@ export const resolvers: Resolvers<Context> = {
       const visiter = await dataSources.BoxVisitersAPI.getByCode(code);
       return visiter;
     },
+    BoxVisiterRelationsByType: async (_source, { code, type }, { dataSources }) => {
+      const relations = await dataSources.BoxVisitersAPI.getRelations(code);
+      if(relations && relations && relations.length > 1){
+        return relations.filter(_relation => _relation?.type == type).reverse()
+      }else return []
+    },
     CreateBoxVisiter: async (_source, { storyId }, { dataSources }) => {
       const visiter = await dataSources.BoxVisitersAPI.create(storyId);
       return visiter;
