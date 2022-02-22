@@ -20,7 +20,10 @@ export const resolvers: Resolvers<Context> = {
   Query: {
     ActiveBox: async (_source, _args, { dataSources }) => {
       const boxStories = await dataSources.EntitiesAPI.getRelations(environment.activeBoxEntity);
-      const activeStories = boxStories.filter(_relation => _relation?.active)
+      let activeStories = boxStories.filter(_relation => _relation?.active)
+      if(activeStories.length > Number(environment.maxStories)){
+        activeStories = activeStories.slice(0, Number(environment.maxStories))
+      }
       let stories: Array<Entity> = []
       for (const story of activeStories) {
         try {
