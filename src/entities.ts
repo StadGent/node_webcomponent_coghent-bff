@@ -5,6 +5,7 @@ import {
   MediaFile,
   Relation,
   EntitiesResults,
+  RelationType,
 } from './type-defs';
 import { RESTDataSourceWithStaticToken } from './RestDataSourceWithStaticToken';
 import { Context } from './types';
@@ -90,5 +91,29 @@ export class EntitiesAPI extends RESTDataSourceWithStaticToken<Context> {
     metadata: MetadataInput[]
   ): Promise<Metadata[]> {
     return await this.put(`entities/${id}/metadata`, metadata);
+  }
+
+  async getRelationOfType(_id: string, _type: RelationType): Promise<Array<Relation>>{
+    const relations = await this.getRelations(_id)
+    return relations.filter(_relation =>  _relation.type == _type)
+  }
+
+  async getEntitiesOfRelationIds(_relationIds: Array<string>): Promise<Array<Entity>>{
+    const entities: Array<Entity> = []
+    if(_relationIds.length > 0){
+      for(const _id of _relationIds){
+        let id = _id
+        if(id.includes('entities/')){
+          id = id.replace('entities/','')
+        }
+        try {
+          const entity = await this.getEntity(id)
+          entities.push(entity)
+        } catch (error) {
+          console.error(`Couldn't find an entity with id: ${_id}`)
+        }        
+      }
+    }
+    return entities
   }
 }

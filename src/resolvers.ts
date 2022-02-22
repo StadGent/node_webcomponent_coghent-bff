@@ -215,18 +215,9 @@ export const resolvers: Resolvers<Context> = {
       return frames;
     },
     frames: async (parent, _args, { dataSources }) => {
-      let data = await dataSources.EntitiesAPI.getRelations(parent.id);
-      let sortedData = new Array<Relation>(data.length);
-      for (const _relation of data) {
-        if (_relation.order) {
-          sortedData[_relation.order] = _relation;
-        } else {
-          sortedData[sortedData.length + 1] = _relation;
-        }
-      }
-      sortedData = sortedData.filter(_relation => _relation);
-      let frames = await getComponents(dataSources, sortedData);
-      return frames;
+      let data = await dataSources.EntitiesAPI.getRelationOfType(parent.id, RelationType.Frames);
+      
+      return await dataSources.EntitiesAPI.getEntitiesOfRelationIds(data.map(_relation => _relation.key));
     },
   },
   MediaFile: {
@@ -272,25 +263,6 @@ const getComponents = async (
     return components;
   } else {
     return [];
-  }
-};
-
-const updateRelationMetadataWhenAudio = async (
-  dataSources: DataSources,
-  allRelations: Array<Relation>,
-  fromComponent: Entity,
-  relation: Relation
-) => {
-  if (relation.key.includes('mediafiles/')) {
-    const mediafile = await dataSources.EntitiesAPI.getMediafilesById(
-      relation.key.replace('mediafiles/', '')
-    );
-    const newRelationObject: Relation = allRelations.filter(
-      (singleRelation) =>
-        singleRelation.key.replace('entities/', '') == fromComponent.id
-    )[0];
-    newRelationObject['audioFile'] = mediafile.original_file_location;
-    return newRelationObject;
   }
 };
 

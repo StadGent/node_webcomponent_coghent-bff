@@ -32,6 +32,7 @@ enum RelationType {
   stories
   visited
   inBasket
+  frames
 }
 
 enum ComponentType {
