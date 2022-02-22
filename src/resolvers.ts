@@ -9,6 +9,7 @@ import {
   Maybe,
   MetadataCollection,
   MediaInfo,
+  EntitiesResults,
 } from './type-defs';
 import { Context, DataSources } from './types';
 import { AuthenticationError } from 'apollo-server';
@@ -17,9 +18,19 @@ import { environment } from './environment';
 
 export const resolvers: Resolvers<Context> = {
   Query: {
-    ActiveBox: async (_source, args , { dataSources }) => {
+    ActiveBox: async (_source, _args, { dataSources }) => {
       const boxStories = await dataSources.EntitiesAPI.getRelations(environment.activeBoxEntity);
-      return boxStories.filter(_relation => _relation?.active);
+      const activeStories = boxStories.filter(_relation => _relation?.active)
+      let stories: Array<Entity> = []
+      for (const story of activeStories) {
+        try {
+          const entity = await dataSources.EntitiesAPI.getEntity(story.key.replace('entities/', ''))
+          stories.push(entity)
+        } catch (error) {
+          console.error(`Couldn't find entity with id: ${story.key}`)
+        }
+      }
+      return { count: stories.length, results: stories } as EntitiesResults;
     },
     BoxVisiters: async (_source, _args, { dataSources }) => {
       const visiters = await dataSources.BoxVisitersAPI.getBoxVisiters();
@@ -31,9 +42,9 @@ export const resolvers: Resolvers<Context> = {
     },
     BoxVisiterRelationsByType: async (_source, { code, type }, { dataSources }) => {
       const relations = await dataSources.BoxVisitersAPI.getRelations(code);
-      if(relations && relations.length > 1){
+      if (relations && relations.length > 1) {
         return relations.filter(_relation => _relation?.type == type).reverse()
-      }else return []
+      } else return []
     },
     CreateBoxVisiter: async (_source, { storyId }, { dataSources }) => {
       const visiter = await dataSources.BoxVisitersAPI.create(storyId);
@@ -76,18 +87,18 @@ export const resolvers: Resolvers<Context> = {
       return await dataSources.BoxVisitersAPI.AddFrameToStory(code, frameInput)
     },
     AddAssetToBoxVisiter: async (_source, { code, assetId, type }, { dataSources }) => {
-      if(type == RelationType.Visited || type == RelationType.InBasket){
+      if (type == RelationType.Visited || type == RelationType.InBasket) {
         await dataSources.BoxVisitersAPI.AddAssetToRelation(code, assetId, type)
       }
       return await dataSources.BoxVisitersAPI.getRelations(code)
     },
   },
   BoxVisiter: {
-    async relations(parent, _args , { dataSources }) {
+    async relations(parent, _args, { dataSources }) {
       return await dataSources.BoxVisitersAPI.getRelations(parent.code);
     },
-    async relationByType(parent, { type } , { dataSources }) {
-      const relations =  await dataSources.BoxVisitersAPI.getRelations(parent.code);
+    async relationByType(parent, { type }, { dataSources }) {
+      const relations = await dataSources.BoxVisitersAPI.getRelations(parent.code);
       return relations.filter(_relation => _relation.type == type).reverse()
     },
   },
