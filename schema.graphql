@@ -65,7 +65,7 @@ input FrameInput {
 
 type FrameSeen {
   id: String!
-  date: String!  
+  date: Int!  
 }
 
 type Metadata {

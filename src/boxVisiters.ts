@@ -32,16 +32,18 @@ export class BoxVisitersAPI extends RESTDataSourceWithStaticToken<Context> {
   }
 
   async AddStory(_code: string, story: StoryInput): Promise<BoxVisiter> {
+    let last_frame = ''
     let seenFrames: Array<FrameSeen> = []
     if (story.last_frame && story.last_frame != '') {
       seenFrames.push(this.createSeenFrame(story.last_frame))
+      last_frame= seenFrames[seenFrames.length- 1].id
     }
     const newStory = {
       type: RelationType.Stories,
       label: 'story',
       key: `entities/${story.key}`,
       active: story.active,
-      last_frame: `entities/${story.last_frame}`,
+      last_frame: last_frame,
       seen_frames: seenFrames,
     } as Relation
     await this.updateRelation(_code, [newStory])
@@ -64,9 +66,14 @@ export class BoxVisitersAPI extends RESTDataSourceWithStaticToken<Context> {
     const relations = await this.getRelations(_code)
     const stories = relations.filter(_relation => _relation.key.replace('entities/', '') == _frameInput.storyId)
     if (stories.length == 1) {
-      const story = stories[0]
+      let story = stories[0]
       if (!story.seen_frames) { story.seen_frames = [] }
-      story.seen_frames?.push(this.createSeenFrame(_frameInput.frameId))
+      if (this.checkIfFrameAlreadySeen(story, _frameInput.frameId)) {
+        story = this.findAndUpdateDateFromFrame(story, _frameInput.frameId)
+        console.log('frame already exists')
+      } else {
+        story.seen_frames?.push(this.createSeenFrame(_frameInput.frameId))
+      }
       await this.updateRelation(_code, [story])
     } else {
       console.error(`No stories found for boxVisiter with code ${_code}`)
@@ -76,17 +83,47 @@ export class BoxVisitersAPI extends RESTDataSourceWithStaticToken<Context> {
   }
 
   createSeenFrame(_frameId: string): FrameSeen {
-    return { id: `entities/${_frameId}`, date: new Date().toUTCString() }
+    return { id: `entities/${_frameId}`, date: Math.round(Date.now() / 1000) }
   }
 
-  async AddAssetToRelation(_code: string, _assetId: string, _type: RelationType): Promise<Relation>{
+  async AddAssetToRelation(_code: string, _assetId: string, _type: RelationType): Promise<Relation> {
     const relation: Relation = {
       key: `entities/${_assetId}`,
       type: _type,
       label: 'asset',
       order: Math.round(Date.now() / 1000),
     }
-    const createdRelation = await this.updateRelation(_code,[relation])
+    const createdRelation = await this.updateRelation(_code, [relation])
     return createdRelation
+  }
+
+  checkIfFrameAlreadySeen(_relation: Relation, _frameId: string): boolean {
+    let isExisting = false
+    if (_relation.seen_frames) {
+      const matches = _relation.seen_frames.filter(_frame => _frame?.id.replace('entities/', '') == _frameId)
+      if (matches.length > 0)
+        isExisting = true
+    }
+    return isExisting
+  }
+
+  findAndUpdateDateFromFrame(_relation: Relation, _frameId: string): Relation {
+    let updatedSeenFrames: Array<FrameSeen> = []
+    let newRelation = {} as Relation
+    Object.assign(newRelation, _relation)
+    if (newRelation.seen_frames) {
+      for (const relation of newRelation.seen_frames) {
+        if (relation?.id.replace('entities/', '') == _frameId) {
+          updatedSeenFrames.push({
+            id: `entities/${_frameId}`,
+            date: Math.round(Date.now() / 1000)
+          } as FrameSeen)
+        } else {
+          updatedSeenFrames.push(relation as FrameSeen)
+        }
+      }
+      newRelation.seen_frames = updatedSeenFrames
+    }
+    return newRelation
   }
 }
