@@ -218,20 +218,24 @@ export const resolvers: Resolvers<Context> = {
       return components;
     },
     assets: async (parent, _args, { dataSources }) => {
+      
       let data = await dataSources.EntitiesAPI.getRelations(parent.id);
-      const relationsExcludedMediafiles = data.filter((_relation) =>
-        _relation.key.includes('entities/')
+      const assetRelations = data.filter((_relation) =>
+        _relation.type == RelationType.Components
       );
-      let frames = await getComponents(
-        dataSources,
-        relationsExcludedMediafiles
-      );
-      return frames;
+      const assets = await dataSources.EntitiesAPI.getEntitiesOfRelationIds(assetRelations.map(_relation => _relation.key));
+      return assets
     },
     frames: async (parent, _args, { dataSources }) => {
       let data = await dataSources.EntitiesAPI.getRelationOfType(parent.id, RelationType.Frames);
       
       return await dataSources.EntitiesAPI.getEntitiesOfRelationIds(data.map(_relation => _relation.key));
+    },
+    collections: async (parent, _args, { dataSources }) => {
+      console.log({parent})
+      const matches = parent.metadata?.filter(_meta => _meta?.label == 'MaterieelDing.beheerder')
+      console.log({matches})
+      return matches as Array<Relation>
     },
   },
   MediaFile: {

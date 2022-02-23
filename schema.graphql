@@ -100,7 +100,7 @@ type Entity {
   metadataCollection(key: [MetaKey], label: [String]): [MetadataCollection]
   title: [Metadata]!
   scopeNote: [Metadata]!
-  collections: [Metadata]!
+  collections: [Relation]!
   relations: [Relation]
   relationMetadata: [Relation]
   components: [Entity]
