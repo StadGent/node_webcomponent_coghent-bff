@@ -47,6 +47,6 @@ export const environment: Environment = {
   staticToken: process.env.STATIC_TOKEN || false,
   redisHost: process.env.REDIS_HOST || false,
   redisPort: process.env.REDIS_PORT || false,
-  activeBoxEntity: process.env.BOX_ENTITY || '2590134a-3e0e-41de-bd8f-cc8c2f88f717',
+  activeBoxEntity: process.env.BOX_ENTITY || 'c0a577c6-071b-4051-bad8-4f4fbe40537b',
   maxStories: process.env.BOX_MAX_STORIES || 4,
 };
