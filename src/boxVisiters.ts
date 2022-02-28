@@ -33,7 +33,7 @@ export class BoxVisitersAPI extends RESTDataSourceWithStaticToken<Context> {
   }
 
   async create(_storyId: string): Promise<BoxVisiter> {
-    const visiter = await this.post(this.BOX_VISITS, { story_id: _storyId })
+    const visiter = await this.post(this.BOX_VISITS, { story_id: _storyId.replace('entities/','') })
     return setIdAs_Key(visiter) as BoxVisiter;
   }
 
