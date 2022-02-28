@@ -7,8 +7,18 @@ export class IiifAPI extends RESTDataSourceWithStaticToken<Context> {
   public baseURL = `${env.api.IiifAPIUrl}/`;
 
   async getInfo(id: string): Promise<MediaInfo> {
-    const data = await this.get<string>(`/iiif/3/${id}/info.json`);
+    let returnValue = {
+      width: '500',
+      height: '500',
+    };
+    const data = await this.get<string>(`/iiif/3/${id}/info.json`)
+      .then((data: any) => {
+        returnValue = JSON.parse(data);
+      })
+      .catch(() => {
+        console.error('No iiif inof found');
+      });
 
-    return JSON.parse(data);
+    return returnValue;
   }
 }
