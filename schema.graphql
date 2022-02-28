@@ -232,7 +232,7 @@ type Query {
 
 type Mutation {
   replaceMetadata(id: String!, metadata: [MetadataInput!]!): [Metadata!]!
-  AddStoryToBoxVisiter(code: String!, story: StoryInput!): BoxVisiter!
-  AddFrameToStoryBoxVisiter(code: String!, frameInput: FrameInput!): BoxVisiter!
+  AddStoryToBoxVisiter(code: String!, story: StoryInput!): BoxVisiter
+  AddFrameToStoryBoxVisiter(code: String!, frameInput: FrameInput!): BoxVisiter
   AddAssetToBoxVisiter(code: String!, assetId: String!, type: RelationType!): [Relation]!
 }

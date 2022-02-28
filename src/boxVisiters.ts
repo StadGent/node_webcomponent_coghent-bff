@@ -17,9 +17,15 @@ export class BoxVisitersAPI extends RESTDataSourceWithStaticToken<Context> {
     return setIdsAs_Key(visiters) as BoxVisitersResults;
   }
 
-  async getByCode(_code: string): Promise<BoxVisiter> {
-    const visiter = await this.get<BoxVisiter>(`${this.BOX_VISITS}/${_code}`);
-    return setIdAs_Key(visiter) as BoxVisiter;
+  async getByCode(_code: string): Promise<BoxVisiter | null> {
+    let visiter = null
+    try {
+      visiter = await this.get<BoxVisiter>(`${this.BOX_VISITS}/${_code}`);
+      visiter = setIdAs_Key(visiter) as BoxVisiter;
+    } catch (error) {
+      console.error(`No visiter found for code: ${_code}`)
+    }
+    return visiter
   }
 
   async getRelations(_code: string): Promise<Array<Relation>> {
@@ -31,12 +37,12 @@ export class BoxVisitersAPI extends RESTDataSourceWithStaticToken<Context> {
     return setIdAs_Key(visiter) as BoxVisiter;
   }
 
-  async AddStory(_code: string, story: StoryInput): Promise<BoxVisiter> {
+  async AddStory(_code: string, story: StoryInput): Promise<BoxVisiter | null> {
     let last_frame = ''
     let seenFrames: Array<FrameSeen> = []
     if (story.last_frame && story.last_frame != '') {
       seenFrames.push(this.createSeenFrame(story.last_frame))
-      last_frame= seenFrames[seenFrames.length- 1].id
+      last_frame = seenFrames[seenFrames.length - 1].id
     }
     const newStory = {
       type: RelationType.Stories,
@@ -47,8 +53,10 @@ export class BoxVisitersAPI extends RESTDataSourceWithStaticToken<Context> {
       seen_frames: seenFrames,
     } as Relation
     await this.updateRelation(_code, [newStory])
-    const updatedVisiter = await this.getByCode(_code)
-    return setIdAs_Key(updatedVisiter) as BoxVisiter
+    let updatedVisiter: BoxVisiter | null
+    const visiter = await this.getByCode(_code)
+    visiter != null ? updatedVisiter = setIdAs_Key(visiter) as BoxVisiter : updatedVisiter = null
+    return updatedVisiter
   }
 
   async updateRelation(_code: string, _relation: Array<Relation>): Promise<Relation> {
@@ -61,8 +69,8 @@ export class BoxVisitersAPI extends RESTDataSourceWithStaticToken<Context> {
     return relation
   }
 
-  async AddFrameToStory(_code: string, _frameInput: FrameInput): Promise<BoxVisiter> {
-    let visiter: BoxVisiter
+  async AddFrameToStory(_code: string, _frameInput: FrameInput): Promise<BoxVisiter | null> {
+    let updatedVisiter: BoxVisiter | null
     const relations = await this.getRelations(_code)
     const stories = relations.filter(_relation => _relation.key.replace('entities/', '') == _frameInput.storyId)
     if (stories.length == 1) {
@@ -78,8 +86,9 @@ export class BoxVisitersAPI extends RESTDataSourceWithStaticToken<Context> {
     } else {
       console.error(`No stories found for boxVisiter with code ${_code}`)
     }
-    visiter = await this.getByCode(_code)
-    return visiter
+    const visiter = await this.getByCode(_code)
+    visiter != null ? updatedVisiter = setIdAs_Key(visiter) as BoxVisiter : updatedVisiter = null
+    return updatedVisiter
   }
 
   createSeenFrame(_frameId: string): FrameSeen {

@@ -25,6 +25,7 @@ export const resolvers: Resolvers<Context> = {
         activeStories = activeStories.slice(0, Number(environment.maxStories))
       }
       let stories: Array<Entity> = []
+      console.log('active stories', activeStories)
       for (const story of activeStories) {
         try {
           const entity = await dataSources.EntitiesAPI.getEntity(story.key.replace('entities/', ''))
@@ -41,16 +42,20 @@ export const resolvers: Resolvers<Context> = {
     },
     BoxVisiterByCode: async (_source, { code }, { dataSources }) => {
       const visiter = await dataSources.BoxVisitersAPI.getByCode(code);
+      console.log('Get visiter by CODE', visiter)
       return visiter;
     },
     BoxVisiterRelationsByType: async (_source, { code, type }, { dataSources }) => {
       const relations = await dataSources.BoxVisitersAPI.getRelations(code);
+      console.log('Get relations fromt visiter', relations)
       if (relations && relations.length > 1) {
         return relations.filter(_relation => _relation?.type == type).reverse()
-      } else return []
+      } else return relations
+      
     },
     CreateBoxVisiter: async (_source, { storyId }, { dataSources }) => {
       const visiter = await dataSources.BoxVisitersAPI.create(storyId);
+      console.log('CREATE box visiter', visiter)
       return visiter;
     },
     Stories: async (_source, _args, { dataSources }) => {
