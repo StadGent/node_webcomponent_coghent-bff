@@ -1,6 +1,6 @@
 import {
   BoxVisiter,
-  BoxVisitersResults, FrameInput, FrameSeen, Relation, RelationType, StoryInput,
+  BoxVisitersResults, Entity, FrameInput, FrameSeen, Relation, RelationType, StoryInput,
 } from './type-defs';
 import { RESTDataSourceWithStaticToken } from './RestDataSourceWithStaticToken';
 import { Context } from './types';
@@ -37,20 +37,21 @@ export class BoxVisitersAPI extends RESTDataSourceWithStaticToken<Context> {
     return setIdAs_Key(visiter) as BoxVisiter;
   }
 
-  async AddStory(_code: string, story: StoryInput): Promise<BoxVisiter | null> {
+  async AddStory(_code: string, storyInput: StoryInput): Promise<BoxVisiter | null> {
     let last_frame = ''
     let seenFrames: Array<FrameSeen> = []
-    if (story.last_frame && story.last_frame != '') {
-      seenFrames.push(this.createSeenFrame(story.last_frame))
+    if (storyInput.last_frame && storyInput.last_frame != '') {
+      seenFrames.push(this.createSeenFrame(storyInput.last_frame))
       last_frame = seenFrames[seenFrames.length - 1].id
     }
     const newStory = {
       type: RelationType.Stories,
       label: 'story',
-      key: `entities/${story.key}`,
-      active: story.active,
-      last_frame: last_frame,
+      key: `entities/${storyInput.id}`,
+      active: true,
+      last_frame: storyInput.last_frame,
       seen_frames: seenFrames,
+      total_frames: storyInput.total_frames
     } as Relation
     await this.updateRelation(_code, [newStory])
     let updatedVisiter: BoxVisiter | null

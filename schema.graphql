@@ -33,6 +33,7 @@ enum RelationType {
   visited
   inBasket
   frames
+  box_stories
 }
 
 enum ComponentType {
@@ -52,15 +53,22 @@ input JSPatch {
   value: String!
 }
 
-input StoryInput {
-  key: String!
-  active: Boolean!
-  last_frame: String
-}
-
 input FrameInput {
   storyId: String!
   frameId: String!
+}
+
+input StoryInput {
+  id: String
+  last_frame: String
+  total_frames: Int
+}
+
+type Story {
+  key: String!
+  active: Boolean
+  last_frame: String
+  total_frames: Int
 }
 
 type FrameSeen {
@@ -156,6 +164,7 @@ type Relation {
   active: Boolean
   last_frame: String
   seen_frames: [FrameSeen]
+  total_frames: Int
 }
 
 type EntitiesResults {
@@ -232,7 +241,7 @@ type Query {
 
 type Mutation {
   replaceMetadata(id: String!, metadata: [MetadataInput!]!): [Metadata!]!
-  AddStoryToBoxVisiter(code: String!, story: StoryInput!): BoxVisiter
+  AddStoryToBoxVisiter(code: String!, storyId: String!): BoxVisiter
   AddFrameToStoryBoxVisiter(code: String!, frameInput: FrameInput!): BoxVisiter
   AddAssetToBoxVisiter(code: String!, assetId: String!, type: RelationType!): [Relation]!
 }
