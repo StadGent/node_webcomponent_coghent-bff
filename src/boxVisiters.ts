@@ -93,7 +93,7 @@ export class BoxVisitersAPI extends RESTDataSourceWithStaticToken<Context> {
   }
 
   createSeenFrame(_frameId: string): FrameSeen {
-    return { id: `entities/${_frameId}`, date: Math.round(Date.now() / 1000) }
+    return { id: `${_frameId}`, date: Math.round(Date.now() / 1000) }
   }
 
   async AddAssetToRelation(_code: string, _assetId: string, _type: RelationType): Promise<Relation> {
