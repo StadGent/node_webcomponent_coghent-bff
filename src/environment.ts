@@ -22,7 +22,7 @@ interface Environment {
   redisPort: string | false;
   activeBoxEntity: string;
   maxStories: number | string;
-  printService: string;
+  codePostfix: string;
 }
 
 export const environment: Environment = {
@@ -50,5 +50,5 @@ export const environment: Environment = {
   redisPort: process.env.REDIS_PORT || false,
   activeBoxEntity: process.env.BOX_ENTITY || 'c0a577c6-071b-4051-bad8-4f4fbe40537b',
   maxStories: process.env.BOX_MAX_STORIES || 4,
-  printService: process.env.PRINT_SERVICE || '',
+  codePostfix: process.env.BOX_CODE_POSTFIX || '/visit',
 };

@@ -19,14 +19,16 @@ import { AuthenticationError } from 'apollo-server';
 import 'apollo-cache-control';
 import { environment } from './environment';
 import { filterByRelationTypes } from './parsers/entities';
+import { ticketXML } from './sources/ticket';
 
 export const resolvers: Resolvers<Context> = {
   Query: {
-    PrintBoxTicket: async (_source, { code }, { dataSources }) => {
-      const xmlWithNewCode = dataSources.TicketsAPI.updateCodeOfTicket(code)
-      const updatedXml = dataSources.TicketsAPI.updateQrCodeOfTicket(xmlWithNewCode,code)
-      const ticket = await dataSources.TicketsAPI.print(updatedXml)
-      return {code: code, xml: ticket, date: Math.round(Date.now() / 1000)} as Ticket
+    PrintBoxTicket: (_source, { code }, { dataSources }) => {
+      const ticket = dataSources.TicketsAPI.print(ticketXML)
+      const body = {
+        data: ticket
+      }
+      return {code: code, body: JSON.stringify(body)} as Ticket
     },
     ActiveBox: async (_source, _args, { dataSources }) => {
       const stories = await getActiveStories(dataSources)

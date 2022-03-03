@@ -221,8 +221,7 @@ type BoxVisiter {
 
 type Ticket {
   code: String!
-  xml: String
-  date: Int!
+  body: String!
 }
 
 type Query {
