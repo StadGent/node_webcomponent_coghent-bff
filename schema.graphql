@@ -219,7 +219,14 @@ type BoxVisiter {
   touch_table_time: String
 }
 
+type Ticket {
+  code: String!
+  xml: String!
+  date: Int!
+}
+
 type Query {
+  PrintBoxTicket(code: String!): Ticket
   ActiveBox: EntitiesResults!
   BoxVisiters: BoxVisitersResults
   BoxVisiterByCode(code: String!):BoxVisiter

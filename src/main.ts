@@ -16,6 +16,7 @@ import { IiifAPI } from './iiif';
 import { BoxVisitersAPI } from './boxVisiters';
 
 import { BaseRedisCache } from 'apollo-server-cache-redis';
+import { TicketsAPI } from './ticket';
 const Redis = require('ioredis');
 
 let redisCache = undefined;
@@ -36,6 +37,7 @@ const apolloServer = new ApolloServer({
   dataSources: () => ({
     EntitiesAPI: new EntitiesAPI(),
     BoxVisitersAPI: new BoxVisitersAPI(),
+    TicketsAPI: new TicketsAPI(),
     IiifAPI: new IiifAPI(),
     SearchAPI: new SearchAPI(),
     UserAPI: new UserAPI(),
