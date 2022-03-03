@@ -23,8 +23,9 @@ import { filterByRelationTypes } from './parsers/entities';
 export const resolvers: Resolvers<Context> = {
   Query: {
     PrintBoxTicket: (_source, { code }, { dataSources }) => {
-      const xml = dataSources.TicketsAPI.updateCodeOfTicket(code)
-      return {code: code, xml: xml, date: Math.round(Date.now() / 1000)} as Ticket
+      const xmlWithNewCode = dataSources.TicketsAPI.updateCodeOfTicket(code)
+      const updatedXml = dataSources.TicketsAPI.updateQrCodeOfTicket(xmlWithNewCode,code)
+      return {code: code, xml: updatedXml, date: Math.round(Date.now() / 1000)} as Ticket
     },
     ActiveBox: async (_source, _args, { dataSources }) => {
       const stories = await getActiveStories(dataSources)
