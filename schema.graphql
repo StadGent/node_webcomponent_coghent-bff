@@ -221,12 +221,12 @@ type BoxVisiter {
 
 type Ticket {
   code: String!
-  xml: String!
+  xml: String
   date: Int!
 }
 
 type Query {
-  PrintBoxTicket(code: String!): Ticket
+  PrintBoxTicket(code: String!): Ticket!
   ActiveBox: EntitiesResults!
   BoxVisiters: BoxVisitersResults
   BoxVisiterByCode(code: String!):BoxVisiter

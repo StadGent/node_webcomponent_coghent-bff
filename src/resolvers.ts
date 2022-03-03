@@ -22,10 +22,11 @@ import { filterByRelationTypes } from './parsers/entities';
 
 export const resolvers: Resolvers<Context> = {
   Query: {
-    PrintBoxTicket: (_source, { code }, { dataSources }) => {
+    PrintBoxTicket: async (_source, { code }, { dataSources }) => {
       const xmlWithNewCode = dataSources.TicketsAPI.updateCodeOfTicket(code)
       const updatedXml = dataSources.TicketsAPI.updateQrCodeOfTicket(xmlWithNewCode,code)
-      return {code: code, xml: updatedXml, date: Math.round(Date.now() / 1000)} as Ticket
+      const ticket = await dataSources.TicketsAPI.print(updatedXml)
+      return {code: code, xml: ticket, date: Math.round(Date.now() / 1000)} as Ticket
     },
     ActiveBox: async (_source, _args, { dataSources }) => {
       const stories = await getActiveStories(dataSources)
