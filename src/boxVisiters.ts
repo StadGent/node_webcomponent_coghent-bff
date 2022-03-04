@@ -5,7 +5,7 @@ import {
 import { RESTDataSourceWithStaticToken } from './RestDataSourceWithStaticToken';
 import { Context } from './types';
 import { environment as env } from './environment';
-import { setIdAs_Key, setIdsAs_Key } from './common';
+import { setIdAs_Key, setIdsAs_Key, setEntitiesIdPrefix } from './common';
 import { PersistedQueryNotFoundError } from 'apollo-server-errors';
 
 export class BoxVisitersAPI extends RESTDataSourceWithStaticToken<Context> {
@@ -33,7 +33,7 @@ export class BoxVisitersAPI extends RESTDataSourceWithStaticToken<Context> {
   }
 
   async create(_storyId: string): Promise<BoxVisiter> {
-    const visiter = await this.post(this.BOX_VISITS, { story_id: _storyId.replace('entities/','') })
+    const visiter = await this.post(this.BOX_VISITS, { story_id: setEntitiesIdPrefix(_storyId) })
     return setIdAs_Key(visiter) as BoxVisiter;
   }
 
@@ -47,7 +47,7 @@ export class BoxVisitersAPI extends RESTDataSourceWithStaticToken<Context> {
     const newStory = {
       type: RelationType.Stories,
       label: 'story',
-      key: `entities/${storyInput.id}`,
+      key: setEntitiesIdPrefix(storyInput.id as string, true),
       active: true,
       last_frame: storyInput.last_frame,
       total_frames: storyInput.total_frames,
@@ -72,10 +72,10 @@ export class BoxVisitersAPI extends RESTDataSourceWithStaticToken<Context> {
   }
 
   async AddFrameToStory(_code: string, _frameInput: FrameInput): Promise<BoxVisiter | null> {
-    const frameId = _frameInput.frameId.replace('entities/','')
+    const frameId = setEntitiesIdPrefix( _frameInput.frameId)
     let updatedVisiter: BoxVisiter | null
     const relations = await this.getRelations(_code)
-    const stories = relations.filter(_relation => _relation.key.replace('entities/', '') == _frameInput.storyId)
+    const stories = relations.filter(_relation => setEntitiesIdPrefix(_relation.key) == _frameInput.storyId)
     if (stories.length == 1) {
       let story = stories[0]
       if (!story.seen_frames) { story.seen_frames = [] }
@@ -100,7 +100,7 @@ export class BoxVisitersAPI extends RESTDataSourceWithStaticToken<Context> {
 
   async AddAssetToRelation(_code: string, _assetId: string, _type: RelationType): Promise<Relation> {
     const relation: Relation = {
-      key: `entities/${_assetId}`,
+      key: setEntitiesIdPrefix(_assetId, true),
       type: _type,
       label: 'asset',
       order: Math.round(Date.now() / 1000),
@@ -112,7 +112,7 @@ export class BoxVisitersAPI extends RESTDataSourceWithStaticToken<Context> {
   checkIfFrameAlreadySeen(_relation: Relation, _frameId: string): boolean {
     let isExisting = false
     if (_relation.seen_frames) {
-      const matches = _relation.seen_frames.filter(_frame => _frame?.id.replace('entities/', '') == _frameId)
+      const matches = _relation.seen_frames.filter(_frame => setEntitiesIdPrefix(_frame?.id as string) == _frameId)
       if (matches.length > 0)
         isExisting = true
     }
@@ -125,9 +125,9 @@ export class BoxVisitersAPI extends RESTDataSourceWithStaticToken<Context> {
     Object.assign(newRelation, _relation)
     if (newRelation.seen_frames) {
       for (const relation of newRelation.seen_frames) {
-        if (relation?.id.replace('entities/', '') == _frameId) {
+        if (setEntitiesIdPrefix(relation?.id as string) == _frameId) {
           updatedSeenFrames.push({
-            id: `${_frameId.replace('entities/','')}`,
+            id: setEntitiesIdPrefix(_frameId),
             date: Math.round(Date.now() / 1000)
           } as FrameSeen)
         } else {

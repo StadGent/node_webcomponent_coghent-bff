@@ -26,3 +26,18 @@ export function setIdAs_Key(_entity: Entity | BoxVisiter){
   Object.assign(entity, _entity);
   return entity;
 }
+
+export function setEntitiesIdPrefix(_id: string, _hasPrefix = false){
+  const prefix = 'entities/'
+  let newId = _id
+  if(_hasPrefix){
+    if(_id.includes(prefix)){
+      newId = _id
+    }else{
+      newId = `${prefix}${_id}`
+    }
+  }else{
+    newId = _id.replace(prefix,'')
+  }
+  return newId
+}
