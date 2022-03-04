@@ -50,8 +50,9 @@ export class BoxVisitersAPI extends RESTDataSourceWithStaticToken<Context> {
       key: `entities/${storyInput.id}`,
       active: true,
       last_frame: storyInput.last_frame,
-      seen_frames: seenFrames,
-      total_frames: storyInput.total_frames
+      total_frames: storyInput.total_frames,
+      order: Math.round(Date.now() / 1000),
+      seen_frames: seenFrames,      
     } as Relation
     await this.updateRelation(_code, [newStory])
     let updatedVisiter: BoxVisiter | null
@@ -71,17 +72,18 @@ export class BoxVisitersAPI extends RESTDataSourceWithStaticToken<Context> {
   }
 
   async AddFrameToStory(_code: string, _frameInput: FrameInput): Promise<BoxVisiter | null> {
+    const frameId = _frameInput.frameId.replace('entities/','')
     let updatedVisiter: BoxVisiter | null
     const relations = await this.getRelations(_code)
     const stories = relations.filter(_relation => _relation.key.replace('entities/', '') == _frameInput.storyId)
     if (stories.length == 1) {
       let story = stories[0]
       if (!story.seen_frames) { story.seen_frames = [] }
-      if (this.checkIfFrameAlreadySeen(story, _frameInput.frameId)) {
-        story = this.findAndUpdateDateFromFrame(story, _frameInput.frameId)
+      if (this.checkIfFrameAlreadySeen(story, frameId)) {
+        story = this.findAndUpdateDateFromFrame(story, frameId)
         console.log('frame already exists')
       } else {
-        story.seen_frames?.push(this.createSeenFrame(_frameInput.frameId))
+        story.seen_frames?.push(this.createSeenFrame(frameId))
       }
       await this.updateRelation(_code, [story])
     } else {
@@ -125,7 +127,7 @@ export class BoxVisitersAPI extends RESTDataSourceWithStaticToken<Context> {
       for (const relation of newRelation.seen_frames) {
         if (relation?.id.replace('entities/', '') == _frameId) {
           updatedSeenFrames.push({
-            id: `entities/${_frameId}`,
+            id: `${_frameId.replace('entities/','')}`,
             date: Math.round(Date.now() / 1000)
           } as FrameSeen)
         } else {
