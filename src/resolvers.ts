@@ -185,7 +185,7 @@ export const resolvers: Resolvers<Context> = {
       return dataSources.EntitiesAPI.getRelations(parent.id);
     },
     relationMetadata: async (parent, _args, { dataSources }) => {
-      const components = await dataSources.EntitiesAPI.getComponents(parent.id);
+      const components = await dataSources.EntitiesAPI.getEntityRelations(parent.id);
       let mediafileRelations = components.filter((_component) =>
         _component.key.includes('mediafiles/')
       );
