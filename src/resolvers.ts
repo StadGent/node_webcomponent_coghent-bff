@@ -24,14 +24,14 @@ import { ticketXML } from './sources/ticket';
 export const resolvers: Resolvers<Context> = {
   Query: {
     PrintBoxTicket: (_source, { code }, { dataSources }) => {
-      const ticket = dataSources.TicketsAPI.print(ticketXML)
+      const ticket = dataSources.TicketsAPI.print(ticketXML);
       const body = {
-        data: ticket
-      }
-      return {code: code, body: JSON.stringify(body)} as Ticket
+        data: ticket,
+      };
+      return { code: code, body: JSON.stringify(body) } as Ticket;
     },
     ActiveBox: async (_source, _args, { dataSources }) => {
-      const stories = await getActiveStories(dataSources)
+      const stories = await getActiveStories(dataSources);
       return { count: stories.length, results: stories } as EntitiesResults;
     },
     BoxVisiters: async (_source, _args, { dataSources }) => {
@@ -40,16 +40,20 @@ export const resolvers: Resolvers<Context> = {
     },
     BoxVisiterByCode: async (_source, { code }, { dataSources }) => {
       const visiter = await dataSources.BoxVisitersAPI.getByCode(code);
-      console.log('Get visiter by CODE', visiter)
+      console.log('Get visiter by CODE', visiter);
       return visiter;
     },
-    BoxVisiterRelationsByType: async (_source, { code, type }, { dataSources }) => {
+    BoxVisiterRelationsByType: async (
+      _source,
+      { code, type },
+      { dataSources }
+    ) => {
       const relations = await dataSources.BoxVisitersAPI.getRelations(code);
-      return filterByRelationTypes(relations, [type]).reverse()
+      return filterByRelationTypes(relations, [type]).reverse();
     },
     CreateBoxVisiter: async (_source, { storyId }, { dataSources }) => {
       const visiter = await dataSources.BoxVisitersAPI.create(storyId);
-      console.log('CREATE box visiter', visiter)
+      console.log('CREATE box visiter', visiter);
       return visiter;
     },
     Stories: async (_source, _args, { dataSources }) => {
@@ -71,7 +75,7 @@ export const resolvers: Resolvers<Context> = {
         fetchPolicy || ''
       );
     },
-    User: async (_source, { }, { dataSources, session }) => {
+    User: async (_source, {}, { dataSources, session }) => {
       if (!session.auth.accessToken) {
         throw new AuthenticationError('Not authenticated');
       }
@@ -82,31 +86,59 @@ export const resolvers: Resolvers<Context> = {
     replaceMetadata: async (_source, { id, metadata }, { dataSources }) => {
       return dataSources.EntitiesAPI.replaceMetadata(id, metadata);
     },
-    AddStoryToBoxVisiter: async (_source, { code, storyId }, { dataSources }) => {
+    AddStoryToBoxVisiter: async (
+      _source,
+      { code, storyId },
+      { dataSources }
+    ) => {
       let updatedVisiter: BoxVisiter | null;
-      const visiterRelations = await dataSources.BoxVisitersAPI.getRelations(code);
-      const storyMatches = visiterRelations?.filter(_relation => _relation.key.replace('entities/', '') == storyId && _relation.type == RelationType.Stories)
+      const visiterRelations = await dataSources.BoxVisitersAPI.getRelations(
+        code
+      );
+      const storyMatches = visiterRelations?.filter(
+        (_relation) =>
+          _relation.key.replace('entities/', '') == storyId &&
+          _relation.type == RelationType.Stories
+      );
       if (storyMatches.length > 0) {
-        console.log(`Story with id ${storyId} was already added tot the box_visiter.`)
-        updatedVisiter = await dataSources.BoxVisitersAPI.getByCode(code)
+        console.log(
+          `Story with id ${storyId} was already added tot the box_visiter.`
+        );
+        updatedVisiter = await dataSources.BoxVisitersAPI.getByCode(code);
       } else {
         const storyToAdd = await dataSources.EntitiesAPI.getEntity(storyId);
-        const frameRelationsOfStory = await dataSources.EntitiesAPI.getRelationOfType(storyToAdd.id, RelationType.Frames)
+        const frameRelationsOfStory =
+          await dataSources.EntitiesAPI.getRelationOfType(
+            storyToAdd.id,
+            RelationType.Frames
+          );
         updatedVisiter = await dataSources.BoxVisitersAPI.AddStory(code, {
           id: storyId,
-          total_frames: frameRelationsOfStory.length
-        } as StoryInput)
+          total_frames: frameRelationsOfStory.length,
+        } as StoryInput);
       }
-      return updatedVisiter
+      return updatedVisiter;
     },
-    AddFrameToStoryBoxVisiter: async (_source, { code, frameInput }, { dataSources }) => {
-      return await dataSources.BoxVisitersAPI.AddFrameToStory(code, frameInput)
+    AddFrameToStoryBoxVisiter: async (
+      _source,
+      { code, frameInput },
+      { dataSources }
+    ) => {
+      return await dataSources.BoxVisitersAPI.AddFrameToStory(code, frameInput);
     },
-    AddAssetToBoxVisiter: async (_source, { code, assetId, type }, { dataSources }) => {
+    AddAssetToBoxVisiter: async (
+      _source,
+      { code, assetId, type },
+      { dataSources }
+    ) => {
       if (type == RelationType.Visited || type == RelationType.InBasket) {
-        await dataSources.BoxVisitersAPI.AddAssetToRelation(code, assetId, type)
+        await dataSources.BoxVisitersAPI.AddAssetToRelation(
+          code,
+          assetId,
+          type
+        );
       }
-      return await dataSources.BoxVisitersAPI.getRelations(code)
+      return await dataSources.BoxVisitersAPI.getRelations(code);
     },
   },
   BoxVisiter: {
@@ -114,8 +146,10 @@ export const resolvers: Resolvers<Context> = {
       return await dataSources.BoxVisitersAPI.getRelations(parent.code);
     },
     async relationByType(parent, { type }, { dataSources }) {
-      const relations = await dataSources.BoxVisitersAPI.getRelations(parent.code);
-      return relations.filter(_relation => _relation.type == type).reverse()
+      const relations = await dataSources.BoxVisitersAPI.getRelations(
+        parent.code
+      );
+      return relations.filter((_relation) => _relation.type == type).reverse();
     },
   },
   Entity: {
@@ -185,7 +219,24 @@ export const resolvers: Resolvers<Context> = {
       return dataSources.EntitiesAPI.getRelations(parent.id);
     },
     relationMetadata: async (parent, _args, { dataSources }) => {
-      const components = await dataSources.EntitiesAPI.getEntityRelations(parent.id);
+      let components = await dataSources.EntitiesAPI.getEntityRelations(
+        parent.id
+      );
+      components = components.map((component) => {
+        //@ts-ignore
+        if (component.x) {
+          component.position = {
+            //@ts-ignore
+            x: component.x,
+            //@ts-ignore
+            y: component.y,
+            //@ts-ignore
+            z: component.z,
+          };
+        }
+
+        return component;
+      });
       let mediafileRelations = components.filter((_component) =>
         _component.key.includes('mediafiles/')
       );
@@ -231,22 +282,30 @@ export const resolvers: Resolvers<Context> = {
       return components;
     },
     assets: async (parent, _args, { dataSources }) => {
-
       let data = await dataSources.EntitiesAPI.getRelations(parent.id);
-      const assetRelations = data.filter((_relation) =>
-        _relation.type == RelationType.Components
+      const assetRelations = data.filter(
+        (_relation) => _relation.type == RelationType.Components
       );
-      const assets = await dataSources.EntitiesAPI.getEntitiesOfRelationIds(assetRelations.map(_relation => _relation.key));
-      return assets
+      const assets = await dataSources.EntitiesAPI.getEntitiesOfRelationIds(
+        assetRelations.map((_relation) => _relation.key)
+      );
+      return assets;
     },
     frames: async (parent, _args, { dataSources }) => {
-      let data = await dataSources.EntitiesAPI.getRelationOfType(parent.id, RelationType.Frames);
+      let data = await dataSources.EntitiesAPI.getRelationOfType(
+        parent.id,
+        RelationType.Frames
+      );
 
-      return await dataSources.EntitiesAPI.getEntitiesOfRelationIds(data.map(_relation => _relation.key));
+      return await dataSources.EntitiesAPI.getEntitiesOfRelationIds(
+        data.map((_relation) => _relation.key)
+      );
     },
     collections: async (parent, _args, { dataSources }) => {
-      const matches = parent.metadata?.filter(_meta => _meta?.label == 'MaterieelDing.beheerder')
-      return matches as Array<Relation>
+      const matches = parent.metadata?.filter(
+        (_meta) => _meta?.label == 'MaterieelDing.beheerder'
+      );
+      return matches as Array<Relation>;
     },
   },
   MediaFile: {
@@ -341,19 +400,23 @@ const exlcudeMetaData = async (
 };
 
 const getActiveStories = async (dataSources: DataSources) => {
-  const boxStories = await dataSources.EntitiesAPI.getRelations(environment.activeBoxEntity);
-  let activeStories = boxStories.filter(_relation => _relation?.active)
+  const boxStories = await dataSources.EntitiesAPI.getRelations(
+    environment.activeBoxEntity
+  );
+  let activeStories = boxStories.filter((_relation) => _relation?.active);
   if (activeStories.length > Number(environment.maxStories)) {
-    activeStories = activeStories.slice(0, Number(environment.maxStories))
+    activeStories = activeStories.slice(0, Number(environment.maxStories));
   }
-  let stories: Array<Entity> = []
+  let stories: Array<Entity> = [];
   for (const story of activeStories) {
     try {
-      const entity = await dataSources.EntitiesAPI.getEntity(story.key.replace('entities/', ''))
-      stories.push(entity)
+      const entity = await dataSources.EntitiesAPI.getEntity(
+        story.key.replace('entities/', '')
+      );
+      stories.push(entity);
     } catch (error) {
-      console.error(`Couldn't find entity with id: ${story.key}`)
+      console.error(`Couldn't find entity with id: ${story.key}`);
     }
   }
-  return stories
-}
+  return stories;
+};
