@@ -69,7 +69,10 @@ applyAuthSession(app, environment.sessionSecret);
 apolloServer.applyMiddleware({
   app,
   path: environment.apollo.graphqlPath,
-  cors: false,
+  cors: {
+    credentials: false,
+    origin: [environment.webPortal, environment.boxFrontend],
+  },
 });
 
 applyAuthEndpoints(app, environment.oauthBaseUrl, environment.clientSecret);
