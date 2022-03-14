@@ -244,7 +244,10 @@ export const resolvers: Resolvers<Context> = {
         const mediafile = await dataSources.EntitiesAPI.getMediafilesById(
           _relation.key.replace('mediafiles/', '')
         );
-        if (mediafile.original_file_location?.includes('.mp3')) {
+        if (
+          mediafile.original_file_location?.includes('.mp3') ||
+          mediafile.original_file_location?.includes('.wav')
+        ) {
           _relation['audioFile'] = mediafile.original_file_location;
         }
         if (mediafile.original_file_location?.includes('.srt')) {
