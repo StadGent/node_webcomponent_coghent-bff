@@ -34,6 +34,7 @@ enum RelationType {
   inBasket
   frames
   box_stories
+  box
 }
 
 enum ComponentType {
@@ -73,7 +74,7 @@ type Story {
 
 type FrameSeen {
   id: String!
-  date: Int!  
+  date: Int!
 }
 
 type Metadata {
@@ -228,9 +229,9 @@ type Query {
   PrintBoxTicket(code: String!): Ticket!
   ActiveBox: EntitiesResults!
   BoxVisiters: BoxVisitersResults
-  BoxVisiterByCode(code: String!):BoxVisiter
-  BoxVisiterRelationsByType(code: String!, type: RelationType!):[Relation]
-  CreateBoxVisiter(storyId: String!):BoxVisiter
+  BoxVisiterByCode(code: String!): BoxVisiter
+  BoxVisiterRelationsByType(code: String!, type: RelationType!): [Relation]
+  CreateBoxVisiter(storyId: String!): BoxVisiter
   Stories: EntitiesResults
   Entity(id: String!): Entity
   Entities(
@@ -249,5 +250,10 @@ type Mutation {
   replaceMetadata(id: String!, metadata: [MetadataInput!]!): [Metadata!]!
   AddStoryToBoxVisiter(code: String!, storyId: String!): BoxVisiter
   AddFrameToStoryBoxVisiter(code: String!, frameInput: FrameInput!): BoxVisiter
-  AddAssetToBoxVisiter(code: String!, assetId: String!, type: RelationType!): [Relation]!
+  addTouchTableTimeToBoxVisiter(code: String!, time: String!): BoxVisiter!
+  AddAssetToBoxVisiter(
+    code: String!
+    assetId: String!
+    type: RelationType!
+  ): [Relation]!
 }
