@@ -24,7 +24,7 @@ import { ticketXML } from './sources/ticket';
 export const resolvers: Resolvers<Context> = {
   Query: {
     PrintBoxTicket: (_source, { code }, { dataSources }) => {
-      const ticket = dataSources.TicketsAPI.print(ticketXML);
+      const ticket = dataSources.TicketsAPI.print(code);
       const body = {
         data: ticket,
       };
