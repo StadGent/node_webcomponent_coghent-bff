@@ -11,12 +11,13 @@ export class IiifAPI extends RESTDataSourceWithStaticToken<Context> {
       width: '500',
       height: '500',
     };
-    const data = await this.get<string>(`/iiif/3/${encodeURI(id)}/info.json`)
+    const encodedId = encodeURI(id);
+    const data = await this.get<string>(`/iiif/3/${encodedId}/info.json`)
       .then((data: any) => {
         returnValue = JSON.parse(data);
       })
       .catch(() => {
-        console.error('No iiif inof found');
+        console.error('No iiif info found for id ', encodedId);
       });
 
     return returnValue;
