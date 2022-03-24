@@ -6,7 +6,7 @@
 include:
   - project: 'inuits/gitlab-ci/pipeline-templates'
     file: 'npm-pipeline.yml'
-    ref: 'v1.3.0'
+    ref: 'v1.4.2'
 
 variables:
   CUSTOMER: 'coghent'
