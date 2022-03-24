@@ -11,7 +11,7 @@ export class IiifAPI extends RESTDataSourceWithStaticToken<Context> {
       width: '500',
       height: '500',
     };
-    const data = await this.get<string>(`/iiif/3/${id}/info.json`)
+    const data = await this.get<string>(`/iiif/3/${encodeURI(id)}/info.json`)
       .then((data: any) => {
         returnValue = JSON.parse(data);
       })
