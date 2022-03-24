@@ -17,6 +17,8 @@ export class IiifAPI extends RESTDataSourceWithStaticToken<Context> {
         returnValue = JSON.parse(data);
       })
       .catch(() => {
+        console.log(`ORIGINAL ID: ${id}`)
+        console.log(`URL: ${this.baseURL}iiif/3/${encodedId}/info.json`)
         console.error('No iiif info found for id ', encodedId);
       });
 

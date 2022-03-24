@@ -17,8 +17,6 @@ export class EntitiesAPI extends RESTDataSourceWithStaticToken<Context> {
 
   async getBoxEntities(): Promise<EntitiesResults> {
     let data = await this.get(`entities?type=box`);
-    console.log({data})
-    console.log(this.baseURL);
     
     data = setIdsAs_Key(data)
     return data;

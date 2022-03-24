@@ -40,7 +40,6 @@ export const resolvers: Resolvers<Context> = {
     },
     BoxVisiterByCode: async (_source, { code }, { dataSources }) => {
       const visiter = await dataSources.BoxVisitersAPI.getByCode(code);
-      console.log('Get visiter by CODE', visiter);
       return visiter;
     },
     BoxVisiterRelationsByType: async (
@@ -53,7 +52,6 @@ export const resolvers: Resolvers<Context> = {
     },
     CreateBoxVisiter: async (_source, { storyId }, { dataSources }) => {
       const visiter = await dataSources.BoxVisitersAPI.create(storyId);
-      console.log('CREATE box visiter', visiter);
       return visiter;
     },
     Stories: async (_source, _args, { dataSources }) => {
@@ -313,6 +311,7 @@ export const resolvers: Resolvers<Context> = {
   },
   MediaFile: {
     mediainfo: async (parent, _args, { dataSources }) => {
+      console.log('mediainfo parent', parent)
       let _mediainfo: MediaInfo;
       if (parent.filename?.includes('.mp3')) {
         _mediainfo = { width: '0', height: '0' } as MediaInfo;
