@@ -20,6 +20,7 @@ import 'apollo-cache-control';
 import { environment } from './environment';
 import { filterByRelationTypes } from './parsers/entities';
 import { ticketXML } from './sources/ticket';
+import { audioFileExtensions, getFileExtensionFromName, subtitleFileExtensions } from './common';
 
 export const resolvers: Resolvers<Context> = {
   Query: {
@@ -73,7 +74,7 @@ export const resolvers: Resolvers<Context> = {
         fetchPolicy || ''
       );
     },
-    User: async (_source, {}, { dataSources, session }) => {
+    User: async (_source, { }, { dataSources, session }) => {
       if (!session.auth.accessToken) {
         throw new AuthenticationError('Not authenticated');
       }
@@ -242,15 +243,27 @@ export const resolvers: Resolvers<Context> = {
         const mediafile = await dataSources.EntitiesAPI.getMediafilesById(
           _relation.key.replace('mediafiles/', '')
         );
-        if (
-          mediafile.original_file_location?.includes('.mp3') ||
-          mediafile.original_file_location?.includes('.wav')
-        ) {
-          _relation['audioFile'] = mediafile.original_file_location;
+        if (mediafile.original_file_location) {
+          const extension = getFileExtensionFromName(mediafile.original_file_location)
+          console.log('EXTENSION:', extension)
+          if (audioFileExtensions.includes(extension)) {
+            console.log('Is audio file', mediafile.original_file_location)
+            _relation['audioFile'] = mediafile.original_file_location;
+          }
+          if (subtitleFileExtensions.includes(extension)) {
+            console.log('Is subtitle file', mediafile.original_file_location)
+            _relation['subtitleFile'] = mediafile.original_file_location;
+          }
         }
-        if (mediafile.original_file_location?.includes('.srt')) {
-          _relation['subtitleFile'] = mediafile.original_file_location;
-        }
+        // if (
+        //   mediafile.original_file_location?.includes('.mp3') ||
+        //   mediafile.original_file_location?.includes('.wav')
+        // ) {
+        //   _relation['audioFile'] = mediafile.original_file_location;
+        // }
+        // if (mediafile.original_file_location?.includes('.srt')) {
+        //   _relation['subtitleFile'] = mediafile.original_file_location;
+        // }
       }
       return components;
     },
@@ -311,7 +324,7 @@ export const resolvers: Resolvers<Context> = {
   },
   MediaFile: {
     mediainfo: async (parent, _args, { dataSources }) => {
-      console.log('mediainfo parent', parent)
+      // console.log('mediainfo parent', parent)
       let _mediainfo: MediaInfo;
       if (parent.filename?.includes('.mp3')) {
         _mediainfo = { width: '0', height: '0' } as MediaInfo;

@@ -21,23 +21,29 @@ export function setIdsAs_Key(_entities: EntitiesResults | BoxVisitersResults) {
   return _entities;
 }
 
-export function setIdAs_Key(_entity: Entity | BoxVisiter){
+export function setIdAs_Key(_entity: Entity | BoxVisiter) {
   const entity = { id: _entity?._key as string } as Entity | BoxVisiter;
   Object.assign(entity, _entity);
   return entity;
 }
 
-export function setEntitiesIdPrefix(_id: string, _hasPrefix = false){
+export function setEntitiesIdPrefix(_id: string, _hasPrefix = false) {
   const prefix = 'entities/'
   let newId = _id
-  if(_hasPrefix){
-    if(_id.includes(prefix)){
+  if (_hasPrefix) {
+    if (_id.includes(prefix)) {
       newId = _id
-    }else{
+    } else {
       newId = `${prefix}${_id}`
     }
-  }else{
-    newId = _id.replace(prefix,'')
+  } else {
+    newId = _id.replace(prefix, '')
   }
   return newId
+}
+
+export const audioFileExtensions = ['.mp3', '.wav']
+export const subtitleFileExtensions = ['.srt']
+export const getFileExtensionFromName = (_filename: string) => {
+  return _filename.substring(_filename.lastIndexOf('.'))
 }
