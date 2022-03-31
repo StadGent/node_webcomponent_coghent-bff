@@ -3,7 +3,6 @@ import { BoxVisiter, BoxVisitersResults, EntitiesResults, Entity } from './type-
 const regexExp = /^[0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{12}$/gi;
 
 export function setId(entityRaw: any) {
-  // console.log("Entityraw", entityRaw);
   const filterdId = entityRaw.identifiers.filter(
     (id: string) => regexExp.test(id)
   );
