@@ -312,14 +312,22 @@ export const resolvers: Resolvers<Context> = {
   },
   MediaFile: {
     mediainfo: async (parent, _args, { dataSources }) => {
+
       let _mediainfo: MediaInfo;
-      if (parent.filename?.includes('.mp3')) {
+      const filename = splitFilenameAndExtension(parent.filename as string)
+      console.log('---------------')
+      console.log('_id:', parent._id)
+      console.log('ORIGINAL filename:', parent.filename)
+      console.log('filename:', filename)
+      console.log('original_file_location:', parent.original_file_location)
+      if (audioFileExtensions.includes(filename.extension) || subtitleFileExtensions.includes(filename.extension) ) {
         _mediainfo = { width: '0', height: '0' } as MediaInfo;
       } else {
         _mediainfo = await dataSources.IiifAPI.getInfo(
           parent.filename ? parent.filename : ''
         );
       }
+      console.log('END GET MEDIAINFO---------------')
       return _mediainfo;
     },
   },

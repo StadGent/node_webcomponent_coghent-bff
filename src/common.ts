@@ -46,7 +46,7 @@ export const subtitleFileExtensions = ['.srt']
 export const splitFilenameAndExtension = (_filename: string, _encodeFilename = false) => {
   const extension = _filename.substring(_filename.lastIndexOf('.'))
   let filename = _filename.substring(0, _filename.lastIndexOf('.'))
-  if (_encodeFilename) filename = encodeURIComponent(filename)
+  // if (_encodeFilename) filename = encodeURIComponent(filename)
   return {
     name: filename,
     extension: extension
