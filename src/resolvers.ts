@@ -20,7 +20,7 @@ import 'apollo-cache-control';
 import { environment } from './environment';
 import { filterByRelationTypes } from './parsers/entities';
 import { ticketXML } from './sources/ticket';
-import { audioFileExtensions, getFileExtensionFromName, subtitleFileExtensions } from './common';
+import { audioFileExtensions, splitFilenameAndExtension, subtitleFileExtensions } from './common';
 
 export const resolvers: Resolvers<Context> = {
   Query: {
@@ -244,11 +244,11 @@ export const resolvers: Resolvers<Context> = {
           _relation.key.replace('mediafiles/', '')
         );
         if (mediafile.original_file_location) {
-          const extension = getFileExtensionFromName(mediafile.original_file_location)
-          if (audioFileExtensions.includes(extension)) {
+          const filename = splitFilenameAndExtension(mediafile.original_file_location)
+          if (audioFileExtensions.includes(filename.extension)) {
             _relation['audioFile'] = mediafile.original_file_location;
           }
-          if (subtitleFileExtensions.includes(extension)) {
+          if (subtitleFileExtensions.includes(filename.extension)) {
             _relation['subtitleFile'] = mediafile.original_file_location;
           }
         }

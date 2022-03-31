@@ -43,6 +43,12 @@ export function setEntitiesIdPrefix(_id: string, _hasPrefix = false) {
 
 export const audioFileExtensions = ['.mp3', '.wav']
 export const subtitleFileExtensions = ['.srt']
-export const getFileExtensionFromName = (_filename: string) => {
-  return _filename.substring(_filename.lastIndexOf('.'))
+export const splitFilenameAndExtension = (_filename: string, _encodeFilename = false) => {
+  const extension = _filename.substring(_filename.lastIndexOf('.'))
+  let filename = _filename.substring(0, _filename.lastIndexOf('.'))
+  if (_encodeFilename) filename = encodeURIComponent(filename)
+  return {
+    name: filename,
+    extension: extension
+  }
 }
