@@ -13,15 +13,15 @@ import {
   BoxVisiter,
   StoryInput,
   Ticket,
+  MimeType,
 } from './type-defs';
 import { Context, DataSources } from './types';
 import { AuthenticationError } from 'apollo-server';
 import 'apollo-cache-control';
 import { environment } from './environment';
 import { filterByRelationTypes } from './parsers/entities';
-import { ticketXML } from './sources/ticket';
 import { audioFileExtensions, splitFilenameAndExtension, subtitleFileExtensions } from './common';
-
+import { AudioMIME, checkEnumOnType, MIMETYPES, VideoMIME } from './sources/enum';
 export const resolvers: Resolvers<Context> = {
   Query: {
     PrintBoxTicket: (_source, { code }, { dataSources }) => {
@@ -312,24 +312,31 @@ export const resolvers: Resolvers<Context> = {
   },
   MediaFile: {
     mediainfo: async (parent, _args, { dataSources }) => {
-
       let _mediainfo: MediaInfo;
       const filename = splitFilenameAndExtension(parent.filename as string)
-      console.log('---------------')
-      console.log('_id:', parent._id)
-      console.log('ORIGINAL filename:', parent.filename)
-      console.log('filename:', filename)
-      console.log('original_file_location:', parent.original_file_location)
-      if (audioFileExtensions.includes(filename.extension) || subtitleFileExtensions.includes(filename.extension) ) {
+      if (audioFileExtensions.includes(filename.extension) || subtitleFileExtensions.includes(filename.extension)) {
         _mediainfo = { width: '0', height: '0' } as MediaInfo;
       } else {
         _mediainfo = await dataSources.IiifAPI.getInfo(
           parent.filename ? parent.filename : ''
         );
       }
-      console.log('END GET MEDIAINFO---------------')
       return _mediainfo;
     },
+    mediatype: async (parent, _args, { dataSources }) => {
+      let mimetype = { type: '', mime: undefined } as any
+      if (parent.mimetype) {
+        mimetype.type = parent.mimetype
+        for (let index = 0;index < Object.values(MIMETYPES).length;index++) {
+          if (Object.values(MIMETYPES)[index] === parent.mimetype) {
+            mimetype.mime = Object.keys(MIMETYPES)[index]
+            checkEnumOnType(mimetype.type, AudioMIME) ? mimetype.audio = true : mimetype.audio = false
+            checkEnumOnType(mimetype.type, VideoMIME) ? mimetype.video = true : mimetype.video = false
+          }
+        }
+      }
+      return mimetype as MimeType
+    }
   },
   Metadata: {
     nestedMetaData: async (parent, _args, { dataSources }) => {

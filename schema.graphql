@@ -1,5 +1,15 @@
 scalar Void
 
+enum MIME {
+  AUDIOMPEG
+  IMGJPG
+  IMGTIFF
+  IMGPNG
+  VIDEOMP4
+  VIDEOWAV
+  TEXTPLAIN
+}
+
 enum MetaKey {
   title
   type
@@ -132,6 +142,14 @@ type MediaFileMetadata {
   value: String
 }
 
+type MimeType {
+  type: String
+  mime: MIME
+  audio: Boolean,
+  video: Boolean
+  image: Boolean
+}
+
 type MediaFile {
   _id: String!
   original_file_location: String
@@ -140,6 +158,8 @@ type MediaFile {
   entities: [String]
   mediainfo: MediaInfo
   metadata: [MediaFileMetadata]
+  mediatype: MimeType
+  mimetype: String
 }
 
 type Position {
