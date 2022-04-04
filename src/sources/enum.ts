@@ -35,6 +35,17 @@ export const checkEnumOnType = (_type: string, _enum: typeof AudioMIME | typeof 
   return isOfTypeEnum
 }
 
+export const getFileType = (_mimetype: string) => {
+  let type = null
+  const filteredType = Object.values(MIMETYPES).filter(type => type === _mimetype)
+  if (filteredType[0]) {
+    checkEnumOnType(_mimetype, AudioMIME) ? type = 'audio' : type
+    checkEnumOnType(_mimetype, VideoMIME) ? type = 'video' : type
+    checkEnumOnType(_mimetype, ImageMIME) ? type = 'image' : type
+  }
+  return type
+}
+
 // import { GraphQLEnumType } from 'graphql'
 
 // export const AudioMimeType = new GraphQLEnumType({

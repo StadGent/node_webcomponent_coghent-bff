@@ -20,8 +20,8 @@ import { AuthenticationError } from 'apollo-server';
 import 'apollo-cache-control';
 import { environment } from './environment';
 import { filterByRelationTypes } from './parsers/entities';
-import { audioFileExtensions, splitFilenameAndExtension, subtitleFileExtensions } from './common';
-import { AudioMIME, checkEnumOnType, MIMETYPES, VideoMIME } from './sources/enum';
+import { splitFilenameAndExtension, subtitleFileExtensions } from './common';
+import { AudioMIME, checkEnumOnType, getFileType, MIMETYPES, VideoMIME } from './sources/enum';
 export const resolvers: Resolvers<Context> = {
   Query: {
     PrintBoxTicket: (_source, { code }, { dataSources }) => {
@@ -245,7 +245,7 @@ export const resolvers: Resolvers<Context> = {
         );
         if (mediafile.original_file_location) {
           const filename = splitFilenameAndExtension(mediafile.original_file_location)
-          if (audioFileExtensions.includes(filename.extension)) {
+          if (mediafile.mimetype && getFileType(mediafile.mimetype as string) === 'audio') {
             _relation['audioFile'] = mediafile.original_file_location;
           }
           if (subtitleFileExtensions.includes(filename.extension)) {
@@ -314,7 +314,7 @@ export const resolvers: Resolvers<Context> = {
     mediainfo: async (parent, _args, { dataSources }) => {
       let _mediainfo: MediaInfo;
       const filename = splitFilenameAndExtension(parent.filename as string)
-      if (audioFileExtensions.includes(filename.extension) || subtitleFileExtensions.includes(filename.extension)) {
+      if (parent.mimetype && getFileType(parent.mimetype as string) === 'audio' || subtitleFileExtensions.includes(filename.extension)) {
         _mediainfo = { width: '0', height: '0' } as MediaInfo;
       } else {
         _mediainfo = await dataSources.IiifAPI.getInfo(
