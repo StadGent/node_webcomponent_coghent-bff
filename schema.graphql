@@ -130,6 +130,8 @@ type Entity {
   primary_mediafile: String
   primary_mediafile_info: MediaInfo
   primary_mediafile_location: String
+  primary_width: String
+  primary_height: String
 }
 
 type MediaInfo {
@@ -160,6 +162,8 @@ type MediaFile {
   metadata: [MediaFileMetadata]
   mediatype: MimeType
   mimetype: String
+  img_width: String
+  img_height: String
 }
 
 type Position {

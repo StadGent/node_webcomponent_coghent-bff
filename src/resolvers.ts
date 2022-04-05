@@ -163,14 +163,35 @@ export const resolvers: Resolvers<Context> = {
       }
     },
     primary_mediafile_info: async (parent, _args, { dataSources }) => {
-      let _mediainfo: MediaInfo;
-      if (parent.primary_mediafile?.includes('.mp3')) {
-        _mediainfo = { width: '0', height: '0' } as MediaInfo;
+      let _mediainfo: MediaInfo = { width: '0', height: '0' };
+
+      if (parent.primary_width != null && parent.primary_height != null) {
+        console.log('Mediafile dimensions get from primary_width & height', parent.id)
+        _mediainfo.height = parent.primary_height
+        _mediainfo.width = parent.primary_width
       } else {
-        _mediainfo = await dataSources.IiifAPI.getInfo(
-          parent.primary_mediafile ? parent.primary_mediafile : ''
-        );
+
+        if (parent.primary_mediafile) {
+          _mediainfo = await dataSources.IiifAPI.getInfo(parent.primary_mediafile);
+        } else if (parent.primary_mediafile_location) {
+          const DOWNLOAD = 'download/'
+          const endIndexOfDownload = parent.primary_mediafile_location.indexOf(DOWNLOAD) + DOWNLOAD.length
+          const filename = parent.primary_mediafile_location.split('').splice(endIndexOfDownload).join('')
+          _mediainfo = await dataSources.IiifAPI.getInfo(filename);
+          console.log('Mediafile dimensions fron info.json', parent.id)
+        } else {
+          console.log('Mediafile dimensions default', parent.id)
+          _mediainfo = await dataSources.IiifAPI.getInfo('');
+        }
       }
+
+      // if (parent.primary_mediafile?.includes('.mp3')) {
+      //   _mediainfo = { width: '0', height: '0' } as MediaInfo;
+      // } else {
+      //   _mediainfo = await dataSources.IiifAPI.getInfo(
+      //     parent.primary_mediafile ? parent.primary_mediafile : ''
+      //   );
+      // }
       return _mediainfo;
     },
     metadataByLabel: async (parent, { key }, { dataSources }) => {
@@ -222,6 +243,9 @@ export const resolvers: Resolvers<Context> = {
         parent.id
       );
       components = components.map((component) => {
+        if (component.timestamp_start && component.timestamp_end && !component.timestamp_zoom && component.timestamp_start + 1 < component.timestamp_end) {
+          component["timestamp_zoom"] = component.timestamp_start + 1
+        }
         //@ts-ignore
         if (component.x) {
           component.position = {
