@@ -158,6 +158,7 @@ type MediaFile {
   original_file_location: String
   thumbnail_file_location: String
   filename: String
+  transcode_filename: String
   entities: [String]
   mediainfo: MediaInfo
   metadata: [MediaFileMetadata]
