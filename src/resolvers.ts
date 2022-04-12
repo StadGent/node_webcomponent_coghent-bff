@@ -178,9 +178,7 @@ export const resolvers: Resolvers<Context> = {
           const endIndexOfDownload = parent.primary_mediafile_location.indexOf(DOWNLOAD) + DOWNLOAD.length
           const filename = parent.primary_mediafile_location.split('').splice(endIndexOfDownload).join('')
           _mediainfo = await dataSources.IiifAPI.getInfo(filename);
-          console.log('Mediafile dimensions fron info.json', parent.id)
         } else {
-          console.log('Mediafile dimensions default', parent.id)
           _mediainfo = await dataSources.IiifAPI.getInfo('');
         }
       }
@@ -321,8 +319,7 @@ export const resolvers: Resolvers<Context> = {
       let data = await dataSources.EntitiesAPI.getRelationOfType(
         parent.id,
         RelationType.Frames
-      );
-
+      );      
       return await dataSources.EntitiesAPI.getEntitiesOfRelationIds(
         data.map((_relation) => _relation.key)
       );

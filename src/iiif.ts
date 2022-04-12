@@ -15,7 +15,6 @@ export class IiifAPI extends RESTDataSourceWithStaticToken<Context> {
     const filename = splitFilenameAndExtension(id, true)
     const data = await this.get<string>(`/iiif/3/${filename.name}${filename.extension}/info.json`)
       .then((data: any) => {
-        console.log('mediafile info get from info.json', id)
         returnValue = JSON.parse(data);
       })
       .catch((error) => {
