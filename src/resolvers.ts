@@ -22,6 +22,7 @@ import { environment } from './environment';
 import { filterByRelationTypes } from './parsers/entities';
 import { splitFilenameAndExtension, subtitleFileExtensions } from './common';
 import { AudioMIME, checkEnumOnType, getFileType, MIMETYPES, VideoMIME } from './sources/enum';
+import { setMediafileOnAsset } from './resolvers/relationMetadata';
 export const resolvers: Resolvers<Context> = {
   Query: {
     PrintBoxTicket: (_source, { code }, { dataSources }) => {
@@ -310,16 +311,17 @@ export const resolvers: Resolvers<Context> = {
       const assetRelations = data.filter(
         (_relation) => _relation.type == RelationType.Components
       );
-      const assets = await dataSources.EntitiesAPI.getEntitiesOfRelationIds(
+      let assets = await dataSources.EntitiesAPI.getEntitiesOfRelationIds(
         assetRelations.map((_relation) => _relation.key)
       );
+      assets = await setMediafileOnAsset(dataSources, assets, parent.id)
       return assets;
     },
     frames: async (parent, _args, { dataSources }) => {
       let data = await dataSources.EntitiesAPI.getRelationOfType(
         parent.id,
         RelationType.Frames
-      );      
+      );
       return await dataSources.EntitiesAPI.getEntitiesOfRelationIds(
         data.map((_relation) => _relation.key)
       );

@@ -129,6 +129,7 @@ type Entity {
   mediafiles: [MediaFile]
   primary_mediafile: String
   primary_transcode: String
+  primary_transcode_location: String
   primary_mediafile_info: MediaInfo
   primary_mediafile_location: String
   primary_width: String
@@ -159,6 +160,7 @@ type MediaFile {
   thumbnail_file_location: String
   filename: String
   transcode_filename: String
+  primary_transcode_location: String
   entities: [String]
   mediainfo: MediaInfo
   metadata: [MediaFileMetadata]
@@ -192,6 +194,8 @@ type Relation {
   last_frame: String
   seen_frames: [FrameSeen]
   total_frames: Int
+  setMediafile: Int
+  mediafile: MediaFile
 }
 
 type EntitiesResults {
