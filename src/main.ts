@@ -1,3 +1,5 @@
+require('dotenv').config();
+
 import { ApolloServer } from 'apollo-server-express';
 import { readFileSync } from 'fs';
 import express from 'express';
