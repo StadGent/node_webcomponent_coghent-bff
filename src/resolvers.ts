@@ -23,6 +23,7 @@ import { filterByRelationTypes } from './parsers/entities';
 import { splitFilenameAndExtension, subtitleFileExtensions } from './common';
 import { AudioMIME, checkEnumOnType, getFileType, MIMETYPES, VideoMIME } from './sources/enum';
 import { setMediafileOnAsset } from './resolvers/relationMetadata';
+import { sortRelationmetadataOnTimestampStart } from './parsers/story';
 export const resolvers: Resolvers<Context> = {
   Query: {
     PrintBoxTicket: (_source, { code }, { dataSources }) => {
@@ -276,7 +277,8 @@ export const resolvers: Resolvers<Context> = {
           }
         }
       }
-      return components;
+
+      return sortRelationmetadataOnTimestampStart(components)
     },
     components: async (parent, _args, { dataSources }) => {
       let data = await dataSources.EntitiesAPI.getRelations(parent.id);
