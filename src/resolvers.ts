@@ -21,7 +21,13 @@ import 'apollo-cache-control';
 import { environment } from './environment';
 import { filterByRelationTypes } from './parsers/entities';
 import { splitFilenameAndExtension, subtitleFileExtensions } from './common';
-import { AudioMIME, checkEnumOnType, getFileType, MIMETYPES, VideoMIME } from './sources/enum';
+import {
+  AudioMIME,
+  checkEnumOnType,
+  getFileType,
+  MIMETYPES,
+  VideoMIME,
+} from './sources/enum';
 import { setMediafileOnAsset } from './resolvers/relationMetadata';
 import { sortRelationmetadataOnTimestampStart } from './parsers/story';
 export const resolvers: Resolvers<Context> = {
@@ -76,7 +82,7 @@ export const resolvers: Resolvers<Context> = {
         fetchPolicy || ''
       );
     },
-    User: async (_source, { }, { dataSources, session }) => {
+    User: async (_source, {}, { dataSources, session }) => {
       if (!session.auth.accessToken) {
         throw new AuthenticationError('Not authenticated');
       }
@@ -141,6 +147,17 @@ export const resolvers: Resolvers<Context> = {
       }
       return await dataSources.BoxVisitersAPI.getRelations(code);
     },
+    DeleteBoxVisiterRelation: async (
+      _source,
+      { code, relationId },
+      { dataSources }
+    ) => {
+      const relations = await dataSources.BoxVisitersAPI.deleteRelation(
+        code,
+        relationId
+      );
+      return relations;
+    },
   },
   BoxVisiter: {
     async relations(parent, _args, { dataSources }) {
@@ -168,17 +185,26 @@ export const resolvers: Resolvers<Context> = {
       let _mediainfo: MediaInfo = { width: '0', height: '0' };
 
       if (parent.primary_width != null && parent.primary_height != null) {
-        console.log('Mediafile dimensions get from primary_width & height', parent.id)
-        _mediainfo.height = parent.primary_height
-        _mediainfo.width = parent.primary_width
+        console.log(
+          'Mediafile dimensions get from primary_width & height',
+          parent.id
+        );
+        _mediainfo.height = parent.primary_height;
+        _mediainfo.width = parent.primary_width;
       } else {
-
         if (parent.primary_mediafile) {
-          _mediainfo = await dataSources.IiifAPI.getInfo(parent.primary_mediafile);
+          _mediainfo = await dataSources.IiifAPI.getInfo(
+            parent.primary_mediafile
+          );
         } else if (parent.primary_mediafile_location) {
-          const DOWNLOAD = 'download/'
-          const endIndexOfDownload = parent.primary_mediafile_location.indexOf(DOWNLOAD) + DOWNLOAD.length
-          const filename = parent.primary_mediafile_location.split('').splice(endIndexOfDownload).join('')
+          const DOWNLOAD = 'download/';
+          const endIndexOfDownload =
+            parent.primary_mediafile_location.indexOf(DOWNLOAD) +
+            DOWNLOAD.length;
+          const filename = parent.primary_mediafile_location
+            .split('')
+            .splice(endIndexOfDownload)
+            .join('');
           _mediainfo = await dataSources.IiifAPI.getInfo(filename);
         } else {
           _mediainfo = await dataSources.IiifAPI.getInfo('');
@@ -243,8 +269,13 @@ export const resolvers: Resolvers<Context> = {
         parent.id
       );
       components = components.map((component) => {
-        if (component.timestamp_start && component.timestamp_end && !component.timestamp_zoom && component.timestamp_start + 1 < component.timestamp_end) {
-          component["timestamp_zoom"] = component.timestamp_start + 1
+        if (
+          component.timestamp_start &&
+          component.timestamp_end &&
+          !component.timestamp_zoom &&
+          component.timestamp_start + 1 < component.timestamp_end
+        ) {
+          component['timestamp_zoom'] = component.timestamp_start + 1;
         }
         //@ts-ignore
         if (component.x) {
@@ -268,8 +299,13 @@ export const resolvers: Resolvers<Context> = {
           _relation.key.replace('mediafiles/', '')
         );
         if (mediafile.original_file_location) {
-          const filename = splitFilenameAndExtension(mediafile.original_file_location)
-          if (mediafile.mimetype && getFileType(mediafile.mimetype as string) === 'audio') {
+          const filename = splitFilenameAndExtension(
+            mediafile.original_file_location
+          );
+          if (
+            mediafile.mimetype &&
+            getFileType(mediafile.mimetype as string) === 'audio'
+          ) {
             _relation['audioFile'] = mediafile.original_file_location;
           }
           if (subtitleFileExtensions.includes(filename.extension)) {
@@ -278,7 +314,7 @@ export const resolvers: Resolvers<Context> = {
         }
       }
 
-      return sortRelationmetadataOnTimestampStart(components)
+      return sortRelationmetadataOnTimestampStart(components);
     },
     components: async (parent, _args, { dataSources }) => {
       let data = await dataSources.EntitiesAPI.getRelations(parent.id);
@@ -316,7 +352,7 @@ export const resolvers: Resolvers<Context> = {
       let assets = await dataSources.EntitiesAPI.getEntitiesOfRelationIds(
         assetRelations.map((_relation) => _relation.key)
       );
-      assets = await setMediafileOnAsset(dataSources, assets, parent.id)
+      assets = await setMediafileOnAsset(dataSources, assets, parent.id);
       return assets;
     },
     frames: async (parent, _args, { dataSources }) => {
@@ -338,8 +374,12 @@ export const resolvers: Resolvers<Context> = {
   MediaFile: {
     mediainfo: async (parent, _args, { dataSources }) => {
       let _mediainfo: MediaInfo;
-      const filename = splitFilenameAndExtension(parent.filename as string)
-      if (parent.mimetype && getFileType(parent.mimetype as string) === 'audio' || subtitleFileExtensions.includes(filename.extension)) {
+      const filename = splitFilenameAndExtension(parent.filename as string);
+      if (
+        (parent.mimetype &&
+          getFileType(parent.mimetype as string) === 'audio') ||
+        subtitleFileExtensions.includes(filename.extension)
+      ) {
         _mediainfo = { width: '0', height: '0' } as MediaInfo;
       } else {
         _mediainfo = await dataSources.IiifAPI.getInfo(
@@ -349,19 +389,23 @@ export const resolvers: Resolvers<Context> = {
       return _mediainfo;
     },
     mediatype: async (parent, _args, { dataSources }) => {
-      let mimetype = { type: '', mime: undefined } as any
+      let mimetype = { type: '', mime: undefined } as any;
       if (parent.mimetype) {
-        mimetype.type = parent.mimetype
-        for (let index = 0;index < Object.values(MIMETYPES).length;index++) {
+        mimetype.type = parent.mimetype;
+        for (let index = 0; index < Object.values(MIMETYPES).length; index++) {
           if (Object.values(MIMETYPES)[index] === parent.mimetype) {
-            mimetype.mime = Object.keys(MIMETYPES)[index]
-            checkEnumOnType(mimetype.type, AudioMIME) ? mimetype.audio = true : mimetype.audio = false
-            checkEnumOnType(mimetype.type, VideoMIME) ? mimetype.video = true : mimetype.video = false
+            mimetype.mime = Object.keys(MIMETYPES)[index];
+            checkEnumOnType(mimetype.type, AudioMIME)
+              ? (mimetype.audio = true)
+              : (mimetype.audio = false);
+            checkEnumOnType(mimetype.type, VideoMIME)
+              ? (mimetype.video = true)
+              : (mimetype.video = false);
           }
         }
       }
-      return mimetype as MimeType
-    }
+      return mimetype as MimeType;
+    },
   },
   Metadata: {
     nestedMetaData: async (parent, _args, { dataSources }) => {

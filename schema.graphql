@@ -281,6 +281,7 @@ type Mutation {
   AddStoryToBoxVisiter(code: String!, storyId: String!): BoxVisiter
   AddFrameToStoryBoxVisiter(code: String!, frameInput: FrameInput!): BoxVisiter
   addTouchTableTimeToBoxVisiter(code: String!, time: String!): BoxVisiter!
+  DeleteBoxVisiterRelation(code: String!, relationId: String!): [Relation]!
   AddAssetToBoxVisiter(
     code: String!
     assetId: String!
