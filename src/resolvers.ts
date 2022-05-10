@@ -27,7 +27,8 @@ import {
   getFileType,
   MIMETYPES,
   VideoMIME,
-  PDFMIME
+  PDFMIME,
+  ImageMIME,
 } from './sources/enum';
 import { setMediafileOnAsset } from './resolvers/relationMetadata';
 import { sortRelationmetadataOnTimestampStart } from './parsers/story';
@@ -405,6 +406,9 @@ export const resolvers: Resolvers<Context> = {
             checkEnumOnType(mimetype.type, PDFMIME)
               ? (mimetype.pdf = true)
               : (mimetype.pdf = false);
+            checkEnumOnType(mimetype.type, ImageMIME)
+              ? (mimetype.image = true)
+              : (mimetype.image = false);
           }
         }
       }
