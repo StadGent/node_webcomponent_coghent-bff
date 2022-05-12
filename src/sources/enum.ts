@@ -11,7 +11,6 @@ export enum AudioMIME {
   AUDIOMP3 = 'audio/mp3',
   AUDIOAAC = 'audio/aac',
   AUDIOOGG = 'audio/ogg',
-  AUDIOOCTET = 'audio/octet-stream',
   AUDIOOPUS = 'audio/opus',
   AUDIOWAV = 'audio/wav',
   AUDIOXWAV = 'audio/x-wav',

@@ -5,7 +5,6 @@ enum MIME {
   AUDIOMP3
   AUDIOAAC
   AUDIOOGG
-  AUDIOOCTET
   AUDIOOPUS
   AUDIOWAV
   AUDIOXWAV
@@ -293,8 +292,11 @@ type Mutation {
   replaceMetadata(id: String!, metadata: [MetadataInput!]!): [Metadata!]!
   AddStoryToBoxVisiter(code: String!, storyId: String!): BoxVisiter
   AddFrameToStoryBoxVisiter(code: String!, frameInput: FrameInput!): BoxVisiter
-  addTouchTableTimeToBoxVisiter(code: String!, time: String!): BoxVisiter!
   DeleteBoxVisiterRelation(code: String!, relationId: String!): [Relation]!
+  UpdateBoxVisiterTouchtableTime(
+    code: String!
+    touchTableTime: String!
+  ): BoxVisiter
   AddAssetToBoxVisiter(
     code: String!
     assetId: String!
