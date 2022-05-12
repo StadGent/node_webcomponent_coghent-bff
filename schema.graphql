@@ -8,6 +8,7 @@ enum MIME {
   AUDIOOCTET
   AUDIOOPUS
   AUDIOWAV
+  AUDIOXWAV
   IMGJPG
   IMGJPEG
   IMGTIFF
@@ -17,6 +18,7 @@ enum MIME {
   IMGWEBP
   VIDEOMP4
   VIDEOWAV
+  VIDEOMOV
   TEXTPLAIN
   APPLICATIONPDF
 }
@@ -130,7 +132,7 @@ type Entity {
   metadataCollection(key: [MetaKey], label: [String]): [MetadataCollection]
   title: [Metadata]!
   scopeNote: [Metadata]!
-  collections: [Relation ]!
+  collections: [Relation]!
   relations: [Relation]
   relationMetadata: [Relation]
   components: [Entity]
@@ -275,7 +277,14 @@ type Query {
   CreateBoxVisiter(storyId: String!): BoxVisiter
   Stories: EntitiesResults
   Entity(id: String!): Entity
-  Entities(limit: Int, skip: Int, searchValue: SearchFilter!, fetchPolicy: String, randomization: Boolean, seed: String): EntitiesResults
+  Entities(
+    limit: Int
+    skip: Int
+    searchValue: SearchFilter!
+    fetchPolicy: String
+    randomization: Boolean
+    seed: String
+  ): EntitiesResults
   Relations(searchValue: SearchFilter!, fetchPolicy: String): RelationsResults
   User: User
 }
@@ -286,5 +295,9 @@ type Mutation {
   AddFrameToStoryBoxVisiter(code: String!, frameInput: FrameInput!): BoxVisiter
   addTouchTableTimeToBoxVisiter(code: String!, time: String!): BoxVisiter!
   DeleteBoxVisiterRelation(code: String!, relationId: String!): [Relation]!
-  AddAssetToBoxVisiter(code: String!, assetId: String!, type: RelationType!): [Relation]!
+  AddAssetToBoxVisiter(
+    code: String!
+    assetId: String!
+    type: RelationType!
+  ): [Relation]!
 }
