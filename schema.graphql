@@ -239,6 +239,7 @@ input SearchFilter {
   seed: String
   has_mediafile: Boolean
   skip_relations: Boolean
+  and_filter: Boolean
 }
 
 type User {
@@ -283,6 +284,7 @@ type Query {
     fetchPolicy: String
     randomization: Boolean
     seed: String
+    and_filter: Boolean
   ): EntitiesResults
   Relations(searchValue: SearchFilter!, fetchPolicy: String): RelationsResults
   User: User
