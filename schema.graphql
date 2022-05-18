@@ -286,6 +286,7 @@ type Query {
   ): EntitiesResults
   Relations(searchValue: SearchFilter!, fetchPolicy: String): RelationsResults
   User: User
+  RelationsAsEntities(id: String!): [Entity]
 }
 
 type Mutation {

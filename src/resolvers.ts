@@ -32,6 +32,7 @@ import {
 } from './sources/enum';
 import { setMediafileOnAsset } from './resolvers/relationMetadata';
 import { sortRelationmetadataOnTimestampStart } from './parsers/story';
+import { getBasketEntityRelationsAsEntities } from './resolvers/entities';
 export const resolvers: Resolvers<Context> = {
   Query: {
     PrintBoxTicket: (_source, { code }, { dataSources }) => {
@@ -90,6 +91,9 @@ export const resolvers: Resolvers<Context> = {
       }
       return dataSources.UserAPI.getMe(session.auth.accessToken);
     },
+    RelationsAsEntities: async (_source, { id }, { dataSources }) => {
+      return await getBasketEntityRelationsAsEntities(id, dataSources)
+    },
   },
   Mutation: {
     replaceMetadata: async (_source, { id, metadata }, { dataSources }) => {
@@ -138,7 +142,7 @@ export const resolvers: Resolvers<Context> = {
     AddAssetToBoxVisiter: async (
       _source,
       { code, assetId, type },
-      { dataSources }
+      { dataSources, session }
     ) => {
       if (type == RelationType.Visited || type == RelationType.InBasket) {
         await dataSources.BoxVisitersAPI.AddAssetToRelation(
@@ -187,10 +191,6 @@ export const resolvers: Resolvers<Context> = {
       let _mediainfo: MediaInfo = { width: '0', height: '0' };
 
       if (parent.primary_width != null && parent.primary_height != null) {
-        console.log(
-          'Mediafile dimensions get from primary_width & height',
-          parent.id
-        );
         _mediainfo.height = parent.primary_height;
         _mediainfo.width = parent.primary_width;
       } else {
@@ -394,7 +394,7 @@ export const resolvers: Resolvers<Context> = {
       let mimetype = { type: '', mime: undefined } as any;
       if (parent.mimetype) {
         mimetype.type = parent.mimetype;
-        for (let index = 0; index < Object.values(MIMETYPES).length; index++) {
+        for (let index = 0;index < Object.values(MIMETYPES).length;index++) {
           if (Object.values(MIMETYPES)[index] === parent.mimetype) {
             mimetype.mime = Object.keys(MIMETYPES)[index];
             checkEnumOnType(mimetype.type, AudioMIME)
