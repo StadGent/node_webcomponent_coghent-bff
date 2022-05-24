@@ -5,6 +5,7 @@ import {
   FrameInput,
   FrameSeen,
   Relation,
+  RelationInput,
   RelationType,
   StoryInput,
 } from './type-defs';
@@ -111,6 +112,22 @@ export class BoxVisitersAPI extends RESTDataSourceWithStaticToken<Context> {
     }
     return relations;
   }
+
+  // async deleteRelation(
+  //   _code: string,
+  //   _relationsToDelete: RelationInput[]
+  // ): Promise<Relation[]> {
+  //   let relations: Relation[];
+  //   try {
+  //     relations = await this.delete(`${this.BOX_VISITS}/${_code}/relations`, {
+  //       relations: _relationsToDelete,
+  //     });
+  //   } catch (error) {
+  //     console.log(error);
+  //     throw new PersistedQueryNotFoundError();
+  //   }
+  //   return relations;
+  // }
 
   // async addTouchtableTimeToBoxVisiter(_code: string, _time: string): Promise<BoxVisiter | null>{
 

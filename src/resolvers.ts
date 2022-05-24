@@ -92,7 +92,7 @@ export const resolvers: Resolvers<Context> = {
       return dataSources.UserAPI.getMe(session.auth.accessToken);
     },
     RelationsAsEntities: async (_source, { id }, { dataSources }) => {
-      return await getBasketEntityRelationsAsEntities(id, dataSources)
+      return await getBasketEntityRelationsAsEntities(id, dataSources);
     },
   },
   Mutation: {
@@ -165,6 +165,18 @@ export const resolvers: Resolvers<Context> = {
       return relations;
     },
   },
+  //   DeleteBoxVisiterRelation: async (
+  //     _source,
+  //     { code, relationsToDelete },
+  //     { dataSources }
+  //   ) => {
+  //     const relations = await dataSources.BoxVisitersAPI.deleteRelation(
+  //       code,
+  //       relationsToDelete
+  //     );
+  //     return relations;
+  //   },
+  // },
   BoxVisiter: {
     async relations(parent, _args, { dataSources }) {
       return await dataSources.BoxVisitersAPI.getRelations(parent.code);
@@ -394,7 +406,7 @@ export const resolvers: Resolvers<Context> = {
       let mimetype = { type: '', mime: undefined } as any;
       if (parent.mimetype) {
         mimetype.type = parent.mimetype;
-        for (let index = 0;index < Object.values(MIMETYPES).length;index++) {
+        for (let index = 0; index < Object.values(MIMETYPES).length; index++) {
           if (Object.values(MIMETYPES)[index] === parent.mimetype) {
             mimetype.mime = Object.keys(MIMETYPES)[index];
             checkEnumOnType(mimetype.type, AudioMIME)
