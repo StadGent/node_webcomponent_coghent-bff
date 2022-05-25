@@ -6,8 +6,11 @@
 include:
   - project: 'inuits/gitlab-ci/pipeline-templates'
     file: 'npm-pipeline.yml'
-    ref: 'v1.4.2'
-
+    ref: 'v1.4.3'
+  - project: 'customers/coghent/infra/coghent-infra-gitlab-templates'
+    file    : 'npm-pipeline-web.yml'
+    ref     : 'master'
+    
 variables:
   CUSTOMER: 'coghent'
   APPLICATION: 'coghent-bff'
