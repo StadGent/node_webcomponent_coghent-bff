@@ -1,5 +1,5 @@
 ### Development stage
-FROM node:14.17.6-alpine3.12 as development-stage
+FROM node:14-alpine as development-stage
 
 ARG NPM_AUTH_TOKEN
 
@@ -20,7 +20,7 @@ CMD npm run dev
 EXPOSE 4000
 
 ### Production stage
-FROM node:14.17.6-alpine3.12 as production-stage
+FROM node:14-alpine as production-stage
 
 ARG NPM_AUTH_TOKEN
 ENV NODE_ENV=production
