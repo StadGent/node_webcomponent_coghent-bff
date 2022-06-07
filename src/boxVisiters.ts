@@ -1,21 +1,19 @@
 import {
   BoxVisiter,
   BoxVisitersResults,
-  Entity,
   FrameInput,
   FrameSeen,
   Relation,
-  RelationInput,
   RelationType,
   StoryInput,
 } from './type-defs';
-import { RESTDataSourceWithStaticToken } from './RestDataSourceWithStaticToken';
 import { Context } from './types';
-import { environment as env } from './environment';
+import { environment as env, environment } from './environment';
 import { setIdAs_Key, setIdsAs_Key, setEntitiesIdPrefix } from './common';
 import { PersistedQueryNotFoundError } from 'apollo-server-errors';
+import { AuthRESTDataSource } from 'inuits-apollo-server-auth';
 
-export class BoxVisitersAPI extends RESTDataSourceWithStaticToken<Context> {
+export class BoxVisitersAPI extends AuthRESTDataSource<Context> {
   public baseURL = `${env.api.collectionAPIUrl}/`;
   private BOX_VISITS = 'box_visits';
 
@@ -25,12 +23,12 @@ export class BoxVisitersAPI extends RESTDataSourceWithStaticToken<Context> {
   }
 
   async getByCode(_code: string): Promise<BoxVisiter | null> {
-    let visiter = null;
+    let visiter = null
     try {
       visiter = await this.get<BoxVisiter>(`${this.BOX_VISITS}/${_code}`);
       visiter = setIdAs_Key(visiter) as BoxVisiter;
     } catch (error) {
-      console.error(`No visiter found for code: ${_code}`);
+      console.log(`No visiter found for code: ${_code}`)
     }
     return visiter;
   }

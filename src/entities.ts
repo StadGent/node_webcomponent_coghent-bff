@@ -7,17 +7,16 @@ import {
   EntitiesResults,
   RelationType,
 } from './type-defs';
-import { RESTDataSourceWithStaticToken } from './RestDataSourceWithStaticToken';
 import { Context } from './types';
 import { environment as env } from './environment';
-import { setId, setIdAs_Key, setIdsAs_Key } from './common';
+import { setIdAs_Key, setIdsAs_Key } from './common';
+import { AuthRESTDataSource } from 'inuits-apollo-server-auth';
 
-export class EntitiesAPI extends RESTDataSourceWithStaticToken<Context> {
+export class EntitiesAPI extends AuthRESTDataSource<Context> {
   public baseURL = `${env.api.collectionAPIUrl}/`;
 
   async getBoxEntities(): Promise<EntitiesResults> {
     let data = await this.get(`entities?type=box`);
-    
     data = setIdsAs_Key(data)
     return data;
   }
@@ -95,25 +94,25 @@ export class EntitiesAPI extends RESTDataSourceWithStaticToken<Context> {
     return await this.put(`entities/${id}/metadata`, metadata);
   }
 
-  async getRelationOfType(_id: string, _type: RelationType): Promise<Array<Relation>>{
+  async getRelationOfType(_id: string, _type: RelationType): Promise<Array<Relation>> {
     const relations = await this.getRelations(_id)
-    return relations.filter(_relation =>  _relation.type == _type)
+    return relations.filter(_relation => _relation.type == _type)
   }
 
-  async getEntitiesOfRelationIds(_relationIds: Array<string>): Promise<Array<Entity>>{
+  async getEntitiesOfRelationIds(_relationIds: Array<string>): Promise<Array<Entity>> {
     const entities: Array<Entity> = []
-    if(_relationIds.length > 0){
-      for(const _id of _relationIds){
+    if (_relationIds.length > 0) {
+      for (const _id of _relationIds) {
         let id = _id
-        if(id.includes('entities/')){
-          id = id.replace('entities/','')
+        if (id.includes('entities/')) {
+          id = id.replace('entities/', '')
         }
         try {
           const entity = await this.getEntity(id)
           entities.push(entity)
         } catch (error) {
           console.error(`Couldn't find an entity with id: ${_id}`)
-        }        
+        }
       }
     }
     return entities

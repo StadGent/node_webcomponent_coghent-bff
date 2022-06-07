@@ -2,10 +2,10 @@ import { EntitiesResults, RelationsResults, SearchFilter } from './type-defs';
 import { setId } from './common';
 import { Context } from './types';
 import { environment as env } from './environment';
-import { RESTDataSourceWithStaticToken } from './RestDataSourceWithStaticToken';
+import { AuthRESTDataSource } from 'inuits-apollo-server-auth';
 
-export class SearchAPI extends RESTDataSourceWithStaticToken<Context> {
-  public baseURL = `${env.api.searchAPIUrl}/search/`;
+export class SearchAPI extends AuthRESTDataSource<Context> {
+    public baseURL = `${env.api.searchAPIUrl}/search/`;
 
   async getEntities(
     limit: number,

@@ -17,6 +17,7 @@ import { BoxVisitersAPI } from './boxVisiters';
 
 import { BaseRedisCache } from 'apollo-server-cache-redis';
 import { TicketsAPI } from './ticket';
+
 const Redis = require('ioredis');
 
 let redisCache = undefined;
@@ -31,6 +32,15 @@ if (environment.redisHost) {
   console.log('No Redis cache');
 }
 
+const app = express();
+app.use(express.json());
+app.use(
+  cors({
+    credentials: false,
+    origin: [environment.webPortal, environment.boxFrontend],
+  })
+);
+
 const apolloServer = new ApolloServer({
   typeDefs: readFileSync('./schema.graphql').toString('utf-8'),
   resolvers,
@@ -44,25 +54,11 @@ const apolloServer = new ApolloServer({
   }),
   cache: redisCache,
   context: ({ req, res }) => {
-    /*if (!req.session.auth) {
-      console.log(req.session)
-      res.status(401);
-      res.end('You must be logged in.');
-    }*/
     return { session: req.session };
   },
   introspection: environment.apollo.introspection,
   playground: environment.apollo.playground,
 });
-
-const app = express();
-app.use(express.json());
-app.use(
-  cors({
-    credentials: false,
-    origin: [environment.webPortal, environment.boxFrontend],
-  })
-);
 
 applyAuthSession(app, environment.sessionSecret);
 

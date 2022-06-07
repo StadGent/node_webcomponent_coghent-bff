@@ -142,7 +142,7 @@ export const resolvers: Resolvers<Context> = {
     AddAssetToBoxVisiter: async (
       _source,
       { code, assetId, type },
-      { dataSources, session }
+      { dataSources }
     ) => {
       if (type == RelationType.Visited || type == RelationType.InBasket) {
         await dataSources.BoxVisitersAPI.AddAssetToRelation(
