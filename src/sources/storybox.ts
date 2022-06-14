@@ -10,18 +10,22 @@ import { setId } from '../common';
 
 export class StoryBoxAPI extends AuthRESTDataSource<Context> {
   public baseURL = `${_.api.collectionAPIUrl}/`;
+  private STORY_BOX = 'story_box'
+
+  async getStorybox() {
+    const storybox = await this.get(`${this.STORY_BOX}`)
+    console.log('\n THE STORYBOX', storybox)
+    return storybox
+  }
 
   async create(_storyboxInfo: StoryboxBuild) {
-
     console.log(`\n URL `, this.baseURL);
-    // console.log(`\n SESSION`, this.context.session)
+    console.log(`\n SESSION`, this.context.session)
     console.log({ _storyboxInfo })
 
     // DEV: // TMP:
     // const user = new UserAPI().getMe(this.context.session.auth.accessToken!)
     // console.log(user)
-    // const storybox = await this.get(`story_box`)
-    // console.log('\n this one\n', storybox);
     let frame = await this.createFrame(_storyboxInfo.title ? _storyboxInfo.title : '', _storyboxInfo.description ? _storyboxInfo.description : '')
     frame = setId(frame)
     console.log(`\n => Create frame`, frame.id)
