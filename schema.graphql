@@ -273,6 +273,20 @@ type Ticket {
   body: String!
 }
 
+input KeyValuePair {
+  key: String
+  value: String
+}
+
+input StoryboxBuild{
+  frameId: String
+  title: String
+  language: String
+  description: String
+  assets: [String]
+  assetTimings: [KeyValuePair]
+}
+
 type Query {
   PrintBoxTicket(code: String!): Ticket!
   ActiveBox: EntitiesResults!
@@ -294,6 +308,7 @@ type Query {
   Relations(searchValue: SearchFilter!, fetchPolicy: String): RelationsResults
   User: User
   RelationsAsEntities(id: String!): [Entity]
+  CreateStorybox(storyboxInfo: StoryboxBuild!): Entity
 }
 
 type Mutation {

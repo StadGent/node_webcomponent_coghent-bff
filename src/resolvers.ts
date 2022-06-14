@@ -85,7 +85,7 @@ export const resolvers: Resolvers<Context> = {
         fetchPolicy || ''
       );
     },
-    User: async (_source, {}, { dataSources, session }) => {
+    User: async (_source, { }, { dataSources, session }) => {
       if (!session.auth.accessToken) {
         throw new AuthenticationError('Not authenticated');
       }
@@ -94,6 +94,11 @@ export const resolvers: Resolvers<Context> = {
     RelationsAsEntities: async (_source, { id }, { dataSources }) => {
       return await getBasketEntityRelationsAsEntities(id, dataSources);
     },
+    CreateStorybox: async (_source, { storyboxInfo }, { dataSources }) => {
+      console.log(storyboxInfo)
+      dataSources.StoryBoxAPI.createNewFrame(storyboxInfo)
+      return {} as Entity
+    }
   },
   Mutation: {
     replaceMetadata: async (_source, { id, metadata }, { dataSources }) => {
@@ -406,7 +411,7 @@ export const resolvers: Resolvers<Context> = {
       let mimetype = { type: '', mime: undefined } as any;
       if (parent.mimetype) {
         mimetype.type = parent.mimetype;
-        for (let index = 0; index < Object.values(MIMETYPES).length; index++) {
+        for (let index = 0;index < Object.values(MIMETYPES).length;index++) {
           if (Object.values(MIMETYPES)[index] === parent.mimetype) {
             mimetype.mime = Object.keys(MIMETYPES)[index];
             checkEnumOnType(mimetype.type, AudioMIME)
