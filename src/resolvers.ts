@@ -95,8 +95,8 @@ export const resolvers: Resolvers<Context> = {
       return await getBasketEntityRelationsAsEntities(id, dataSources);
     },
     CreateStorybox: async (_source, { storyboxInfo }, { dataSources }) => {
-      const created = dataSources.StoryBoxAPI.createNewFrame(storyboxInfo)
-      return {} as Entity
+      const created = await dataSources.StoryBoxAPI.create(storyboxInfo)
+      return null
     }
   },
   Mutation: {

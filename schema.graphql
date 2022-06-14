@@ -42,6 +42,12 @@ enum MetaKey {
   scopeNote
 }
 
+enum EntityTypes {
+  frame
+  story
+  box_visit
+}
+
 enum RelationType {
   authoredBy
   isIn

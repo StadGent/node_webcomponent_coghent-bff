@@ -1,5 +1,5 @@
 import { setEntitiesIdPrefix } from '../common';
-import { Entity } from '../type-defs';
+import { Entity, Relation, RelationType } from '../type-defs';
 import { DataSources } from '../types';
 
 export const setMediafileOnAsset = async (_dataSources: DataSources, _assets: Array<Entity>, _frameId: string) => {
@@ -25,4 +25,19 @@ export const setMediafileOnAsset = async (_dataSources: DataSources, _assets: Ar
     }
   }
   return _assets
+}
+
+export const createRelationOfId = (_entityId: string, _relationType: RelationType) => {
+  const relation = {
+    key: `entities/${_entityId}`,
+    type: _relationType,
+  } as Relation
+  return relation
+}
+
+export const addTimingsToRelation = (_relation: Relation, _timings: Record<'start' | 'zoom' | 'end', number>) => {
+  _relation.timestamp_start = _timings['start']
+  _relation.timestamp_zoom = _timings['zoom']
+  _relation.timestamp_end = _timings['end']
+  return _relation
 }
