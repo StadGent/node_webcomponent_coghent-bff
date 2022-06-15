@@ -4,8 +4,8 @@ import { Relation, RelationType, StoryboxBuild } from '../type-defs';
 export const createTimingForAsset = (_startTime: number, _duration: number) => {
   let timing: Record<'start' | 'zoom' | 'end', number> = {
     "start": _startTime,
-    "zoom": _startTime + _duration,
-    "end": _startTime + _duration + 1,
+    "zoom": _startTime + 1,
+    "end": _startTime + 1 + _duration,
   };
   return timing
 }
