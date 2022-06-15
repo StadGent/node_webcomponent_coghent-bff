@@ -85,7 +85,7 @@ export const resolvers: Resolvers<Context> = {
         fetchPolicy || ''
       );
     },
-    User: async (_source, { }, { dataSources, session }) => {
+    User: async (_source, {}, { dataSources, session }) => {
       if (!session.auth.accessToken) {
         throw new AuthenticationError('Not authenticated');
       }
@@ -95,20 +95,20 @@ export const resolvers: Resolvers<Context> = {
       return await getBasketEntityRelationsAsEntities(id, dataSources);
     },
     CreateStorybox: async (_source, { storyboxInfo }, { dataSources }) => {
-      let frame: Entity | null = null
+      let frame: Entity | null = null;
       if (storyboxInfo) {
         if (storyboxInfo.frameId === null) {
-          frame = await dataSources.StoryBoxAPI.create(storyboxInfo)
+          frame = await dataSources.StoryBoxAPI.create(storyboxInfo);
         } else {
-          frame = await dataSources.StoryBoxAPI.update(storyboxInfo)
+          frame = await dataSources.StoryBoxAPI.update(storyboxInfo);
         }
       }
-      return frame
+      return frame;
     },
     Storybox: async (_source, _args, { dataSources }) => {
-      const userStorybox = await dataSources.StoryBoxAPI.userStorybox()
-      return userStorybox
-    }
+      const userStorybox = await dataSources.StoryBoxAPI.userStorybox();
+      return userStorybox;
+    },
   },
   Mutation: {
     replaceMetadata: async (_source, { id, metadata }, { dataSources }) => {
@@ -287,7 +287,6 @@ export const resolvers: Resolvers<Context> = {
           }
         }
       });
-
       return data;
     },
     relations(parent, _args, { dataSources }) {
@@ -421,7 +420,7 @@ export const resolvers: Resolvers<Context> = {
       let mimetype = { type: '', mime: undefined } as any;
       if (parent.mimetype) {
         mimetype.type = parent.mimetype;
-        for (let index = 0;index < Object.values(MIMETYPES).length;index++) {
+        for (let index = 0; index < Object.values(MIMETYPES).length; index++) {
           if (Object.values(MIMETYPES)[index] === parent.mimetype) {
             mimetype.mime = Object.keys(MIMETYPES)[index];
             checkEnumOnType(mimetype.type, AudioMIME)
@@ -445,9 +444,10 @@ export const resolvers: Resolvers<Context> = {
   Metadata: {
     nestedMetaData: async (parent, _args, { dataSources }) => {
       if (parent.type && parent.type !== 'isIn') {
-        return await dataSources.EntitiesAPI.getEntity(
+        const response = await dataSources.EntitiesAPI.getEntity(
           parent.key.replace('entities/', '')
         );
+        return response;
       }
       return null;
     },
