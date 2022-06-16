@@ -1,37 +1,34 @@
 import { environment as _ } from '../environment';
 import { EntitiesAPI } from '../entities';
-import { Entity, EntityTypes, Relation, RelationType, StoryboxBuild } from '../type-defs';
+import { EntitiesResults, Entity, EntityTypes, Relation, StoryboxBuild } from '../type-defs';
 import { AuthRESTDataSource } from 'inuits-apollo-server-auth';
 import { Context } from '../types';
-import { UserAPI } from '../user';
 import { createEntityBody } from '../parsers/entities';
 import { createRelationsOfStorybox } from '../parsers/storybox';
-import { setId } from '../common';
+import { setId, setIdsAs_Key } from '../common';
 
 export class StoryBoxAPI extends AuthRESTDataSource<Context> {
   public baseURL = `${_.api.collectionAPIUrl}/`;
   private STORY_BOX = 'story_box'
+  private entities = new EntitiesAPI()
 
-  async getStorybox() {
-    const storybox = await this.get(`${this.STORY_BOX}`)
-    console.log('\n THE STORYBOX', storybox)
+  async userStorybox(): Promise<EntitiesResults> {
+    // console.log(`\n CONTEXT`, this.context.session) // DEV:
+
+    let storybox = await this.get(`${this.STORY_BOX}`)
+    storybox = setIdsAs_Key(storybox) as EntitiesResults
     return storybox
   }
 
-  async create(_storyboxInfo: StoryboxBuild) {
-    console.log(`\n URL `, this.baseURL);
-    console.log(`\n SESSION`, this.context.session)
-    console.log({ _storyboxInfo })
+  async create(_storyboxInfo: StoryboxBuild): Promise<Entity> {
+    console.log(`\n CONTEXT`, this.context.session)
 
-    // DEV: // TMP:
-    // const user = new UserAPI().getMe(this.context.session.auth.accessToken!)
-    // console.log(user)
     let frame = await this.createFrame(_storyboxInfo.title ? _storyboxInfo.title : '', _storyboxInfo.description ? _storyboxInfo.description : '')
     frame = setId(frame)
-    console.log(`\n => Create frame`, frame.id)
+    console.log(`\n => Created frame id`, frame.id)
+    console.log(`\n => Created frame key`, frame._key)
     const relations = createRelationsOfStorybox(_storyboxInfo)
-    const frameRelations = await this.addRelations(frame.id, relations)
-    console.log(`\n => Created relations`, frameRelations)
+    await this.addRelations(frame.id, relations)
     return frame
   }
 
@@ -46,4 +43,10 @@ export class StoryBoxAPI extends AuthRESTDataSource<Context> {
     return newRelations
   }
 
+  async update(_storyboxInfo: StoryboxBuild): Promise<Entity> {
+    const originalFrame = await this.entities.getEntity(_storyboxInfo.frameId!)
+    console.log(`\n ORIGNAL FRAME`, originalFrame)
+    console.log(`\n ORIGNAL FRAME metadata`, originalFrame.metadata)
+    return originalFrame as Entity
+  }
 }

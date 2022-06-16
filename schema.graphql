@@ -315,6 +315,7 @@ type Query {
   User: User
   RelationsAsEntities(id: String!): [Entity]
   CreateStorybox(storyboxInfo: StoryboxBuild!): Entity
+  Storybox: EntitiesResults
 }
 
 type Mutation {
