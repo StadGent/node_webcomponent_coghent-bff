@@ -14,6 +14,7 @@ import {
   StoryInput,
   Ticket,
   MimeType,
+  StoryboxBuild,
 } from './type-defs';
 import { Context, DataSources } from './types';
 import { AuthenticationError } from 'apollo-server';
@@ -85,7 +86,7 @@ export const resolvers: Resolvers<Context> = {
         fetchPolicy || ''
       );
     },
-    User: async (_source, {}, { dataSources, session }) => {
+    User: async (_source, { }, { dataSources, session }) => {
       if (!session.auth.accessToken) {
         throw new AuthenticationError('Not authenticated');
       }
@@ -98,12 +99,15 @@ export const resolvers: Resolvers<Context> = {
       return await dataSources.StoryBoxAPI.linkStorybox(code);
     },
     CreateStorybox: async (_source, { storyboxInfo }, { dataSources }) => {
-      let frame: Entity | null = null;
-      if (storyboxInfo) {
+      console.log(`\n\n STORYBOX FRONTEND`, storyboxInfo);
+      let frame: Entity | null = null
+      if (storyboxInfo && Object.keys(storyboxInfo).length > 0) {
         if (storyboxInfo.frameId === null) {
-          frame = await dataSources.StoryBoxAPI.create(storyboxInfo);
+          console.log(`\n CREATE NEW STORYBOX \n`);
+          frame = await dataSources.StoryBoxAPI.create(storyboxInfo as StoryboxBuild)
         } else {
-          frame = await dataSources.StoryBoxAPI.update(storyboxInfo);
+          console.log(`\n UPDATE STORYBOX \n`);
+          frame = await dataSources.StoryBoxAPI.update(storyboxInfo as StoryboxBuild)
         }
       }
       return frame;
@@ -423,7 +427,7 @@ export const resolvers: Resolvers<Context> = {
       let mimetype = { type: '', mime: undefined } as any;
       if (parent.mimetype) {
         mimetype.type = parent.mimetype;
-        for (let index = 0; index < Object.values(MIMETYPES).length; index++) {
+        for (let index = 0;index < Object.values(MIMETYPES).length;index++) {
           if (Object.values(MIMETYPES)[index] === parent.mimetype) {
             mimetype.mime = Object.keys(MIMETYPES)[index];
             checkEnumOnType(mimetype.type, AudioMIME)

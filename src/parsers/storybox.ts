@@ -1,5 +1,5 @@
 import { addTimingsToRelation, createRelationOfId } from '../resolvers/relationMetadata';
-import { Relation, RelationType, StoryboxBuild } from '../type-defs';
+import { Metadata, MetaKey, Relation, RelationType, StoryboxBuild } from '../type-defs';
 
 export const createTimingForAsset = (_startTime: number, _duration: number) => {
   let timing: Record<'start' | 'zoom' | 'end', number> = {
@@ -21,4 +21,8 @@ export const createRelationsOfStorybox = (_storyboxBuild: StoryboxBuild) => {
     time = timing.end + 1
   }
   return relations
+}
+
+export const createMetadataTypeFromData = (_type: MetaKey, _value: string) => {
+  return { key: _type, value: _value !== null ? _value : '' } as Metadata
 }

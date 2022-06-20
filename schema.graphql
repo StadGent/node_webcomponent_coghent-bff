@@ -279,18 +279,30 @@ type Ticket {
   body: String!
 }
 
-input KeyValuePair {
+input KeyValuePairInput {
+  key: String
+  value: String
+}
+type KeyValuePair {
   key: String
   value: String
 }
 
-input StoryboxBuild {
+input StoryboxBuildInput {
   frameId: String
   title: String
   language: String
   description: String
   assets: [String]
-  assetTimings: [KeyValuePair]
+  assetTimings: [KeyValuePairInput]
+}
+type StoryboxBuild {
+  frameId: String!
+  title: String
+  language: String
+  description: String
+  assets: [Entity]!
+  assetTimings: [KeyValuePair]!
 }
 
 type Query {
@@ -316,7 +328,7 @@ type Query {
   StoryBox: Entity
   RelationsAsEntities(id: String!): [Entity]
   LinkStorybox(code: Int!): Entity
-  CreateStorybox(storyboxInfo: StoryboxBuild!): Entity
+  CreateStorybox(storyboxInfo: StoryboxBuildInput!): Entity
   Storybox: EntitiesResults
 }
 

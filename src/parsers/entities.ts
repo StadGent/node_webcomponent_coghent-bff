@@ -1,4 +1,4 @@
-import { EntityTypes, Relation, RelationType } from '../type-defs';
+import { EntityTypes, Metadata, Relation, RelationType } from '../type-defs';
 
 export const filterByRelationTypes = (_relations: Array<Relation>, _types: Array<RelationType>) => {
   let relations: Array<Relation>;
@@ -33,4 +33,17 @@ export const createEntityBody = (_type: EntityTypes, _title: string, _descriptio
     "data": {}
 }`
   return body
+}
+
+export const replaceMetadata = (_metadata: Array<Metadata>, _newMetadata: Metadata) => {
+  let metadata = _metadata
+  console.log('\n ORIGINAL metadata', metadata)
+
+  for (const data of _metadata) {
+    if (data.key === _newMetadata.key) {
+      console.log(`\n THIS ITEM to remove`, data)
+      metadata.splice(metadata.indexOf(data), 1)
+      console.log('\n MANIPULATED metadata', metadata)
+    }
+  }
 }

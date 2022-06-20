@@ -117,4 +117,9 @@ export class EntitiesAPI extends AuthRESTDataSource<Context> {
     }
     return entities
   }
+
+  async replaceRelations(_entityId: string, _relations: Array<Relation>): Promise<Array<Relation>> {
+    const newRelations = await this.put(`entities/${_entityId}/relations`, _relations).catch(error => console.log(`\n\n ERROR ON REPLACE RELATIONS`, error))
+    return newRelations
+  }
 }
