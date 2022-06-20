@@ -313,7 +313,9 @@ type Query {
   ): EntitiesResults
   Relations(searchValue: SearchFilter!, fetchPolicy: String): RelationsResults
   User: User
+  StoryBox: Entity
   RelationsAsEntities(id: String!): [Entity]
+  LinkStorybox(code: Int!): Entity
   CreateStorybox(storyboxInfo: StoryboxBuild!): Entity
   Storybox: EntitiesResults
 }
