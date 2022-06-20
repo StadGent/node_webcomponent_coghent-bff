@@ -34,16 +34,3 @@ export const createEntityBody = (_type: EntityTypes, _title: string, _descriptio
 }`
   return body
 }
-
-export const replaceMetadata = (_metadata: Array<Metadata>, _newMetadata: Metadata) => {
-  let metadata = _metadata
-  console.log('\n ORIGINAL metadata', metadata)
-
-  for (const data of _metadata) {
-    if (data.key === _newMetadata.key) {
-      console.log(`\n THIS ITEM to remove`, data)
-      metadata.splice(metadata.indexOf(data), 1)
-      console.log('\n MANIPULATED metadata', metadata)
-    }
-  }
-}

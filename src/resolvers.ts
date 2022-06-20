@@ -101,7 +101,7 @@ export const resolvers: Resolvers<Context> = {
     CreateStorybox: async (_source, { storyboxInfo }, { dataSources }) => {
       console.log(`\n\n STORYBOX FRONTEND`, storyboxInfo);
       let frame: Entity | null = null
-      if (storyboxInfo && Object.keys(storyboxInfo).length > 0) {
+      if (Object.keys(storyboxInfo).length > 0) {
         if (storyboxInfo.frameId === null) {
           console.log(`\n CREATE NEW STORYBOX \n`);
           frame = await dataSources.StoryBoxAPI.create(storyboxInfo as StoryboxBuild)
