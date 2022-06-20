@@ -26,3 +26,9 @@ export const createRelationsOfStorybox = (_storyboxBuild: StoryboxBuild) => {
 export const createMetadataTypeFromData = (_type: MetaKey, _value: string) => {
   return { key: _type, value: _value !== null ? _value : '' } as Metadata
 }
+
+export const createRelationTypeFromData = (_type: RelationType, _key: string, _keyPrefix: `entities/`) => {
+  return {
+    type: _type, key: `${_keyPrefix}${_key}`
+  } as Relation
+}

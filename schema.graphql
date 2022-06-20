@@ -330,6 +330,7 @@ type Query {
   LinkStorybox(code: Int!): Entity
   CreateStorybox(storyboxInfo: StoryboxBuildInput!): Entity
   Storybox: EntitiesResults
+  AddEntityAsRelation(entityId: String!, entityRelationId: String!): [Relation]
 }
 
 type Mutation {

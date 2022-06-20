@@ -34,6 +34,7 @@ import {
 import { setMediafileOnAsset } from './resolvers/relationMetadata';
 import { sortRelationmetadataOnTimestampStart } from './parsers/story';
 import { getBasketEntityRelationsAsEntities } from './resolvers/entities';
+import { createRelationTypeFromData } from './parsers/storybox';
 export const resolvers: Resolvers<Context> = {
   Query: {
     PrintBoxTicket: (_source, { code }, { dataSources }) => {
@@ -113,8 +114,12 @@ export const resolvers: Resolvers<Context> = {
       return frame;
     },
     Storybox: async (_source, _args, { dataSources }) => {
-      const userStorybox = await dataSources.StoryBoxAPI.userStorybox();
-      return userStorybox;
+      const userStorybox = await dataSources.StoryBoxAPI.userStorybox()
+      return userStorybox
+    },
+    AddEntityAsRelation: async (_source, { entityId, entityRelationId }, { dataSources }) => {
+      const relation = createRelationTypeFromData(RelationType.Components, entityRelationId, 'entities/')
+      return await dataSources.EntitiesAPI.addRelation(entityId, relation)
     },
   },
   Mutation: {
