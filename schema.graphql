@@ -327,7 +327,7 @@ type Query {
   User: User
   StoryBox: Entity
   RelationsAsEntities(id: String!): [Entity]
-  LinkStorybox(code: Int!): Entity
+  LinkStorybox(code: String!): Entity
   CreateStorybox(storyboxInfo: StoryboxBuildInput!): Entity
   Storybox: EntitiesResults
   AddEntityAsRelation(entityId: String!, entityRelationId: String!): [Relation]
@@ -351,4 +351,5 @@ type Mutation {
     assetId: String!
     type: RelationType!
   ): [Relation]!
+  DeleteEntity(id: String!): String
 }

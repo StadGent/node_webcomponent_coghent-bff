@@ -2,8 +2,8 @@ import { environment as _ } from '../environment';
 import { EntitiesAPI } from '../entities';
 import { EntitiesResults, Entity, EntityTypes, Metadata, MetadataInput, MetaKey, Relation, StoryboxBuild } from '../type-defs';
 import { createEntityBody } from '../parsers/entities';
-import { createMetadataTypeFromData, createRelationsOfStorybox } from '../parsers/storybox';
-import { setId, setIdsAs_Key } from '../common';
+import { createMetadataTypeFromData, createRelationsOfStorybox, setObjectIdToCustomStorybox } from '../parsers/storybox';
+import { setId, setIdAs_Key, setIdsAs_Key } from '../common';
 
 export class StoryBoxAPI extends EntitiesAPI {
   public baseURL = `${_.api.collectionAPIUrl}/`;
@@ -11,17 +11,19 @@ export class StoryBoxAPI extends EntitiesAPI {
   private entities = new EntitiesAPI();
 
   async userStorybox(): Promise<EntitiesResults> {
-    //console.log(`\n CONTEXT`, this.context.session) // DEV:
+    // console.log(`\n CONTEXT`, this.context.session) // DEV:
 
     let storybox = await this.get(`${this.STORY_BOX}`);
     storybox = setIdsAs_Key(storybox) as EntitiesResults;
     return storybox;
   }
 
-  async linkStorybox(_code: Number): Promise<Entity> {
-    const linkedStorybox: Entity = await this.post(
+  async linkStorybox(_code: string): Promise<Entity> {
+    let linkedStorybox: Entity = await this.post(
       `${this.STORY_BOX}/link/${_code}`
     );
+    linkedStorybox = setIdAs_Key(linkedStorybox) as Entity
+    linkedStorybox = setObjectIdToCustomStorybox(linkedStorybox)
     return linkedStorybox;
   }
 
@@ -32,11 +34,12 @@ export class StoryBoxAPI extends EntitiesAPI {
       _storyboxInfo.title ? _storyboxInfo.title : '',
       _storyboxInfo.description ? _storyboxInfo.description : ''
     );
-    frame = setId(frame);
+    frame = setIdAs_Key(frame) as Entity;
+    frame = setObjectIdToCustomStorybox(frame)
     console.log(`\n => Created frame id`, frame.id);
     console.log(`\n => Created frame key`, frame._key);
-    const relations = createRelationsOfStorybox(_storyboxInfo);
-    await this.addRelations(frame.id, relations);
+    // const relations = createRelationsOfStorybox(_storyboxInfo);
+    // await this.addRelations(frame.id, relations);
     return frame;
   }
 

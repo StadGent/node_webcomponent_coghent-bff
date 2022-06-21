@@ -124,7 +124,12 @@ export class EntitiesAPI extends AuthRESTDataSource<Context> {
   }
 
   async addRelation(_entityId: string, _entityRelation: Relation): Promise<Array<Relation>> {
-    const relationsOfEntity = await this.patch(`entities/${_entityId}/relations`, [_entityRelation]).catch(error => { console.log(`\n\n error from addrelation`,error)})
+    const relationsOfEntity = await this.patch(`entities/${_entityId}/relations`, [_entityRelation]).catch(error => { console.log(`\n\n error from addrelation`, error) })
     return relationsOfEntity
+  }
+
+  async deleteEntity(_id: string): Promise<string> {
+    await this.delete(`entities/${_id}`)
+    return `Deleted entity with id ${_id}`
   }
 }

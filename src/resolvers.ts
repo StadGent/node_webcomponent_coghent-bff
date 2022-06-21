@@ -21,7 +21,7 @@ import { AuthenticationError } from 'apollo-server';
 import 'apollo-cache-control';
 import { environment } from './environment';
 import { filterByRelationTypes } from './parsers/entities';
-import { splitFilenameAndExtension, subtitleFileExtensions } from './common';
+import { setIdAs_Key, splitFilenameAndExtension, subtitleFileExtensions } from './common';
 import {
   AudioMIME,
   checkEnumOnType,
@@ -111,6 +111,7 @@ export const resolvers: Resolvers<Context> = {
           await dataSources.StoryBoxAPI.update(storyboxInfo as StoryboxBuild)
         }
       }
+      frame != null ? frame = setIdAs_Key(frame) as Entity : null
       return frame;
     },
     Storybox: async (_source, _args, { dataSources }) => {
@@ -190,6 +191,13 @@ export const resolvers: Resolvers<Context> = {
         relationId
       );
       return relations;
+    },
+    DeleteEntity: async (
+      _source,
+      { id },
+      { dataSources }
+    ) => {
+      return await dataSources.EntitiesAPI.deleteEntity(id);
     },
   },
   //   DeleteBoxVisiterRelation: async (
