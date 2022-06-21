@@ -54,7 +54,7 @@ export class StoryBoxAPI extends EntitiesAPI {
     return newRelations;
   }
 
-  async update(_storyboxInfo: StoryboxBuild): Promise<Entity> {
+  async update(_storyboxInfo: StoryboxBuild): Promise<string> {
     const relations = createRelationsOfStorybox(_storyboxInfo)
     // console.log(`\n\n Relations created from storybox`, relations)
     await this.replaceRelations(_storyboxInfo.frameId!, relations)
@@ -64,9 +64,10 @@ export class StoryBoxAPI extends EntitiesAPI {
     ]
     await this.replaceMetadata(_storyboxInfo.frameId!, newmetadata as Array<MetadataInput>)
     console.log(`\n\nstorybox frameId`, _storyboxInfo.frameId);
-    const originalFrame = await this.get(`entities/`, _storyboxInfo.frameId!)
-    console.log(`\n ORIGNAL FRAME`, originalFrame)
-    console.log(`\n ORIGNAL FRAME metadata`, originalFrame.metadata)
-    return originalFrame as Entity
+    // const originalFrame = await this.get(`entities/`, _storyboxInfo.frameId!)
+    // console.log(`\n ORIGNAL FRAME`, originalFrame)
+    // console.log(`\n ORIGNAL FRAME metadata`, originalFrame.metadata)
+    // return originalFrame as Entity
+    return `Updated frame with id: ${_storyboxInfo.frameId}`
   }
 }
