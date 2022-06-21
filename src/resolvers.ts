@@ -108,7 +108,7 @@ export const resolvers: Resolvers<Context> = {
           frame = await dataSources.StoryBoxAPI.create(storyboxInfo as StoryboxBuild)
         } else {
           console.log(`\n UPDATE STORYBOX \n`);
-          frame = await dataSources.StoryBoxAPI.update(storyboxInfo as StoryboxBuild)
+          await dataSources.StoryBoxAPI.update(storyboxInfo as StoryboxBuild)
         }
       }
       return frame;
