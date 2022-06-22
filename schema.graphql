@@ -40,6 +40,7 @@ enum MetaKey {
   lastname
   nationality
   scopeNote
+  boxCode
 }
 
 enum EntityTypes {

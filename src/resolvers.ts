@@ -110,7 +110,7 @@ export const resolvers: Resolvers<Context> = {
           );
         } else {
           console.log(`\n UPDATE STORYBOX \n`);
-          await dataSources.StoryBoxAPI.update(storyboxInfo as StoryboxBuild);
+          frame = await dataSources.StoryBoxAPI.update(storyboxInfo as StoryboxBuild)
         }
       }
       frame != null ? frame = setIdAs_Key(frame) as Entity : null

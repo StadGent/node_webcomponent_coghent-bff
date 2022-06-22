@@ -1,3 +1,4 @@
+import { setIdAs_Key } from '../common';
 import { addTimingsToRelation, createRelationOfId } from '../resolvers/relationMetadata';
 import { Entity, Metadata, MetaKey, Relation, RelationType, StoryboxBuild } from '../type-defs';
 
@@ -27,6 +28,23 @@ export const createMetadataTypeFromData = (_type: MetaKey, _value: string) => {
   return { key: _type, value: _value !== null ? _value : '' } as Metadata
 }
 
+export const updateMetadataField = (_type: MetaKey, _value: string, _metadata: Array<Metadata>) => {
+  console.log(`\n original `, _metadata);
+
+  const updateMetadata: Array<Metadata> = _metadata
+  const found = _metadata.find((_meta: Metadata) => _meta.key === _type)
+  if (found) {
+    const indexToDelete = _metadata.indexOf(found)
+    if (indexToDelete != -1) {
+      updateMetadata.splice(indexToDelete, 1)
+    }
+
+  }
+  updateMetadata.push(createMetadataTypeFromData(_type, _value))
+  console.log(`\n updateMetadata`, updateMetadata);
+  return updateMetadata
+}
+
 export const createRelationTypeFromData = (_type: RelationType, _key: string, _keyPrefix: `entities/`) => {
   return {
     type: _type, key: `${_keyPrefix}${_key}`
@@ -35,5 +53,11 @@ export const createRelationTypeFromData = (_type: RelationType, _key: string, _k
 
 export const setObjectIdToCustomStorybox = (_entity: Entity) => {
   _entity.object_id = `customStory-${_entity.id}`
+  return _entity
+}
+
+export const setIdAndCustomObjectId = (_entity: Entity) => {
+  _entity = setIdAs_Key(_entity) as Entity;
+  _entity = setObjectIdToCustomStorybox(_entity)
   return _entity
 }
