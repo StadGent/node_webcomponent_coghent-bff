@@ -87,7 +87,7 @@ export const resolvers: Resolvers<Context> = {
         fetchPolicy || ''
       );
     },
-    User: async (_source, { }, { dataSources, session }) => {
+    User: async (_source, {}, { dataSources, session }) => {
       if (!session.auth.accessToken) {
         throw new AuthenticationError('Not authenticated');
       }
@@ -101,26 +101,36 @@ export const resolvers: Resolvers<Context> = {
     },
     CreateStorybox: async (_source, { storyboxInfo }, { dataSources }) => {
       console.log(`\n\n STORYBOX FRONTEND`, storyboxInfo);
-      let frame: Entity | null = null
+      let frame: Entity | null = null;
       if (Object.keys(storyboxInfo).length > 0) {
         if (storyboxInfo.frameId === null) {
           console.log(`\n CREATE NEW STORYBOX \n`);
-          frame = await dataSources.StoryBoxAPI.create(storyboxInfo as StoryboxBuild)
+          frame = await dataSources.StoryBoxAPI.create(
+            storyboxInfo as StoryboxBuild
+          );
         } else {
           console.log(`\n UPDATE STORYBOX \n`);
-          await dataSources.StoryBoxAPI.update(storyboxInfo as StoryboxBuild)
+          await dataSources.StoryBoxAPI.update(storyboxInfo as StoryboxBuild);
         }
       }
       frame != null ? frame = setIdAs_Key(frame) as Entity : null
       return frame;
     },
     Storybox: async (_source, _args, { dataSources }) => {
-      const userStorybox = await dataSources.StoryBoxAPI.userStorybox()
-      return userStorybox
+      const userStorybox = await dataSources.StoryBoxAPI.userStorybox();
+      return userStorybox;
     },
-    AddEntityAsRelation: async (_source, { entityId, entityRelationId }, { dataSources }) => {
-      const relation = createRelationTypeFromData(RelationType.Components, entityRelationId, 'entities/')
-      return await dataSources.EntitiesAPI.addRelation(entityId, relation)
+    AddEntityAsRelation: async (
+      _source,
+      { entityId, entityRelationId },
+      { dataSources }
+    ) => {
+      const relation = createRelationTypeFromData(
+        RelationType.Components,
+        entityRelationId,
+        'entities/'
+      );
+      return await dataSources.EntitiesAPI.addRelation(entityId, relation);
     },
   },
   Mutation: {
@@ -292,12 +302,11 @@ export const resolvers: Resolvers<Context> = {
       metaData.forEach((element) => {
         if (element.value) {
           const label = element.label ? element.label : element.key;
-          if (data.some((collectionItem) => collectionItem.label === label)) {
-            data.map((collectionItem) => {
-              if (collectionItem.label === label) {
-                collectionItem.data && collectionItem.data.push(element);
-              }
-            });
+          if (data.some((collectionItem) => collectionItem.label == label)) {
+            const sameCollectionItem = data.find(
+              (collectionItem) => collectionItem.label == label
+            );
+            sameCollectionItem?.data?.push(element);
           } else {
             data.push({
               label: label,
@@ -440,7 +449,7 @@ export const resolvers: Resolvers<Context> = {
       let mimetype = { type: '', mime: undefined } as any;
       if (parent.mimetype) {
         mimetype.type = parent.mimetype;
-        for (let index = 0;index < Object.values(MIMETYPES).length;index++) {
+        for (let index = 0; index < Object.values(MIMETYPES).length; index++) {
           if (Object.values(MIMETYPES)[index] === parent.mimetype) {
             mimetype.mime = Object.keys(MIMETYPES)[index];
             checkEnumOnType(mimetype.type, AudioMIME)
