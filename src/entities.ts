@@ -17,13 +17,13 @@ export class EntitiesAPI extends AuthRESTDataSource<Context> {
 
   async getBoxEntities(): Promise<EntitiesResults> {
     let data = await this.get(`entities?type=box`);
-    data = setIdsAs_Key(data)
+    data = setIdsAs_Key(data);
     return data;
   }
 
   async getStories(): Promise<EntitiesResults> {
     let data = await this.get(`entities?type=story&limit=20&skip=0`);
-    data = setIdsAs_Key(data)
+    data = setIdsAs_Key(data);
     return data;
   }
 
@@ -80,7 +80,7 @@ export class EntitiesAPI extends AuthRESTDataSource<Context> {
   async getMediafilesById(id: string): Promise<MediaFile> {
     let mediafile: MediaFile = {} as MediaFile;
     try {
-      return mediafile = await this.get(`mediafiles/${id}`);
+      return (mediafile = await this.get(`mediafiles/${id}`));
     } catch (error) {
       console.log(error);
     }
@@ -94,28 +94,33 @@ export class EntitiesAPI extends AuthRESTDataSource<Context> {
     return await this.put(`entities/${id}/metadata`, metadata);
   }
 
-  async getRelationOfType(_id: string, _type: RelationType): Promise<Array<Relation>> {
-    const relations = await this.getRelations(_id)
-    return relations.filter(_relation => _relation.type == _type)
+  async getRelationOfType(
+    _id: string,
+    _type: RelationType
+  ): Promise<Array<Relation>> {
+    const relations = await this.getRelations(_id);
+    return relations.filter((_relation) => _relation.type == _type);
   }
 
-  async getEntitiesOfRelationIds(_relationIds: Array<string>): Promise<Array<Entity>> {
-    const entities: Array<Entity> = []
+  async getEntitiesOfRelationIds(
+    _relationIds: Array<string>
+  ): Promise<Array<Entity>> {
+    const entities: Array<Entity> = [];
     if (_relationIds.length > 0) {
       for (const _id of _relationIds) {
-        let id = _id
+        let id = _id;
         if (id.includes('entities/')) {
-          id = id.replace('entities/', '')
+          id = id.replace('entities/', '');
         }
         try {
-          const entity = await this.getEntity(id)
-          entities.push(entity)
+          const entity = await this.getEntity(id);
+          entities.push(entity);
         } catch (error) {
-          console.error(`Couldn't find an entity with id: ${_id}`)
+          console.error(`Couldn't find an entity with id: ${_id}`);
         }
       }
     }
-    return entities
+    return entities;
   }
 
   async replaceRelations(_entityId: string, _relations: Array<Relation>): Promise<Array<Relation>> {
