@@ -29,8 +29,6 @@ export const createMetadataTypeFromData = (_type: MetaKey, _value: string) => {
 }
 
 export const updateMetadataField = (_type: MetaKey, _value: string, _metadata: Array<Metadata>) => {
-  console.log(`\n original `, _metadata);
-
   const updateMetadata: Array<Metadata> = _metadata
   const found = _metadata.find((_meta: Metadata) => _meta.key === _type)
   if (found) {
@@ -41,7 +39,6 @@ export const updateMetadataField = (_type: MetaKey, _value: string, _metadata: A
 
   }
   updateMetadata.push(createMetadataTypeFromData(_type, _value))
-  console.log(`\n updateMetadata`, updateMetadata);
   return updateMetadata
 }
 

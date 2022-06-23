@@ -8,9 +8,10 @@ import {
   MetadataInput,
   MetaKey,
   Relation,
+  RelationType,
   StoryboxBuild,
 } from '../type-defs';
-import { createEntityBody } from '../parsers/entities';
+import { createEntityBody, filterByRelationTypes, filterOutRelationTypes, mergeRelations } from '../parsers/entities';
 import { createMetadataTypeFromData, createRelationsOfStorybox, setIdAndCustomObjectId, setObjectIdToCustomStorybox, updateMetadataField } from '../parsers/storybox';
 import { setIdAs_Key, setIdsAs_Key } from '../common';
 
@@ -75,13 +76,23 @@ export class StoryBoxAPI extends EntitiesAPI {
   async update(_storyboxInfo: StoryboxBuild): Promise<Entity> {
     let originalFrame = await this.getEntity(_storyboxInfo.frameId!)
     originalFrame = setIdAndCustomObjectId(originalFrame)
-    const relations = createRelationsOfStorybox(_storyboxInfo)
-    await this.replaceRelations(_storyboxInfo.frameId!, relations)
-    let newmetadata: Array<Metadata> = originalFrame.metadata ? originalFrame.metadata as Array<Metadata> : [] as Array<Metadata>
+    const originalMetadata = await this.getMetadata(originalFrame.id)
+    const originalRelationsAll = await this.getRelations(originalFrame.id)
+
+    const componentRelationsFromOrignal = filterByRelationTypes(originalRelationsAll, [RelationType.Components])
+    const relationsFromStorybox = createRelationsOfStorybox(_storyboxInfo)
+
+    const updatedComponentRelations = mergeRelations(componentRelationsFromOrignal, relationsFromStorybox)
+    const otherRelations = filterOutRelationTypes(originalRelationsAll, [RelationType.Components])
+    
+    const updatedRelationsAll = [...otherRelations, ...updatedComponentRelations]
+
+    await this.replaceRelations(_storyboxInfo.frameId!, updatedRelationsAll)
+    let newmetadata: Array<Metadata> = originalMetadata as Array<Metadata>
     newmetadata = updateMetadataField(MetaKey.Title, _storyboxInfo.title!, newmetadata)
     newmetadata = updateMetadataField(MetaKey.Description, _storyboxInfo.description!, newmetadata)
     await this.replaceMetadata(_storyboxInfo.frameId!, newmetadata as Array<MetadataInput>)
     let updatedFrame = await this.getEntity(_storyboxInfo.frameId!)
-    return updatedFrame
+    return setIdAndCustomObjectId(updatedFrame)
   }
 }

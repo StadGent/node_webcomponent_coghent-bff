@@ -94,6 +94,12 @@ export class EntitiesAPI extends AuthRESTDataSource<Context> {
     return await this.put(`entities/${id}/metadata`, metadata);
   }
 
+  async getMetadata(
+    id: String,
+  ): Promise<Metadata[]> {
+    return await this.get(`entities/${id}/metadata`);
+  }
+
   async getRelationOfType(
     _id: string,
     _type: RelationType

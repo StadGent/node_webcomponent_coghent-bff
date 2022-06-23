@@ -34,3 +34,24 @@ export const createEntityBody = (_type: EntityTypes, _title: string, _descriptio
 }`
   return body
 }
+
+export const mergeRelations = (_originalRelations: Array<Relation>, _newRelations: Array<Relation>) => {
+  let mergedrelations = _originalRelations
+  for (const updatedRelation of _newRelations) {
+    const found = _originalRelations.find(_rel => _rel.key === updatedRelation.key && _rel.type === updatedRelation.type)
+    if (found) {
+      const index = mergedrelations.indexOf(found)
+      Object.assign(mergedrelations[index], updatedRelation)
+    } else mergedrelations.push(updatedRelation)
+  }
+  return mergedrelations
+}
+
+
+export const filterOutRelationTypes = (_relations: Array<Relation>, _types: Array<RelationType>) => {
+  const otherRelations = []
+  for (const relation of _relations) {
+    if (!_types.includes(relation.type)) otherRelations.push(relation)
+  }
+  return otherRelations
+}
