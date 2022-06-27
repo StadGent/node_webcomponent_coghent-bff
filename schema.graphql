@@ -308,7 +308,7 @@ type StoryboxBuild {
 
 type Query {
   PrintBoxTicket(code: String!): Ticket!
-  ActiveBox: EntitiesResults!
+  ActiveBox(id: String): EntitiesResults!
   BoxVisiters: BoxVisitersResults
   BoxVisiterByCode(code: String!): BoxVisiter
   BoxVisiterRelationsByType(code: String!, type: RelationType!): [Relation]

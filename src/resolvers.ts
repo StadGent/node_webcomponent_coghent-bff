@@ -44,8 +44,10 @@ export const resolvers: Resolvers<Context> = {
       };
       return { code: code, body: JSON.stringify(body) } as Ticket;
     },
-    ActiveBox: async (_source, _args, { dataSources }) => {
-      const stories = await getActiveStories(dataSources);
+    ActiveBox: async (_source, { id }, { dataSources }) => {
+      let _id = null
+      id ? _id = id : null
+      const stories = await getActiveStories(dataSources, _id);
       return { count: stories.length, results: stories } as EntitiesResults;
     },
     BoxVisiters: async (_source, _args, { dataSources }) => {
@@ -87,7 +89,7 @@ export const resolvers: Resolvers<Context> = {
         fetchPolicy || ''
       );
     },
-    User: async (_source, {}, { dataSources, session }) => {
+    User: async (_source, { }, { dataSources, session }) => {
       if (!session.auth.accessToken) {
         throw new AuthenticationError('Not authenticated');
       }
@@ -449,7 +451,7 @@ export const resolvers: Resolvers<Context> = {
       let mimetype = { type: '', mime: undefined } as any;
       if (parent.mimetype) {
         mimetype.type = parent.mimetype;
-        for (let index = 0; index < Object.values(MIMETYPES).length; index++) {
+        for (let index = 0;index < Object.values(MIMETYPES).length;index++) {
           if (Object.values(MIMETYPES)[index] === parent.mimetype) {
             mimetype.mime = Object.keys(MIMETYPES)[index];
             checkEnumOnType(mimetype.type, AudioMIME)
@@ -549,9 +551,9 @@ const exlcudeMetaData = async (
   return dataFilterdOnLabel;
 };
 
-const getActiveStories = async (dataSources: DataSources) => {
+const getActiveStories = async (dataSources: DataSources, _id: string | null) => {
   const boxStories = await dataSources.EntitiesAPI.getRelations(
-    environment.activeBoxEntity
+    _id != null ? _id : environment.activeBoxEntity
   );
   let activeStories = boxStories.filter((_relation) => _relation?.active);
   if (activeStories.length > Number(environment.maxStories)) {
