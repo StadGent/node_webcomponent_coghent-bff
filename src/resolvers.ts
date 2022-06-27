@@ -35,6 +35,7 @@ import { setMediafileOnAsset } from './resolvers/relationMetadata';
 import { sortRelationmetadataOnTimestampStart } from './parsers/story';
 import { getBasketEntityRelationsAsEntities } from './resolvers/entities';
 import { createRelationTypeFromData } from './parsers/storybox';
+import { addPositionsToAssets } from './resolvers/customStory';
 export const resolvers: Resolvers<Context> = {
   Query: {
     PrintBoxTicket: (_source, { code }, { dataSources }) => {
@@ -72,6 +73,11 @@ export const resolvers: Resolvers<Context> = {
     },
     Stories: async (_source, _args, { dataSources }) => {
       return dataSources.EntitiesAPI.getStories();
+    },
+    GetStoryById: async (_source, { id }, { dataSources }) => {
+      await addPositionsToAssets(dataSources, id)
+      const story = await dataSources.EntitiesAPI.getEntity(id)
+      return story;
     },
     Entity: async (_source, { id }, { dataSources }, info) => {
       info.cacheControl.setCacheHint({ maxAge: 3600 });
