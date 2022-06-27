@@ -315,6 +315,7 @@ type Query {
   CreateBoxVisiter(storyId: String!): BoxVisiter
   Stories: EntitiesResults
   Entity(id: String!): Entity
+  getStoryById(id: String!): Entity
   Entities(
     limit: Int
     skip: Int
