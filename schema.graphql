@@ -47,6 +47,7 @@ enum EntityTypes {
   frame
   story
   box_visit
+  contains
 }
 
 enum RelationType {
@@ -222,6 +223,12 @@ type Relation {
   setMediafile: Int
 }
 
+type EntityInfo {
+  type: EntityTypes!
+  title: String!
+  description: String!
+}
+
 type EntitiesResults {
   results: [Entity]
   relations: [Relation]
@@ -314,6 +321,7 @@ type Query {
   BoxVisiterRelationsByType(code: String!, type: RelationType!): [Relation]
   CreateBoxVisiter(storyId: String!): BoxVisiter
   Stories: EntitiesResults
+  CreateEntity(entityInfo: EntityInfo!): Entity
   Entity(id: String!): Entity
   GetStoryById(id: String!): Entity
   Entities(

@@ -21,7 +21,11 @@ import { AuthenticationError } from 'apollo-server';
 import 'apollo-cache-control';
 import { environment } from './environment';
 import { filterByRelationTypes } from './parsers/entities';
-import { setIdAs_Key, splitFilenameAndExtension, subtitleFileExtensions } from './common';
+import {
+  setIdAs_Key,
+  splitFilenameAndExtension,
+  subtitleFileExtensions,
+} from './common';
 import {
   AudioMIME,
   checkEnumOnType,
@@ -46,8 +50,8 @@ export const resolvers: Resolvers<Context> = {
       return { code: code, body: JSON.stringify(body) } as Ticket;
     },
     ActiveBox: async (_source, { id }, { dataSources }) => {
-      let _id = null
-      id ? _id = id : null
+      let _id = null;
+      id ? (_id = id) : null;
       const stories = await getActiveStories(dataSources, _id);
       return { count: stories.length, results: stories } as EntitiesResults;
     },
@@ -75,9 +79,13 @@ export const resolvers: Resolvers<Context> = {
       return dataSources.EntitiesAPI.getStories();
     },
     GetStoryById: async (_source, { id }, { dataSources }) => {
-      await addPositionsToAssets(dataSources, id)
-      const story = await dataSources.EntitiesAPI.getEntity(id)
+      await addPositionsToAssets(dataSources, id);
+      const story = await dataSources.EntitiesAPI.getEntity(id);
       return story;
+    },
+    CreateEntity: async (_source, { entityInfo }, { dataSources }) => {
+      const entity = await dataSources.EntitiesAPI.createEntity(entityInfo);
+      return entity;
     },
     Entity: async (_source, { id }, { dataSources }, info) => {
       info.cacheControl.setCacheHint({ maxAge: 3600 });
@@ -95,7 +103,7 @@ export const resolvers: Resolvers<Context> = {
         fetchPolicy || ''
       );
     },
-    User: async (_source, { }, { dataSources, session }) => {
+    User: async (_source, {}, { dataSources, session }) => {
       if (!session.auth.accessToken) {
         throw new AuthenticationError('Not authenticated');
       }
@@ -118,10 +126,12 @@ export const resolvers: Resolvers<Context> = {
           );
         } else {
           console.log(`\n UPDATE STORYBOX \n`);
-          frame = await dataSources.StoryBoxAPI.update(storyboxInfo as StoryboxBuild)
+          frame = await dataSources.StoryBoxAPI.update(
+            storyboxInfo as StoryboxBuild
+          );
         }
       }
-      frame != null ? frame = setIdAs_Key(frame) as Entity : null
+      frame != null ? (frame = setIdAs_Key(frame) as Entity) : null;
       return frame;
     },
     Storybox: async (_source, _args, { dataSources }) => {
@@ -210,11 +220,7 @@ export const resolvers: Resolvers<Context> = {
       );
       return relations;
     },
-    DeleteEntity: async (
-      _source,
-      { id },
-      { dataSources }
-    ) => {
+    DeleteEntity: async (_source, { id }, { dataSources }) => {
       return await dataSources.EntitiesAPI.deleteEntity(id);
     },
   },
@@ -457,7 +463,7 @@ export const resolvers: Resolvers<Context> = {
       let mimetype = { type: '', mime: undefined } as any;
       if (parent.mimetype) {
         mimetype.type = parent.mimetype;
-        for (let index = 0;index < Object.values(MIMETYPES).length;index++) {
+        for (let index = 0; index < Object.values(MIMETYPES).length; index++) {
           if (Object.values(MIMETYPES)[index] === parent.mimetype) {
             mimetype.mime = Object.keys(MIMETYPES)[index];
             checkEnumOnType(mimetype.type, AudioMIME)
@@ -557,7 +563,10 @@ const exlcudeMetaData = async (
   return dataFilterdOnLabel;
 };
 
-const getActiveStories = async (dataSources: DataSources, _id: string | null) => {
+const getActiveStories = async (
+  dataSources: DataSources,
+  _id: string | null
+) => {
   const boxStories = await dataSources.EntitiesAPI.getRelations(
     _id != null ? _id : environment.activeBoxEntity
   );

@@ -6,11 +6,13 @@ import {
   Relation,
   EntitiesResults,
   RelationType,
+  EntityInfo,
 } from './type-defs';
 import { Context } from './types';
 import { environment as env } from './environment';
 import { setIdAs_Key, setIdsAs_Key } from './common';
 import { AuthRESTDataSource } from 'inuits-apollo-server-auth';
+import { createBaseEntity } from './parsers/entities';
 
 export class EntitiesAPI extends AuthRESTDataSource<Context> {
   public baseURL = `${env.api.collectionAPIUrl}/`;
@@ -24,6 +26,16 @@ export class EntitiesAPI extends AuthRESTDataSource<Context> {
   async getStories(): Promise<EntitiesResults> {
     let data = await this.get(`entities?type=story&limit=20&skip=0`);
     data = setIdsAs_Key(data);
+    return data;
+  }
+
+  async createEntity(entityInfo: EntityInfo): Promise<Entity> {
+    const entityBody = createBaseEntity(
+      entityInfo.type,
+      entityInfo.title,
+      entityInfo.description
+    );
+    let data = await this.post(`entities`, JSON.parse(entityBody));
     return data;
   }
 
@@ -129,18 +141,32 @@ export class EntitiesAPI extends AuthRESTDataSource<Context> {
     return entities;
   }
 
-  async replaceRelations(_entityId: string, _relations: Array<Relation>): Promise<Array<Relation>> {
-    const newRelations = await this.put(`entities/${_entityId}/relations`, _relations).catch(error => console.log(`\n\n ERROR ON REPLACE RELATIONS`, error))
-    return newRelations
+  async replaceRelations(
+    _entityId: string,
+    _relations: Array<Relation>
+  ): Promise<Array<Relation>> {
+    const newRelations = await this.put(
+      `entities/${_entityId}/relations`,
+      _relations
+    ).catch((error) => console.log(`\n\n ERROR ON REPLACE RELATIONS`, error));
+    return newRelations;
   }
 
-  async addRelation(_entityId: string, _entityRelation: Relation): Promise<Array<Relation>> {
-    const relationsOfEntity = await this.patch(`entities/${_entityId}/relations`, [_entityRelation]).catch(error => { console.log(`\n\n error from addrelation`, error) })
-    return relationsOfEntity
+  async addRelation(
+    _entityId: string,
+    _entityRelation: Relation
+  ): Promise<Array<Relation>> {
+    const relationsOfEntity = await this.patch(
+      `entities/${_entityId}/relations`,
+      [_entityRelation]
+    ).catch((error) => {
+      console.log(`\n\n error from addrelation`, error);
+    });
+    return relationsOfEntity;
   }
 
   async deleteEntity(_id: string): Promise<string> {
-    await this.delete(`entities/${_id}`)
-    return `Deleted entity with id ${_id}`
+    await this.delete(`entities/${_id}`);
+    return `Deleted entity with id ${_id}`;
   }
 }
