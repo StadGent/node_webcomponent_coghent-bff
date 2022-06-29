@@ -83,11 +83,11 @@ export class StoryBoxAPI extends EntitiesAPI {
     const componentRelationsFromOrignal = filterByRelationTypes(originalRelationsAll, [RelationType.Components])
     const relationsFromStorybox = createRelationsOfStorybox(_storyboxInfo)
 
-    let updatedComponentRelations = mergeRelations(componentRelationsFromOrignal, relationsFromStorybox)
-    updatedComponentRelations = updatedComponentRelations.sort((_a, _b) => _a.timestamp_start! - _b.timestamp_start!)
+    // let updatedComponentRelations = mergeRelations(componentRelationsFromOrignal, relationsFromStorybox)
+    // updatedComponentRelations = updatedComponentRelations.sort((_a, _b) => _a.timestamp_start! - _b.timestamp_start!)
     const otherRelations = filterOutRelationTypes(originalRelationsAll, [RelationType.Components])
 
-    const updatedRelationsAll = [...otherRelations, ...updatedComponentRelations]
+    const updatedRelationsAll = [...otherRelations, ...relationsFromStorybox]
 
     await this.replaceRelations(_storyboxInfo.frameId!, updatedRelationsAll)
     let newmetadata: Array<Metadata> = originalMetadata as Array<Metadata>
