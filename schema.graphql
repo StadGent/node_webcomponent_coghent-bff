@@ -232,6 +232,12 @@ type EntityInfo {
   description: String!
 }
 
+input EntityInfoInput {
+  type: String!
+  title: String!
+  description: String!
+}
+
 type EntitiesResults {
   results: [Entity]
   relations: [Relation]
@@ -324,7 +330,7 @@ type Query {
   BoxVisiterRelationsByType(code: String!, type: RelationType!): [Relation]
   CreateBoxVisiter(storyId: String!): BoxVisiter
   Stories: EntitiesResults
-  CreateEntity(entityInfo: EntityInfo!): Entity
+  CreateEntity(entityInfo: EntityInfoInput!): Entity
   Entity(id: String!): Entity
   GetStoryById(id: String!): Entity
   Entities(

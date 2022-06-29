@@ -15,6 +15,7 @@ import {
   Ticket,
   MimeType,
   StoryboxBuild,
+  EntityInfo,
 } from './type-defs';
 import { Context, DataSources } from './types';
 import { AuthenticationError } from 'apollo-server';
@@ -84,7 +85,7 @@ export const resolvers: Resolvers<Context> = {
       return story;
     },
     CreateEntity: async (_source, { entityInfo }, { dataSources }) => {
-      const entity = await dataSources.EntitiesAPI.createEntity(entityInfo);
+      const entity = await dataSources.EntitiesAPI.createEntity(entityInfo as EntityInfo);
       return entity;
     },
     Entity: async (_source, { id }, { dataSources }, info) => {
