@@ -21,7 +21,7 @@ export class StoryBoxAPI extends EntitiesAPI {
   private entities = new EntitiesAPI();
 
   async userStorybox(): Promise<EntitiesResults> {
-    // console.log(`\n CONTEXT`, this.context.session) // DEV:
+    //console.log(`\n CONTEXT`, this.context.session) // DEV:
 
     let storybox = await this.get(`${this.STORY_BOX}`);
     storybox = setIdsAs_Key(storybox) as EntitiesResults;
@@ -34,6 +34,7 @@ export class StoryBoxAPI extends EntitiesAPI {
     );
     linkedStorybox = setIdAs_Key(linkedStorybox) as Entity
     linkedStorybox = setObjectIdToCustomStorybox(linkedStorybox)
+    console.log(`linkedstorybox`, linkedStorybox)
 
     let copiedMetadata: Array<Metadata> = []
     Object.assign(copiedMetadata, linkedStorybox.metadata ? linkedStorybox.metadata : [])
@@ -82,9 +83,10 @@ export class StoryBoxAPI extends EntitiesAPI {
     const componentRelationsFromOrignal = filterByRelationTypes(originalRelationsAll, [RelationType.Components])
     const relationsFromStorybox = createRelationsOfStorybox(_storyboxInfo)
 
-    const updatedComponentRelations = mergeRelations(componentRelationsFromOrignal, relationsFromStorybox)
+    let updatedComponentRelations = mergeRelations(componentRelationsFromOrignal, relationsFromStorybox)
+    updatedComponentRelations = updatedComponentRelations.sort((_a, _b) => _a.timestamp_start! - _b.timestamp_start!)
     const otherRelations = filterOutRelationTypes(originalRelationsAll, [RelationType.Components])
-    
+
     const updatedRelationsAll = [...otherRelations, ...updatedComponentRelations]
 
     await this.replaceRelations(_storyboxInfo.frameId!, updatedRelationsAll)

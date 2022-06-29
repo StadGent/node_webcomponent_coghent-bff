@@ -211,6 +211,9 @@ type Relation {
   timestamp_start: Float
   timestamp_end: Float
   timestamp_zoom: Float
+  x: Float
+  y: Float
+  z: Float
   position: Position
   scale: Float
   audioFile: String

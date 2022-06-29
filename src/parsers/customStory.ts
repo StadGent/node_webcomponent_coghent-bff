@@ -39,7 +39,9 @@ export const updatedComponentRelationsWithPositions = (_relations: Array<Relatio
   _relations = _relations.sort((one, two) => one.timestamp_start! - two.timestamp_start!)
   if (_relations.length > 0) {
     for (let index = 0;index < _relations.length;index++) {
-      _relations[index].position = positions[index]
+      _relations[index].x = positions[index].x
+      _relations[index].y = positions[index].y
+      _relations[index].z = positions[index].z
     }
   }
   return _relations
