@@ -1,4 +1,4 @@
-import { PADDING, zoneWidth } from '../resolvers/customStory';
+import { PADDING, wallFullWidth, zoneWidth } from '../resolvers/customStory';
 import { Position, Relation, RelationType } from '../type-defs';
 import { filterOutRelationTypes, filterByRelationTypes } from './entities';
 
@@ -15,8 +15,8 @@ export const calculateSpaceForAssets = (_assets: number) => {
   const assetsLeft = Math.floor(_assets / 2)
   const assetsRight = _assets - assetsLeft
 
-  const singleAssetViewLeft = (zoneWidth * 2) / assetsLeft
-  const singleAssetViewRight = (zoneWidth * 2) / assetsRight
+  const singleAssetViewLeft = ((wallFullWidth / 2) - (zoneWidth / 2)) / assetsLeft
+  const singleAssetViewRight = ((wallFullWidth / 2) - (zoneWidth / 2)) / assetsRight
 
   return {
     assetsLeft: assetsLeft,
@@ -28,8 +28,7 @@ export const calculateSpaceForAssets = (_assets: number) => {
 
 export const calculatePositions = (_assets: Array<Relation>) => {
   const space = calculateSpaceForAssets(_assets.length)
-  console.log(`\n\n SPACE`, space)
-
+  
   const positions: Array<Position> = []
 
   positions.push(...positionsXForAssets(space.assetsLeft, space.spaceleft))
@@ -39,10 +38,10 @@ export const calculatePositions = (_assets: Array<Relation>) => {
 
 const positionsXForAssets = (_assets: number, _width: number, _positiveSide = false) => {
   let positionsX = []
-  const firstAssetPosition = zoneWidth + (_width / 2)
+  const firstAssetPosition = (zoneWidth / 2) + (_width / 2)
   positionsX.push(createPositionObject(-firstAssetPosition, 0, 0))
   for (let index = 1;index < _assets;index++) {
-    const x = firstAssetPosition + (index * zoneWidth)
+    const x = firstAssetPosition + (index * _width)
     positionsX.push(createPositionObject(x && x != Infinity ? -(x) : 0, 0, 0))
   }
   if (_positiveSide) positionsX = positionsX.map(_pos => createPositionObject(Math.abs(_pos.x!), _pos.y!, _pos.z!))
@@ -77,15 +76,23 @@ export const getUpdateRelations = (_relations: Array<Relation>) => {
 export const calculateScale = async (_width: number, _height: number, _availableSpace: Dimension): Promise<number> => {
   let scale = 1;
   return new Promise((resolve, reject) => {
-    if (_width < _availableSpace.width) resolve(scale)
+
+
+    if (_width === _height) {
+      const factor = _width / _availableSpace.width
+      resolve(1 / factor)
+    }
     if (_width > _height) {
       const factor = _width / _availableSpace.width
       resolve(1 / factor)
     }
+
     if (_width < _height) {
       const factor = _height / _availableSpace.height
       resolve(1 / factor)
     }
+    if (_width < _availableSpace.width && _width > _height) resolve(scale)
+    if (_height < _availableSpace.height && _width < _height) resolve(scale)
     resolve(1)
   })
 }
