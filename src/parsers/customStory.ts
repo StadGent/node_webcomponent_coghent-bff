@@ -1,4 +1,4 @@
-import { zoneWidth } from '../resolvers/customStory';
+import { PADDING, zoneWidth } from '../resolvers/customStory';
 import { Position, Relation, RelationType } from '../type-defs';
 import { filterOutRelationTypes, filterByRelationTypes } from './entities';
 
@@ -10,8 +10,6 @@ type DynamicPosition = {
   spaceleft: number,
   spaceright: number,
 }
-
-const PADDING = 60
 
 export const calculateSpaceForAssets = (_assets: number) => {
   const assetsLeft = Math.floor(_assets / 2)

@@ -7,7 +7,7 @@ export const wallFullWidth = 5760
 export const wallFullHeight = 1080
 export const zones = 6
 export const zoneWidth = wallFullWidth / zones
-
+export const PADDING = 60
 
 export const getCustomFrame = async (_dataSources: DataSources, _id: string) => {
   const storyRelations = await _dataSources.EntitiesAPI.getRelationOfType(_id, RelationType.Frames)
