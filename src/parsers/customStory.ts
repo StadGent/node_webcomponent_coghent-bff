@@ -1,22 +1,41 @@
+import { zoneWidth } from '../resolvers/customStory';
 import { Position, Relation, RelationType } from '../type-defs';
 import { filterOutRelationTypes, filterByRelationTypes } from './entities';
 
-const wallFullWidth = 5760
-const wallFullHeight = 1080
-const zones = 6
-const zoneWidth = wallFullWidth / zones
+export type Dimension = { width: number, height: number }
 
-export const calculatePositions = (_assets: Array<Relation>) => {
-  const assetsLeft = Math.floor(_assets.length / 2)
-  const assetsRight = _assets.length - assetsLeft
+type DynamicPosition = {
+  assetsLeft: number,
+  assetsRight: number,
+  spaceleft: number,
+  spaceright: number,
+}
+
+const PADDING = 60
+
+export const calculateSpaceForAssets = (_assets: number) => {
+  const assetsLeft = Math.floor(_assets / 2)
+  const assetsRight = _assets - assetsLeft
 
   const singleAssetViewLeft = (zoneWidth * 2) / assetsLeft
   const singleAssetViewRight = (zoneWidth * 2) / assetsRight
 
+  return {
+    assetsLeft: assetsLeft,
+    assetsRight: assetsRight,
+    spaceleft: singleAssetViewLeft - PADDING,
+    spaceright: singleAssetViewRight - PADDING,
+  } as DynamicPosition
+}
+
+export const calculatePositions = (_assets: Array<Relation>) => {
+  const space = calculateSpaceForAssets(_assets.length)
+  console.log(`\n\n SPACE`, space)
+
   const positions: Array<Position> = []
 
-  positions.push(...positionsXForAssets(assetsLeft, singleAssetViewLeft))
-  positions.push(...positionsXForAssets(assetsRight, singleAssetViewRight, true))
+  positions.push(...positionsXForAssets(space.assetsLeft, space.spaceleft))
+  positions.push(...positionsXForAssets(space.assetsRight, space.spaceright, true))
   return positions
 }
 
@@ -55,4 +74,20 @@ export const getUpdateRelations = (_relations: Array<Relation>) => {
   relationComponents = updatedComponentRelationsWithPositions(relationComponents)
 
   return [...relationOthers, ...relationComponents]
+}
+
+export const calculateScale = async (_width: number, _height: number, _availableSpace: Dimension): Promise<number> => {
+  let scale = 1;
+  return new Promise((resolve, reject) => {
+    if (_width < _availableSpace.width) resolve(scale)
+    if (_width > _height) {
+      const factor = _width / _availableSpace.width
+      resolve(1 / factor)
+    }
+    if (_width < _height) {
+      const factor = _height / _availableSpace.height
+      resolve(1 / factor)
+    }
+    resolve(1)
+  })
 }

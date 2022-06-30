@@ -40,7 +40,7 @@ import { setMediafileOnAsset } from './resolvers/relationMetadata';
 import { sortRelationmetadataOnTimestampStart } from './parsers/story';
 import { getBasketEntityRelationsAsEntities } from './resolvers/entities';
 import { createRelationTypeFromData } from './parsers/storybox';
-import { addPositionsToAssets } from './resolvers/customStory';
+import { prepareCustomStory } from './resolvers/customStory';
 export const resolvers: Resolvers<Context> = {
   Query: {
     PrintBoxTicket: (_source, { code }, { dataSources }) => {
@@ -80,7 +80,7 @@ export const resolvers: Resolvers<Context> = {
       return dataSources.EntitiesAPI.getStories();
     },
     GetStoryById: async (_source, { id }, { dataSources }) => {
-      await addPositionsToAssets(dataSources, id);
+      await prepareCustomStory(dataSources, id);
       const story = await dataSources.EntitiesAPI.getEntity(id);
       return story;
     },
@@ -104,7 +104,7 @@ export const resolvers: Resolvers<Context> = {
         fetchPolicy || ''
       );
     },
-    User: async (_source, {}, { dataSources, session }) => {
+    User: async (_source, { }, { dataSources, session }) => {
       if (!session.auth.accessToken) {
         throw new AuthenticationError('Not authenticated');
       }
@@ -464,7 +464,7 @@ export const resolvers: Resolvers<Context> = {
       let mimetype = { type: '', mime: undefined } as any;
       if (parent.mimetype) {
         mimetype.type = parent.mimetype;
-        for (let index = 0; index < Object.values(MIMETYPES).length; index++) {
+        for (let index = 0;index < Object.values(MIMETYPES).length;index++) {
           if (Object.values(MIMETYPES)[index] === parent.mimetype) {
             mimetype.mime = Object.keys(MIMETYPES)[index];
             checkEnumOnType(mimetype.type, AudioMIME)
