@@ -17,7 +17,6 @@ export const calculatePositions = (_assets: Array<Relation>) => {
 
   positions.push(...positionsXForAssets(assetsLeft, singleAssetViewLeft))
   positions.push(...positionsXForAssets(assetsRight, singleAssetViewRight, true))
-
   return positions
 }
 
@@ -26,7 +25,8 @@ const positionsXForAssets = (_assets: number, _width: number, _positiveSide = fa
   const firstAssetPosition = zoneWidth + (_width / 2)
   positionsX.push(createPositionObject(-firstAssetPosition, 0, 0))
   for (let index = 1;index < _assets;index++) {
-    positionsX.push(createPositionObject(-(firstAssetPosition + (index * zoneWidth)), 0, 0))
+    const x = firstAssetPosition + (index * zoneWidth)
+    positionsX.push(createPositionObject(x && x != Infinity ? -(x) : 0, 0, 0))
   }
   if (_positiveSide) positionsX = positionsX.map(_pos => createPositionObject(Math.abs(_pos.x!), _pos.y!, _pos.z!))
   return positionsX
