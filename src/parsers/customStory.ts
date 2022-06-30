@@ -1,4 +1,4 @@
-import { PADDING, wallFullWidth, zoneWidth } from '../resolvers/customStory';
+import { ASSET_MARGIN, PADDING, wallFullWidth, zoneWidth } from '../resolvers/customStory';
 import { Position, Relation, RelationType } from '../type-defs';
 import { filterOutRelationTypes, filterByRelationTypes } from './entities';
 
@@ -28,7 +28,7 @@ export const calculateSpaceForAssets = (_assets: number) => {
 
 export const calculatePositions = (_assets: Array<Relation>) => {
   const space = calculateSpaceForAssets(_assets.length)
-  
+
   const positions: Array<Position> = []
 
   positions.push(...positionsXForAssets(space.assetsLeft, space.spaceleft))
@@ -76,19 +76,17 @@ export const getUpdateRelations = (_relations: Array<Relation>) => {
 export const calculateScale = async (_width: number, _height: number, _availableSpace: Dimension): Promise<number> => {
   let scale = 1;
   return new Promise((resolve, reject) => {
-
-
     if (_width === _height) {
-      const factor = _width / _availableSpace.width
+      const factor = _width / (_availableSpace.width - ASSET_MARGIN)
       resolve(1 / factor)
     }
     if (_width > _height) {
-      const factor = _width / _availableSpace.width
+      const factor = _width / (_availableSpace.width - ASSET_MARGIN)
       resolve(1 / factor)
     }
 
     if (_width < _height) {
-      const factor = _height / _availableSpace.height
+      const factor = _height / (_availableSpace.height - ASSET_MARGIN)
       resolve(1 / factor)
     }
     if (_width < _availableSpace.width && _width > _height) resolve(scale)
