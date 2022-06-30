@@ -42,6 +42,8 @@ export const updatedComponentRelationsWithPositions = (_relations: Array<Relatio
       _relations[index].x = positions[index].x
       _relations[index].y = positions[index].y
       _relations[index].z = positions[index].z
+      // TMP: 
+      _relations[index].scale = 1
     }
   }
   return _relations
