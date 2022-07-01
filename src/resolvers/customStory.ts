@@ -47,7 +47,7 @@ export const addScaleToAssets = async (_dataSources: DataSources, _frameId: stri
       count++
       let width;
       count <= space.assetsLeft ? width = space.spaceleft : width = space.spaceright
-      const scale = await generateAssetScale(_dataSources, relation.key, { height: wallFullHeight, width: width } as Dimension)
+      const scale = await generateAssetScale(_dataSources, relation.key, { height: wallFullHeight/2, width: width } as Dimension)
       const found = relationComponents.find(_obj => _obj.key === relation.key)
       if (found) {
         found.scale = scale

@@ -74,23 +74,14 @@ export const getUpdateRelations = (_relations: Array<Relation>) => {
 }
 
 export const calculateScale = async (_width: number, _height: number, _availableSpace: Dimension): Promise<number> => {
-  let scale = 1;
+  let scale = 0;
   return new Promise((resolve, reject) => {
-    if (_width === _height) {
-      const factor = _width / (_availableSpace.width - ASSET_MARGIN)
-      resolve(1 / factor)
+    if (_width === null || _height === null) resolve(1)
+    while (((_width * scale) <= _availableSpace.width - ASSET_MARGIN) && (_height * scale) <= _availableSpace.height - ASSET_MARGIN) {
+      if (scale < 1) {
+        scale += 0.0001
+      }
     }
-    if (_width > _height) {
-      const factor = _width / (_availableSpace.width - ASSET_MARGIN)
-      resolve(1 / factor)
-    }
-
-    if (_width < _height) {
-      const factor = _height / (_availableSpace.height - ASSET_MARGIN)
-      resolve(1 / factor)
-    }
-    if (_width < _availableSpace.width && _width > _height) resolve(scale)
-    if (_height < _availableSpace.height && _width < _height) resolve(scale)
-    resolve(1)
+    resolve(scale)
   })
 }
