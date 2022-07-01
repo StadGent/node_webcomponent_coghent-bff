@@ -151,6 +151,23 @@ export const resolvers: Resolvers<Context> = {
       );
       return await dataSources.EntitiesAPI.addRelation(entityId, relation);
     },
+    CreateTestimoni: async (_source, { entityInfo }, { dataSources }) => {
+      const testimoni = await dataSources.TestimoniAPI.createTestimoni(
+        entityInfo
+      );
+      return testimoni;
+    },
+    LinkTestimoniToAsset: async (
+      _source,
+      { assetId, testimoniId },
+      { dataSources }
+    ) => {
+      const relations = await dataSources.TestimoniAPI.linkTestimoniWithAsset(
+        assetId,
+        testimoniId
+      );
+      return relations;
+    },
   },
   Mutation: {
     replaceMetadata: async (_source, { id, metadata }, { dataSources }) => {
@@ -201,12 +218,30 @@ export const resolvers: Resolvers<Context> = {
       { code, assetId, type },
       { dataSources }
     ) => {
-      if (type == RelationType.Visited || type == RelationType.InBasket) {
-        await dataSources.BoxVisitersAPI.AddAssetToRelation(
-          code,
-          assetId,
-          type
-        );
+      const boxVisiterRelations: Relation[] =
+        await dataSources.BoxVisitersAPI.getRelations(code);
+      let customFrameId: string | undefined = boxVisiterRelations
+        .find((relation: Relation) => relation.type == RelationType.Frames)
+        ?.key.replace('entities/', '');
+
+      if (!customFrameId) {
+        const newFrame =
+          await dataSources.BoxVisitersAPI.CreateCustomFrameForBoxVisit(code);
+        customFrameId = newFrame._id.replace('entities/', '');
+      }
+      if (customFrameId) {
+        const customFrame: Entity | undefined =
+          await dataSources.EntitiesAPI.getEntity(customFrameId);
+
+        if (customFrame) {
+          const relation = createRelationTypeFromData(
+            type,
+            assetId,
+            'entities/'
+          );
+          console.log({ customFrame });
+          dataSources.EntitiesAPI.addRelation(customFrameId, relation);
+        }
       }
       return await dataSources.BoxVisitersAPI.getRelations(code);
     },

@@ -41,6 +41,8 @@ enum MetaKey {
   nationality
   scopeNote
   boxCode
+  status
+  likes
 }
 
 enum EntityTypes {
@@ -65,6 +67,12 @@ enum RelationType {
   frames
   box_stories
   box
+  storyBox
+}
+
+enum StatusKey {
+  hidden
+  shown
 }
 
 enum ComponentType {
@@ -226,7 +234,7 @@ type Relation {
   setMediafile: Int
 }
 
-type EntityInfo {
+input EntityInfo {
   type: EntityTypes!
   title: String!
   description: String!
@@ -350,6 +358,8 @@ type Query {
   CreateStorybox(storyboxInfo: StoryboxBuildInput!): Entity
   Storybox: EntitiesResults
   AddEntityAsRelation(entityId: String!, entityRelationId: String!): [Relation]
+  CreateTestimoni(entityInfo: EntityInfo!): Entity
+  LinkTestimoniToAsset(assetId: String!, testimoniId: String!): [Relation]
 }
 
 type Mutation {

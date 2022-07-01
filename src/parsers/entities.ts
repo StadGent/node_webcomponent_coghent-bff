@@ -1,4 +1,10 @@
-import { EntityTypes, Metadata, Relation, RelationType } from '../type-defs';
+import {
+  Entity,
+  EntityTypes,
+  Metadata,
+  Relation,
+  RelationType,
+} from '../type-defs';
 
 export const filterByRelationTypes = (
   _relations: Array<Relation>,
@@ -13,6 +19,11 @@ export const filterByRelationTypes = (
     relations = _relations;
   }
   return relations;
+};
+
+export const setObjectIdToEntity = (_entity: Entity) => {
+  _entity.object_id = `${_entity.id}`;
+  return _entity;
 };
 
 export const createBaseEntity = (

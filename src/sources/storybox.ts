@@ -11,8 +11,19 @@ import {
   RelationType,
   StoryboxBuild,
 } from '../type-defs';
-import { createEntityBody, filterByRelationTypes, filterOutRelationTypes, mergeRelations } from '../parsers/entities';
-import { createMetadataTypeFromData, createRelationsOfStorybox, setIdAndCustomObjectId, setObjectIdToCustomStorybox, updateMetadataField } from '../parsers/storybox';
+import {
+  createEntityBody,
+  filterByRelationTypes,
+  filterOutRelationTypes,
+  mergeRelations,
+} from '../parsers/entities';
+import {
+  createMetadataTypeFromData,
+  createRelationsOfStorybox,
+  setIdAndCustomObjectId,
+  setObjectIdToCustomStorybox,
+  updateMetadataField,
+} from '../parsers/storybox';
 import { setIdAs_Key, setIdsAs_Key } from '../common';
 
 export class StoryBoxAPI extends EntitiesAPI {
@@ -32,17 +43,22 @@ export class StoryBoxAPI extends EntitiesAPI {
     let linkedStorybox: Entity = await this.post(
       `${this.STORY_BOX}/link/${_code}`
     );
-    linkedStorybox = setIdAs_Key(linkedStorybox) as Entity
-    linkedStorybox = setObjectIdToCustomStorybox(linkedStorybox)
-    console.log(`linkedstorybox`, linkedStorybox)
+    linkedStorybox = setIdAs_Key(linkedStorybox) as Entity;
+    linkedStorybox = setObjectIdToCustomStorybox(linkedStorybox);
 
-    let copiedMetadata: Array<Metadata> = []
-    Object.assign(copiedMetadata, linkedStorybox.metadata ? linkedStorybox.metadata : [])
-    copiedMetadata.push(createMetadataTypeFromData(MetaKey.BoxCode, _code))
+    let copiedMetadata: Array<Metadata> = [];
+    Object.assign(
+      copiedMetadata,
+      linkedStorybox.metadata ? linkedStorybox.metadata : []
+    );
+    copiedMetadata.push(createMetadataTypeFromData(MetaKey.BoxCode, _code));
 
-    await this.replaceMetadata(linkedStorybox.id, copiedMetadata as Array<MetadataInput>)
-    let frameFromCode = await this.getEntity(linkedStorybox.id)
-    frameFromCode = setIdAndCustomObjectId(frameFromCode)
+    await this.replaceMetadata(
+      linkedStorybox.id,
+      copiedMetadata as Array<MetadataInput>
+    );
+    let frameFromCode = await this.getEntity(linkedStorybox.id);
+    frameFromCode = setIdAndCustomObjectId(frameFromCode);
     return frameFromCode;
   }
 
@@ -75,26 +91,47 @@ export class StoryBoxAPI extends EntitiesAPI {
   }
 
   async update(_storyboxInfo: StoryboxBuild): Promise<Entity> {
-    let originalFrame = await this.getEntity(_storyboxInfo.frameId!)
-    originalFrame = setIdAndCustomObjectId(originalFrame)
-    const originalMetadata = await this.getMetadata(originalFrame.id)
-    const originalRelationsAll = await this.getRelations(originalFrame.id)
+    let originalFrame = await this.getEntity(_storyboxInfo.frameId!);
+    originalFrame = setIdAndCustomObjectId(originalFrame);
+    const originalMetadata = await this.getMetadata(originalFrame.id);
+    const originalRelationsAll = await this.getRelations(originalFrame.id);
 
-    const componentRelationsFromOrignal = filterByRelationTypes(originalRelationsAll, [RelationType.Components])
-    const relationsFromStorybox = createRelationsOfStorybox(_storyboxInfo)
+    const componentRelationsFromOrignal = filterByRelationTypes(
+      originalRelationsAll,
+      [RelationType.Components]
+    );
+    const relationsFromStorybox = createRelationsOfStorybox(_storyboxInfo);
 
-    // let updatedComponentRelations = mergeRelations(componentRelationsFromOrignal, relationsFromStorybox)
-    // updatedComponentRelations = updatedComponentRelations.sort((_a, _b) => _a.timestamp_start! - _b.timestamp_start!)
-    const otherRelations = filterOutRelationTypes(originalRelationsAll, [RelationType.Components])
+    const updatedComponentRelations = mergeRelations(
+      componentRelationsFromOrignal,
+      relationsFromStorybox
+    );
+    const otherRelations = filterOutRelationTypes(originalRelationsAll, [
+      RelationType.Components,
+    ]);
 
-    const updatedRelationsAll = [...otherRelations, ...relationsFromStorybox]
+    const updatedRelationsAll = [
+      ...otherRelations,
+      ...updatedComponentRelations,
+    ];
 
-    await this.replaceRelations(_storyboxInfo.frameId!, updatedRelationsAll)
-    let newmetadata: Array<Metadata> = originalMetadata as Array<Metadata>
-    newmetadata = updateMetadataField(MetaKey.Title, _storyboxInfo.title!, newmetadata)
-    newmetadata = updateMetadataField(MetaKey.Description, _storyboxInfo.description!, newmetadata)
-    await this.replaceMetadata(_storyboxInfo.frameId!, newmetadata as Array<MetadataInput>)
-    let updatedFrame = await this.getEntity(_storyboxInfo.frameId!)
-    return setIdAndCustomObjectId(updatedFrame)
+    await this.replaceRelations(_storyboxInfo.frameId!, updatedRelationsAll);
+    let newmetadata: Array<Metadata> = originalMetadata as Array<Metadata>;
+    newmetadata = updateMetadataField(
+      MetaKey.Title,
+      _storyboxInfo.title!,
+      newmetadata
+    );
+    newmetadata = updateMetadataField(
+      MetaKey.Description,
+      _storyboxInfo.description!,
+      newmetadata
+    );
+    await this.replaceMetadata(
+      _storyboxInfo.frameId!,
+      newmetadata as Array<MetadataInput>
+    );
+    let updatedFrame = await this.getEntity(_storyboxInfo.frameId!);
+    return setIdAndCustomObjectId(updatedFrame);
   }
 }

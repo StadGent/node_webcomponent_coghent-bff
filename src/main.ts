@@ -18,6 +18,7 @@ import { BoxVisitersAPI } from './boxVisiters';
 import { BaseRedisCache } from 'apollo-server-cache-redis';
 import { TicketsAPI } from './ticket';
 import { StoryBoxAPI } from './sources/storybox';
+import { TestimoniAPI } from './testimoni';
 
 const Redis = require('ioredis');
 
@@ -49,6 +50,7 @@ const apolloServer = new ApolloServer({
     EntitiesAPI: new EntitiesAPI(),
     StoryBoxAPI: new StoryBoxAPI(),
     BoxVisitersAPI: new BoxVisitersAPI(),
+    TestimoniAPI: new TestimoniAPI(),
     TicketsAPI: new TicketsAPI(),
     IiifAPI: new IiifAPI(),
     SearchAPI: new SearchAPI(),

@@ -1,6 +1,8 @@
 import {
   BoxVisiter,
   BoxVisitersResults,
+  Entity,
+  EntityTypes,
   FrameInput,
   FrameSeen,
   Relation,
@@ -12,6 +14,8 @@ import { environment as env, environment } from './environment';
 import { setIdAs_Key, setIdsAs_Key, setEntitiesIdPrefix } from './common';
 import { PersistedQueryNotFoundError } from 'apollo-server-errors';
 import { AuthRESTDataSource } from 'inuits-apollo-server-auth';
+import { createEntityBody } from './parsers/entities';
+import { createRelationTypeFromData } from './parsers/storybox';
 
 export class BoxVisitersAPI extends AuthRESTDataSource<Context> {
   public baseURL = `${env.api.collectionAPIUrl}/`;
@@ -23,12 +27,12 @@ export class BoxVisitersAPI extends AuthRESTDataSource<Context> {
   }
 
   async getByCode(_code: string): Promise<BoxVisiter | null> {
-    let visiter = null
+    let visiter = null;
     try {
       visiter = await this.get<BoxVisiter>(`${this.BOX_VISITS}/${_code}`);
       visiter = setIdAs_Key(visiter) as BoxVisiter;
     } catch (error) {
-      console.log(`No visiter found for code: ${_code}`)
+      console.log(`No visiter found for code: ${_code}`);
     }
     return visiter;
   }
@@ -73,6 +77,19 @@ export class BoxVisitersAPI extends AuthRESTDataSource<Context> {
       ? (updatedVisiter = setIdAs_Key(visiter) as BoxVisiter)
       : (updatedVisiter = null);
     return updatedVisiter;
+  }
+
+  async addRelation(
+    _entityId: string,
+    _entityRelation: Relation
+  ): Promise<Array<Relation>> {
+    const relationsOfEntity = await this.patch(
+      `entities/${_entityId}/relations`,
+      [_entityRelation]
+    ).catch((error) => {
+      console.log(`\n\n error from addrelation`, error);
+    });
+    return relationsOfEntity;
   }
 
   async updateRelation(
@@ -130,6 +147,23 @@ export class BoxVisitersAPI extends AuthRESTDataSource<Context> {
   // async addTouchtableTimeToBoxVisiter(_code: string, _time: string): Promise<BoxVisiter | null>{
 
   // }
+
+  async CreateCustomFrameForBoxVisit(_code: string) {
+    const storybox = await this.getByCode(_code);
+    if (storybox) {
+      const frameBody = createEntityBody(EntityTypes.Frame, '', '');
+      const newFrame = await this.post(`entities`, JSON.parse(frameBody));
+
+      const relation = createRelationTypeFromData(
+        RelationType.StoryBox,
+        newFrame.id,
+        'entities/'
+      );
+      await this.addRelation(storybox?.id, relation);
+      console.log({ newFrame });
+      return newFrame;
+    }
+  }
 
   async AddFrameToStory(
     _code: string,
