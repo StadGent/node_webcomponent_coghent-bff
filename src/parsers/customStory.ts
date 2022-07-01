@@ -33,6 +33,7 @@ export const calculatePositions = (_assets: Array<Relation>) => {
 
   positions.push(...positionsXForAssets(space.assetsLeft, space.spaceleft))
   positions.push(...positionsXForAssets(space.assetsRight, space.spaceright, true))
+  positions.sort((posA, posB) => posA.x! - posB.x!)
   return positions
 }
 
