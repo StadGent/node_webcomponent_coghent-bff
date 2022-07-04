@@ -360,6 +360,7 @@ type Query {
   AddEntityAsRelation(entityId: String!, entityRelationId: String!): [Relation]
   CreateTestimoni(entityInfo: EntityInfo!): Entity
   LinkTestimoniToAsset(assetId: String!, testimoniId: String!): [Relation]
+  LinkFrameToVisiter(frameId: String!): BoxVisiter
 }
 
 type Mutation {

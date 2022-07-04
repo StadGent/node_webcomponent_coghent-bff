@@ -12,7 +12,7 @@ import { Context } from './types';
 import { environment as env } from './environment';
 import { setIdAs_Key, setIdsAs_Key } from './common';
 import { AuthRESTDataSource } from 'inuits-apollo-server-auth';
-import { createBaseEntity, setObjectIdToEntity } from './parsers/entities';
+import { createBaseEntity, setIdAndObjectId, setObjectIdToEntity } from './parsers/entities';
 
 export class EntitiesAPI extends AuthRESTDataSource<Context> {
   public baseURL = `${env.api.collectionAPIUrl}/`;
@@ -44,7 +44,8 @@ export class EntitiesAPI extends AuthRESTDataSource<Context> {
   async getEntity(id: string): Promise<Entity> {
     let data = await this.get<Entity>('entities' + (id ? '/' + id : ''));
     // setId(data);
-    data = setIdAs_Key(data) as Entity;
+    // data = setIdAs_Key(data) as Entity;
+    data = setIdAndObjectId(data)
     return data;
   }
 

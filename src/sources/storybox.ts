@@ -1,8 +1,10 @@
 import { environment as _ } from '../environment';
 import { EntitiesAPI } from '../entities';
 import {
+  BoxVisiter,
   EntitiesResults,
   Entity,
+  EntityInfo,
   EntityTypes,
   Metadata,
   MetadataInput,
@@ -13,9 +15,8 @@ import {
 } from '../type-defs';
 import {
   createEntityBody,
-  filterByRelationTypes,
   filterOutRelationTypes,
-  mergeRelations,
+  getMetadataOfKey,
 } from '../parsers/entities';
 import {
   createMetadataTypeFromData,
@@ -24,7 +25,7 @@ import {
   setObjectIdToCustomStorybox,
   updateMetadataField,
 } from '../parsers/storybox';
-import { setIdAs_Key, setIdsAs_Key } from '../common';
+import { setEntitiesIdPrefix, setIdAs_Key, setIdsAs_Key } from '../common';
 
 export class StoryBoxAPI extends EntitiesAPI {
   public baseURL = `${_.api.collectionAPIUrl}/`;
@@ -126,5 +127,28 @@ export class StoryBoxAPI extends EntitiesAPI {
     let updatedFrame = await this.getEntity(_storyboxInfo.frameId!);
     console.log(`\n UPDATED FRAME WITH IDS SET`, setIdAndCustomObjectId(updatedFrame))
     return setIdAndCustomObjectId(updatedFrame);
+  }
+
+  async linkFrameToVisiter(_frameId: string): Promise<BoxVisiter> {
+    const frame = await this.getEntity(_frameId)
+    const title = getMetadataOfKey(frame, MetaKey.Title)
+    const description = getMetadataOfKey(frame, MetaKey.Description)
+    // Create story for frame
+    const story = await this.createEntity({
+      type: EntityTypes.Story,
+      title: title != null ? title.value : '',
+      description: description != null ? description.value : '',
+    } as EntityInfo)
+    // Link frame to story
+    await this.addRelation(story.id, {
+      key: setEntitiesIdPrefix(frame._key as string, true),
+      type: RelationType.Frames
+    } as Relation)
+    // Create and add story to visiter
+    let visiter = await this.post(`box_visits`, {
+      story_id: setEntitiesIdPrefix(story.id),
+    })
+    visiter = setIdAs_Key(visiter) as BoxVisiter
+    return visiter
   }
 }

@@ -1,7 +1,9 @@
+import { setIdAs_Key } from '../common';
 import {
   Entity,
   EntityTypes,
   Metadata,
+  MetaKey,
   Relation,
   RelationType,
 } from '../type-defs';
@@ -22,7 +24,7 @@ export const filterByRelationTypes = (
 };
 
 export const setObjectIdToEntity = (_entity: Entity) => {
-  _entity.object_id = `${_entity.id}`;
+  _entity.object_id ? null : _entity.object_id = `${_entity.id}`;
   return _entity;
 };
 
@@ -107,3 +109,14 @@ export const filterOutRelationTypes = (
   }
   return otherRelations;
 };
+
+export const setIdAndObjectId = (_entity: Entity) => {
+  _entity = setIdAs_Key(_entity) as Entity;
+  _entity = setObjectIdToEntity(_entity)
+  return _entity
+}
+
+export const getMetadataOfKey = (_entity: Entity, _type: MetaKey): Metadata | null => {
+  const found = _entity.metadata.find(meta => meta?.key === _type)
+  return found ? found : null
+}

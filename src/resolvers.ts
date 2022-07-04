@@ -168,6 +168,13 @@ export const resolvers: Resolvers<Context> = {
       );
       return relations;
     },
+    LinkFrameToVisiter: async (
+      _source,
+      { frameId },
+      { dataSources }
+    ) => {
+      return frameId != '' ? await dataSources.StoryBoxAPI.linkFrameToVisiter(frameId) : null;
+    },
   },
   Mutation: {
     replaceMetadata: async (_source, { id, metadata }, { dataSources }) => {
