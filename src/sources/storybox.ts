@@ -96,23 +96,15 @@ export class StoryBoxAPI extends EntitiesAPI {
     const originalMetadata = await this.getMetadata(originalFrame.id);
     const originalRelationsAll = await this.getRelations(originalFrame.id);
 
-    const componentRelationsFromOrignal = filterByRelationTypes(
-      originalRelationsAll,
-      [RelationType.Components]
-    );
     const relationsFromStorybox = createRelationsOfStorybox(_storyboxInfo);
 
-    const updatedComponentRelations = mergeRelations(
-      componentRelationsFromOrignal,
-      relationsFromStorybox
-    );
     const otherRelations = filterOutRelationTypes(originalRelationsAll, [
       RelationType.Components,
     ]);
 
     const updatedRelationsAll = [
       ...otherRelations,
-      ...updatedComponentRelations,
+      ...relationsFromStorybox,
     ];
 
     await this.replaceRelations(_storyboxInfo.frameId!, updatedRelationsAll);
@@ -132,6 +124,7 @@ export class StoryBoxAPI extends EntitiesAPI {
       newmetadata as Array<MetadataInput>
     );
     let updatedFrame = await this.getEntity(_storyboxInfo.frameId!);
+    console.log(`\n UPDATED FRAME WITH IDS SET`, setIdAndCustomObjectId(updatedFrame))
     return setIdAndCustomObjectId(updatedFrame);
   }
 }
