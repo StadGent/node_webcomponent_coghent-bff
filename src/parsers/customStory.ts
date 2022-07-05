@@ -12,11 +12,18 @@ type DynamicPosition = {
 }
 
 export const calculateSpaceForAssets = (_assets: number) => {
-  const assetsLeft = Math.floor(_assets / 2)
-  const assetsRight = _assets - assetsLeft
+  let assetsLeft = 1
+  let assetsRight = 0
 
-  const singleAssetViewLeft = ((wallFullWidth / 2) - (zoneWidth / 2)) / assetsLeft
-  const singleAssetViewRight = ((wallFullWidth / 2) - (zoneWidth / 2)) / assetsRight
+  let singleAssetViewLeft = ((wallFullWidth / 2) - (zoneWidth / 2))
+  let singleAssetViewRight = 0
+  if (_assets > 1) {
+    assetsLeft = Math.floor(_assets / 2)
+    assetsRight = _assets - assetsLeft
+
+    singleAssetViewLeft = ((wallFullWidth / 2) - (zoneWidth / 2)) / assetsLeft
+    singleAssetViewRight = ((wallFullWidth / 2) - (zoneWidth / 2)) / assetsRight
+  }
 
   return {
     assetsLeft: assetsLeft,
