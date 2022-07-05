@@ -129,24 +129,7 @@ export class StoryBoxAPI extends EntitiesAPI {
   }
 
   async linkFrameToVisiter(_frameId: string): Promise<BoxVisiter> {
-    const frame = await this.getEntity(_frameId)
-    const title = getMetadataOfKey(frame, MetaKey.Title)
-    const description = getMetadataOfKey(frame, MetaKey.Description)
-    // Create story for frame
-    const story = await this.createEntity({
-      type: EntityTypes.Story,
-      title: title != null ? title.value : '',
-      description: description != null ? description.value : '',
-    } as EntityInfo)
-    // Link frame to story
-    await this.addRelation(story.id, {
-      key: setEntitiesIdPrefix(frame._key as string, true),
-      type: RelationType.Frames
-    } as Relation)
-    // Create and add story to visiter
-    let visiter = await this.post(`box_visits`, {
-      story_id: setEntitiesIdPrefix(story.id),
-    })
+    let visiter = await this.post(`/story_box/publish/${_frameId}`)
     visiter = setIdAs_Key(visiter) as BoxVisiter
     return visiter
   }
