@@ -91,7 +91,7 @@ export const resolvers: Resolvers<Context> = {
     },
     Entity: async (_source, { id }, { dataSources }, info) => {
       info.cacheControl.setCacheHint({ maxAge: 3600 });
-      return dataSources.EntitiesAPI.getEntity(id);
+      return id?dataSources.EntitiesAPI.getEntity(id):null
     },
     Entities: async (
       _source,
