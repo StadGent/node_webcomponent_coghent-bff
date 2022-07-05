@@ -1,7 +1,6 @@
 import {
   BoxVisiter,
   BoxVisitersResults,
-  Entity,
   EntityTypes,
   FrameInput,
   FrameSeen,
@@ -9,16 +8,13 @@ import {
   RelationType,
   StoryInput,
 } from './type-defs';
-import { Context } from './types';
-import { environment as env, environment } from './environment';
 import { setIdAs_Key, setIdsAs_Key, setEntitiesIdPrefix } from './common';
 import { PersistedQueryNotFoundError } from 'apollo-server-errors';
-import { AuthRESTDataSource } from 'inuits-apollo-server-auth';
 import { createEntityBody } from './parsers/entities';
 import { createRelationTypeFromData } from './parsers/storybox';
+import { EntitiesAPI } from './entities';
 
-export class BoxVisitersAPI extends AuthRESTDataSource<Context> {
-  public baseURL = `${env.api.collectionAPIUrl}/`;
+export class BoxVisitersAPI extends EntitiesAPI {
   private BOX_VISITS = 'box_visits';
 
   async getBoxVisiters(): Promise<BoxVisitersResults> {

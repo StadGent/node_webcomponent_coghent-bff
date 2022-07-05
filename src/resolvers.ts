@@ -41,6 +41,7 @@ import { sortRelationmetadataOnTimestampStart } from './parsers/story';
 import { getBasketEntityRelationsAsEntities } from './resolvers/entities';
 import { createRelationTypeFromData } from './parsers/storybox';
 import { prepareCustomStory } from './resolvers/customStory';
+import { getVisiterOfEntity } from './resolvers/boxVisiter';
 export const resolvers: Resolvers<Context> = {
   Query: {
     PrintBoxTicket: (_source, { code }, { dataSources }) => {
@@ -174,6 +175,14 @@ export const resolvers: Resolvers<Context> = {
       { dataSources }
     ) => {
       return frameId != '' ? await dataSources.StoryBoxAPI.linkFrameToVisiter(frameId) : null;
+    },
+    GetvisiterOfEntity: async (
+      _source,
+      { id },
+      { dataSources }
+    ) => {
+      const parentEntity = await dataSources.EntitiesAPI.getEntity(id)
+      return await getVisiterOfEntity(parentEntity, dataSources);
     },
   },
   Mutation: {

@@ -125,7 +125,6 @@ export class StoryBoxAPI extends EntitiesAPI {
       newmetadata as Array<MetadataInput>
     );
     let updatedFrame = await this.getEntity(_storyboxInfo.frameId!);
-    console.log(`\n UPDATED FRAME WITH IDS SET`, setIdAndCustomObjectId(updatedFrame))
     return setIdAndCustomObjectId(updatedFrame);
   }
 

@@ -120,3 +120,8 @@ export const getMetadataOfKey = (_entity: Entity, _type: MetaKey): Metadata | nu
   const found = _entity.metadata.find(meta => meta?.key === _type)
   return found ? found : null
 }
+
+export const hasRelationOfType = (_relations: Array<Relation>, _type: RelationType) => {
+  const found = _relations.map(relation => relation.type === _type)
+  return found ? found.some(result => result === true) : false
+}

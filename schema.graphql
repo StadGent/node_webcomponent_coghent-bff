@@ -68,6 +68,7 @@ enum RelationType {
   box_stories
   box
   storyBox
+  story_box_visits
 }
 
 enum StatusKey {
@@ -361,6 +362,7 @@ type Query {
   CreateTestimoni(entityInfo: EntityInfo!): Entity
   LinkTestimoniToAsset(assetId: String!, testimoniId: String!): [Relation]
   LinkFrameToVisiter(frameId: String!): BoxVisiter
+  GetvisiterOfEntity(id: String!): BoxVisiter
 }
 
 type Mutation {
