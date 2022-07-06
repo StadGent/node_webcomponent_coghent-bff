@@ -23,6 +23,7 @@ import 'apollo-cache-control';
 import { environment } from './environment';
 import { filterByRelationTypes } from './parsers/entities';
 import {
+  setEntitiesIdPrefix,
   setIdAs_Key,
   splitFilenameAndExtension,
   subtitleFileExtensions,
@@ -91,7 +92,7 @@ export const resolvers: Resolvers<Context> = {
     },
     Entity: async (_source, { id }, { dataSources }, info) => {
       info.cacheControl.setCacheHint({ maxAge: 3600 });
-      return id?dataSources.EntitiesAPI.getEntity(id):null
+      return id ? dataSources.EntitiesAPI.getEntity(id) : null
     },
     Entities: async (
       _source,
@@ -234,32 +235,25 @@ export const resolvers: Resolvers<Context> = {
       { code, assetId, type },
       { dataSources }
     ) => {
-      const boxVisiterRelations: Relation[] =
-        await dataSources.BoxVisitersAPI.getRelations(code);
-      let customFrameId: string | undefined = boxVisiterRelations
-        .find((relation: Relation) => relation.type == RelationType.Frames)
-        ?.key.replace('entities/', '');
+      const visiter = await dataSources.BoxVisitersAPI.getByCode(code)
+      let storyboxId: string | null = null
+      let storyboxAssets: Array<Relation> = []
+      if (visiter) {
+        const boxVisiterRelations: Relation[] = await dataSources.BoxVisitersAPI.getRelations(code);
 
-      if (!customFrameId) {
-        const newFrame =
-          await dataSources.BoxVisitersAPI.CreateCustomFrameForBoxVisit(code);
-        customFrameId = newFrame._id.replace('entities/', '');
-      }
-      if (customFrameId) {
-        const customFrame: Entity | undefined =
-          await dataSources.EntitiesAPI.getEntity(customFrameId);
+        let storyboxRelations = filterByRelationTypes(boxVisiterRelations, [RelationType.StoryBox])
+        storyboxRelations.length === 1 ? storyboxId = setEntitiesIdPrefix(storyboxRelations[0].key, false) : null
 
-        if (customFrame) {
-          const relation = createRelationTypeFromData(
-            type,
-            assetId,
-            'entities/'
-          );
-          console.log({ customFrame });
-          dataSources.EntitiesAPI.addRelation(customFrameId, relation);
+        if (storyboxId != null) {
+          const assetRelation = createRelationTypeFromData(type, assetId, 'entities/')
+          storyboxAssets = await dataSources.EntitiesAPI.addRelation(storyboxId, assetRelation)
+        } else {
+          const frame = await dataSources.StoryBoxAPI.createFrame('Verhaal', 'Verhaal gecreeerd op de touchtable in de Coghent box.');
+          const storyboxRelation = createRelationTypeFromData(RelationType.StoryBox, frame.id, 'entities/')
+          storyboxAssets = await dataSources.EntitiesAPI.addRelation(visiter.id, storyboxRelation, 'box_visits')
         }
       }
-      return await dataSources.BoxVisitersAPI.getRelations(code);
+      return storyboxAssets
     },
     DeleteBoxVisiterRelation: async (
       _source,

@@ -79,7 +79,8 @@ export class StoryBoxAPI extends EntitiesAPI {
 
   async createFrame(_title: string, _description: string): Promise<Entity> {
     const frameBody = createEntityBody(EntityTypes.Frame, _title, _description);
-    const newFrame = await this.post(`entities`, JSON.parse(frameBody));
+    let newFrame = await this.post(`entities`, JSON.parse(frameBody));
+    newFrame = setIdAs_Key(newFrame)
     return newFrame;
   }
 

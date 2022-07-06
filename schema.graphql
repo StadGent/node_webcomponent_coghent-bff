@@ -67,8 +67,8 @@ enum RelationType {
   frames
   box_stories
   box
-  storyBox
   story_box_visits
+  story_box
 }
 
 enum StatusKey {

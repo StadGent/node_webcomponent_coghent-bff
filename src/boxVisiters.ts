@@ -148,7 +148,7 @@ export class BoxVisitersAPI extends EntitiesAPI {
     const storybox = await this.getByCode(_code);
     if (storybox) {
       const frameBody = createEntityBody(EntityTypes.Frame, '', '');
-      const newFrame = await this.post(`entities`, JSON.parse(frameBody));
+      let newFrame = await this.post(`entities`, JSON.parse(frameBody));
 
       const relation = createRelationTypeFromData(
         RelationType.StoryBox,
@@ -156,7 +156,7 @@ export class BoxVisitersAPI extends EntitiesAPI {
         'entities/'
       );
       await this.addRelation(storybox?.id, relation);
-      console.log({ newFrame });
+      newFrame = setIdAs_Key(newFrame)
       return newFrame;
     }
   }
