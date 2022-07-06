@@ -21,7 +21,7 @@ import { Context, DataSources } from './types';
 import { AuthenticationError } from 'apollo-server';
 import 'apollo-cache-control';
 import { environment } from './environment';
-import { filterByRelationTypes } from './parsers/entities';
+import { filterByRelationTypes, filterOutRelationTypes } from './parsers/entities';
 import {
   setEntitiesIdPrefix,
   setIdAs_Key,
@@ -263,11 +263,24 @@ export const resolvers: Resolvers<Context> = {
       { code, relationId },
       { dataSources }
     ) => {
-      const relations = await dataSources.BoxVisitersAPI.deleteRelation(
-        code,
-        relationId
-      );
-      return relations;
+      const visiterRelations = await dataSources.EntitiesAPI.getRelations(code, 'box_visits')
+      if (visiterRelations.length > 0) {
+        const found = visiterRelations.find(relation => relation.type === RelationType.StoryBox)
+        if (found) {
+          const frame = await dataSources.EntitiesAPI.getEntity(setEntitiesIdPrefix(found.key, false))
+          const frameRelations = await dataSources.EntitiesAPI.getRelations(frame.id)
+          const updatedFrameRelations: Array<Relation> = []
+          const otherRelations = filterOutRelationTypes(frameRelations, [RelationType.Components])
+          const componentRelations = filterByRelationTypes(frameRelations, [RelationType.Components])
+          const updatedComponentRelations: Array<Relation> = []
+          for (const rel of componentRelations) {
+            if (rel.key !== setEntitiesIdPrefix(relationId, true)) updatedComponentRelations.push(rel)
+          }
+          updatedFrameRelations.push(...otherRelations, ...updatedComponentRelations)
+          await dataSources.EntitiesAPI.replaceRelations(frame.id, updatedFrameRelations)
+        }
+      }
+      return visiterRelations;
     },
     DeleteEntity: async (_source, { id }, { dataSources }) => {
       return await dataSources.EntitiesAPI.deleteEntity(id);
