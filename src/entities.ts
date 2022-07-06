@@ -155,10 +155,11 @@ export class EntitiesAPI extends AuthRESTDataSource<Context> {
 
   async addRelation(
     _entityId: string,
-    _entityRelation: Relation
+    _entityRelation: Relation,
+    _collection: 'entities' | 'box_visits' = 'entities'
   ): Promise<Array<Relation>> {
     const relationsOfEntity = await this.patch(
-      `entities/${_entityId}/relations`,
+      `${_collection}/${_entityId}/relations`,
       [_entityRelation]
     ).catch((error) => {
       console.log(`\n\n error from addrelation`, error);
