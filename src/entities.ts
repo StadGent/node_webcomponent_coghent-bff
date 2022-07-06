@@ -49,8 +49,8 @@ export class EntitiesAPI extends AuthRESTDataSource<Context> {
     return data;
   }
 
-  async getRelations(id: string): Promise<Relation[]> {
-    return await this.get(`entities/${id}/relations/all`);
+  async getRelations(id: string, _collection: 'entities' | 'box_visits' = 'entities'): Promise<Relation[]> {
+    return await this.get(`${_collection}/${id}/relations/all`);
   }
 
   async getEntityRelations(id: string): Promise<Relation[]> {
