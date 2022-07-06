@@ -1,7 +1,7 @@
 import { ASSET_MARGIN, PADDING, wallFullWidth, zoneWidth } from '../resolvers/customStory';
 import { Position, Relation, RelationType } from '../type-defs';
 import { filterOutRelationTypes, filterByRelationTypes } from './entities';
-import { createTimingForAsset } from './storybox';
+import { createRelationTiming } from './storybox';
 
 const MINIMUM_DURATION = 5
 
@@ -86,46 +86,38 @@ const updateRelationsWithMinimumDuration = (_relations: Array<Relation>, _minimu
     if (updatedRelations.length >= 1) {
       previousEndTime = updatedRelations[updatedRelations.length - 1].timestamp_end!
     }
+    const newTiming = createRelationTiming(previousEndTime + 1, MINIMUM_DURATION)
+
     if (updateAllFollowingTimestamps === false) {
       if (
         !updatedRelation.timestamp_start ||
         !updatedRelation.timestamp_end ||
         !updatedRelation.timestamp_zoom) {
-        updateAllFollowingTimestamps = true
-        const _ = createTimingForAsset(previousEndTime + 1, MINIMUM_DURATION)
-        updatedRelation.timestamp_start = _.start
-        updatedRelation.timestamp_zoom = _.zoom
-        updatedRelation.timestamp_end = _.end
 
+        updateAllFollowingTimestamps = true
+        Object.assign(updatedRelation, newTiming)
       } else if (
         updatedRelation.timestamp_start &&
         updatedRelation.timestamp_end &&
         updatedRelation.timestamp_zoom &&
         (updatedRelation.timestamp_end! - updatedRelation.timestamp_zoom!) < _minimumDuration) {
+
         updateAllFollowingTimestamps = true
-        const _ = createTimingForAsset(previousEndTime + 1, MINIMUM_DURATION)
-        updatedRelation.timestamp_start = _.start
-        updatedRelation.timestamp_zoom = _.zoom
-        updatedRelation.timestamp_end = _.end
+        Object.assign(updatedRelation, newTiming)
       }
     } else {
-      const _ = createTimingForAsset(previousEndTime + 1, MINIMUM_DURATION)
-      updatedRelation.timestamp_start = _.start
-      updatedRelation.timestamp_zoom = _.zoom
-      updatedRelation.timestamp_end = _.end
+      Object.assign(updatedRelation, newTiming)
     }
     updatedRelations.push(updatedRelation)
   }
-  console.log(`\n==`)
-  console.log(`\n _relations updated`, updatedRelations)
-  console.log(`\n==`)
+  return updatedRelations
 }
 
 export const getUpdateRelations = (_relations: Array<Relation>) => {
   let relationOthers = filterOutRelationTypes(_relations, [RelationType.Components])
   let relationComponents = filterByRelationTypes(_relations, [RelationType.Components])
   relationComponents = updatedComponentRelationsWithPositions(relationComponents)
-  updateRelationsWithMinimumDuration(relationComponents, MINIMUM_DURATION)
+  relationComponents = updateRelationsWithMinimumDuration(relationComponents, MINIMUM_DURATION)
   return [...relationOthers, ...relationComponents]
 }
 

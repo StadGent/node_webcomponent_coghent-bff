@@ -11,6 +11,15 @@ export const createTimingForAsset = (_startTime: number, _duration: number) => {
   return timing
 }
 
+export const createRelationTiming = (_startTime: number, _duration: number): Relation => {
+  const timing = createTimingForAsset(_startTime, _duration)
+  return {
+    timestamp_start: timing.start,
+    timestamp_zoom: timing.zoom,
+    timestamp_end: timing.end,
+  } as Relation
+}
+
 export const createRelationsOfStorybox = (_storyboxBuild: StoryboxBuild) => {
   let time = 1;
   const relations: Array<Relation> = []
