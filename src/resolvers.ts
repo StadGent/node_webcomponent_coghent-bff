@@ -238,7 +238,7 @@ export const resolvers: Resolvers<Context> = {
       const visiter = await dataSources.BoxVisitersAPI.getByCode(code)
       let storyboxId: string | null = null
       let storyboxAssets: Array<Relation> = []
-      if (visiter) {
+      if (visiter && type === RelationType.Components) {
         const boxVisiterRelations: Relation[] = await dataSources.BoxVisitersAPI.getRelations(code);
 
         let storyboxRelations = filterByRelationTypes(boxVisiterRelations, [RelationType.StoryBox])
@@ -252,6 +252,9 @@ export const resolvers: Resolvers<Context> = {
           const storyboxRelation = createRelationTypeFromData(RelationType.StoryBox, frame.id, 'entities/')
           storyboxAssets = await dataSources.EntitiesAPI.addRelation(visiter.id, storyboxRelation, 'box_visits')
         }
+      } else if (visiter && type === RelationType.Visited) {
+        const visitedRelation = createRelationTypeFromData(type, assetId, 'entities/')
+        storyboxAssets = await dataSources.EntitiesAPI.addRelation(visiter.id, visitedRelation, 'box_visits')
       }
       return storyboxAssets
     },
