@@ -16,7 +16,6 @@ import {
 import {
   createEntityBody,
   filterOutRelationTypes,
-  getMetadataOfKey,
 } from '../parsers/entities';
 import {
   createMetadataTypeFromData,
@@ -25,7 +24,7 @@ import {
   setObjectIdToCustomStorybox,
   updateMetadataField,
 } from '../parsers/storybox';
-import { setEntitiesIdPrefix, setIdAs_Key, setIdsAs_Key } from '../common';
+import { setIdAs_Key, setIdsAs_Key } from '../common';
 
 export class StoryBoxAPI extends EntitiesAPI {
   public baseURL = `${_.api.collectionAPIUrl}/`;
@@ -46,10 +45,7 @@ export class StoryBoxAPI extends EntitiesAPI {
     );
     linkedStorybox = setIdAs_Key(linkedStorybox) as Entity;
     linkedStorybox = setObjectIdToCustomStorybox(linkedStorybox);
-    let frameFromCode = await this.getEntity(linkedStorybox.id);
-    frameFromCode = setIdAndCustomObjectId(frameFromCode);
-
-    return frameFromCode;
+    return linkedStorybox;
   }
 
   async create(_storyboxInfo: StoryboxBuild): Promise<Entity> {
