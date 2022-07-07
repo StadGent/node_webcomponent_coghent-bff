@@ -246,7 +246,8 @@ export const resolvers: Resolvers<Context> = {
 
         if (storyboxId != null) {
           const assetRelation = createRelationTypeFromData(type, assetId, 'entities/')
-          storyboxAssets = await dataSources.EntitiesAPI.addRelation(storyboxId, assetRelation)
+          await dataSources.EntitiesAPI.addRelation(storyboxId, assetRelation)
+          storyboxAssets = await dataSources.EntitiesAPI.getRelationOfType(storyboxId, RelationType.Components)
         } else {
           const frame = await dataSources.StoryBoxAPI.createFrame('Verhaal', 'Verhaal gecreeerd op de touchtable in de Coghent box.');
           const storyboxRelation = createRelationTypeFromData(RelationType.StoryBox, frame.id, 'entities/')

@@ -46,20 +46,9 @@ export class StoryBoxAPI extends EntitiesAPI {
     );
     linkedStorybox = setIdAs_Key(linkedStorybox) as Entity;
     linkedStorybox = setObjectIdToCustomStorybox(linkedStorybox);
-
-    let copiedMetadata: Array<Metadata> = [];
-    Object.assign(
-      copiedMetadata,
-      linkedStorybox.metadata ? linkedStorybox.metadata : []
-    );
-    copiedMetadata.push(createMetadataTypeFromData(MetaKey.BoxCode, _code));
-
-    await this.replaceMetadata(
-      linkedStorybox.id,
-      copiedMetadata as Array<MetadataInput>
-    );
     let frameFromCode = await this.getEntity(linkedStorybox.id);
     frameFromCode = setIdAndCustomObjectId(frameFromCode);
+
     return frameFromCode;
   }
 
