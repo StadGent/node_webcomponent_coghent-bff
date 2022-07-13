@@ -62,7 +62,7 @@ export const createEntityBody = (
     "metadata": [
         {
             "key": "type",
-            "value": "frame",
+            "value": "${_type}",
             "language": "en"
         },
         {
