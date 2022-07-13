@@ -355,7 +355,7 @@ type Query {
   User: User
   StoryBox: Entity
   RelationsAsEntities(id: String!): [Entity]
-  LinkStorybox(code: String!): Entity
+  LinkStorybox(code: String!, title: String!, description: String!): Entity
   CreateStorybox(storyboxInfo: StoryboxBuildInput!): Entity
   Storybox: EntitiesResults
   AddEntityAsRelation(entityId: String!, entityRelationId: String!): [Relation]

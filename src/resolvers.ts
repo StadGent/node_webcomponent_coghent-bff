@@ -115,8 +115,8 @@ export const resolvers: Resolvers<Context> = {
     RelationsAsEntities: async (_source, { id }, { dataSources }) => {
       return await getBasketEntityRelationsAsEntities(id, dataSources);
     },
-    LinkStorybox: async (_source, { code }, { dataSources }) => {
-      return await dataSources.StoryBoxAPI.linkStorybox(code);
+    LinkStorybox: async (_source, { code, title, description }, { dataSources }) => {
+      return await dataSources.StoryBoxAPI.linkStorybox(code, title, description);
     },
     CreateStorybox: async (_source, { storyboxInfo }, { dataSources }) => {
       console.log(`\n\n STORYBOX FRONTEND`, storyboxInfo);

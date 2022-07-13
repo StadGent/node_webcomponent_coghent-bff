@@ -39,12 +39,16 @@ export class StoryBoxAPI extends EntitiesAPI {
     return storybox;
   }
 
-  async linkStorybox(_code: string): Promise<Entity> {
+  async linkStorybox(_code: string, _title: string, _description: string): Promise<Entity> {
     let linkedStorybox: Entity = await this.post(
       `${this.STORY_BOX}/link/${_code}`
     );
     linkedStorybox = setIdAs_Key(linkedStorybox) as Entity;
     linkedStorybox = setObjectIdToCustomStorybox(linkedStorybox);
+    linkedStorybox.metadata.push({ key: MetaKey.Title, value: _title } as Metadata)
+    linkedStorybox.metadata.push({ key: MetaKey.Description, value: _description } as Metadata)
+    await this.replaceMetadata(linkedStorybox.id, linkedStorybox.metadata as Array<MetadataInput>)
+
     return linkedStorybox;
   }
 
