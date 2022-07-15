@@ -298,6 +298,7 @@ type BoxVisiter {
   code: String!
   start_time: String
   touch_table_time: String
+  ticketUsed: Int
 }
 
 type Ticket {
@@ -322,6 +323,7 @@ input StoryboxBuildInput {
   assets: [String]
   assetTimings: [KeyValuePairInput]
 }
+
 type StoryboxBuild {
   frameId: String!
   title: String
@@ -384,4 +386,5 @@ type Mutation {
     type: RelationType!
   ): [Relation]!
   DeleteEntity(id: String!): String
+  UpdatedScannedOfBoxvisiter(code: String!): BoxVisiter
 }

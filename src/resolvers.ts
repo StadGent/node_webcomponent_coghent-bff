@@ -286,6 +286,9 @@ export const resolvers: Resolvers<Context> = {
     DeleteEntity: async (_source, { id }, { dataSources }) => {
       return await dataSources.EntitiesAPI.deleteEntity(id);
     },
+    UpdatedScannedOfBoxvisiter: async (_source, { code }, { dataSources }) => {
+      return await dataSources.BoxVisitersAPI.updatedScanned(code)
+    },
   },
   //   DeleteBoxVisiterRelation: async (
   //     _source,

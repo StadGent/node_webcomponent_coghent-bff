@@ -7,6 +7,7 @@ import {
   EntitiesResults,
   RelationType,
   EntityInfo,
+  BoxVisiter,
 } from './type-defs';
 import { Context } from './types';
 import { environment as env } from './environment';
@@ -170,5 +171,12 @@ export class EntitiesAPI extends AuthRESTDataSource<Context> {
   async deleteEntity(_id: string): Promise<string> {
     await this.delete(`entities/${_id}`);
     return `Deleted entity with id ${_id}`;
+  }
+
+  async addUpdateProperty(_id: string, _property: keyof Entity | keyof BoxVisiter, _value: string | number, _collection: 'entities' | 'box_visits' = 'entities'): Promise<Entity | BoxVisiter> {
+    const obj = {} as any
+    obj[_property] = _value
+    const result = await this.patch(`${_collection}/${_id}`, obj)
+    return result
   }
 }

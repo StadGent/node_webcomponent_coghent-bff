@@ -250,4 +250,15 @@ export class BoxVisitersAPI extends EntitiesAPI {
     }
     return newRelation;
   }
+
+  async updatedScanned(_code: string): Promise<BoxVisiter | null> {
+    let count = 0
+    let visiter = await this.getByCode(_code)
+    if (visiter !== null) {
+      visiter.ticketUsed != undefined ? count = (visiter.ticketUsed! + 1) : count = 1
+      visiter = await this.addUpdateProperty(visiter.id, "ticketUsed", count, "box_visits") as BoxVisiter
+      visiter = setIdAs_Key(visiter) as BoxVisiter
+    }
+    return visiter
+  }
 }
