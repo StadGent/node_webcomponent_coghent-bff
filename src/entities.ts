@@ -129,14 +129,16 @@ export class EntitiesAPI extends AuthRESTDataSource<Context> {
     if (_relationIds.length > 0) {
       for (const _id of _relationIds) {
         let id = _id;
-        if (id.includes('entities/')) {
-          id = id.replace('entities/', '');
-        }
-        try {
-          const entity = await this.getEntity(id);
-          entities.push(entity);
-        } catch (error) {
-          console.error(`Couldn't find an entity with id: ${_id}`);
+        if (!id.includes('mediafiles/')) {
+          if (id.includes('entities/')) {
+            id = id.replace('entities/', '');
+          }
+          try {
+            const entity = await this.getEntity(id);
+            entities.push(entity);
+          } catch (error) {
+            console.error(`Couldn't find an entity with id: ${_id}`);
+          }
         }
       }
     }

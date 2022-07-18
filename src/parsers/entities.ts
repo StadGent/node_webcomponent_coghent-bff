@@ -125,3 +125,11 @@ export const hasRelationOfType = (_relations: Array<Relation>, _type: RelationTy
   const found = _relations.map(relation => relation.type === _type)
   return found ? found.some(result => result === true) : false
 }
+
+export const getRelationsFromMetadata = (_entity: Entity, _type: RelationType) => {
+  let relations: Array<Metadata> = []
+  if (_entity && _entity.metadata.length >= 1) {
+    relations = _entity.metadata.filter(_meta => _meta?.type === _type) as Array<Metadata>
+  }
+  return relations
+}

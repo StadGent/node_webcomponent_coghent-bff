@@ -21,7 +21,7 @@ import { Context, DataSources } from './types';
 import { AuthenticationError } from 'apollo-server';
 import 'apollo-cache-control';
 import { environment } from './environment';
-import { filterByRelationTypes, filterOutRelationTypes } from './parsers/entities';
+import { filterByRelationTypes, filterOutRelationTypes, getRelationsFromMetadata } from './parsers/entities';
 import {
   setEntitiesIdPrefix,
   setIdAs_Key,
@@ -482,23 +482,19 @@ export const resolvers: Resolvers<Context> = {
       return components;
     },
     assets: async (parent, _args, { dataSources }) => {
-      let data = await dataSources.EntitiesAPI.getRelations(parent.id);
-      const assetRelations = data.filter(
-        (_relation) => _relation.type == RelationType.Components
-      );
+      const relations = getRelationsFromMetadata(parent, RelationType.Components)
+
       let assets = await dataSources.EntitiesAPI.getEntitiesOfRelationIds(
-        assetRelations.map((_relation) => _relation.key)
+        relations.map((_relation) => _relation.key)
       );
       assets = await setMediafileOnAsset(dataSources, assets, parent.id);
       return assets;
     },
     frames: async (parent, _args, { dataSources }) => {
-      let data = await dataSources.EntitiesAPI.getRelationOfType(
-        parent.id,
-        RelationType.Frames
-      );
+      const relations = getRelationsFromMetadata(parent, RelationType.Frames)
+
       return await dataSources.EntitiesAPI.getEntitiesOfRelationIds(
-        data.map((_relation) => _relation.key)
+        relations.map((_relation) => _relation.key)
       );
     },
     collections: async (parent, _args, { dataSources }) => {
