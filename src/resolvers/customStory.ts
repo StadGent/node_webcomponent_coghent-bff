@@ -1,6 +1,7 @@
 import { setEntitiesIdPrefix, setIdAs_Key } from '../common';
 import { calculateScale, calculateSpaceForAssets, Dimension, getUpdateRelations } from '../parsers/customStory';
-import { Entity, RelationType } from '../type-defs'
+import { filterByRelationTypes } from '../parsers/entities';
+import { Entity, Relation, RelationType } from '../type-defs'
 import { DataSources } from '../types'
 
 export const wallFullWidth = 5760
@@ -22,7 +23,8 @@ export const getCustomFrame = async (_dataSources: DataSources, _id: string) => 
 export const updatedRelationsForFrame = async (_dataSources: DataSources, _frameId: string) => {
   const relationsAll = await _dataSources.EntitiesAPI.getRelations(_frameId)
   const updatedRelations = getUpdateRelations(relationsAll)
-  await _dataSources.EntitiesAPI.replaceRelations(_frameId, updatedRelations)
+  const updated = await _dataSources.EntitiesAPI.replaceRelations(_frameId, updatedRelations)
+  return updated
 }
 
 export const generateAssetScale = async (_dataSources: DataSources, _assetKey: string, availableSpace: Dimension) => {
@@ -38,8 +40,8 @@ export const generateAssetScale = async (_dataSources: DataSources, _assetKey: s
   return scale
 }
 
-export const addScaleToAssets = async (_dataSources: DataSources, _frameId: string) => {
-  const relationComponents = await _dataSources.EntitiesAPI.getRelationOfType(_frameId, RelationType.Components)
+export const addScaleToAssets = async (_dataSources: DataSources, _relations: Array<Relation>, _frameId: string) => {
+  const relationComponents = filterByRelationTypes(_relations, [RelationType.Components])
   if (relationComponents) {
     const space = calculateSpaceForAssets(relationComponents.length)
     let count = 0
@@ -47,7 +49,7 @@ export const addScaleToAssets = async (_dataSources: DataSources, _frameId: stri
       count++
       let width;
       count <= space.assetsLeft ? width = space.spaceleft : width = space.spaceright
-      const scale = await generateAssetScale(_dataSources, relation.key, { height: wallFullHeight/2, width: width } as Dimension)
+      const scale = await generateAssetScale(_dataSources, relation.key, { height: wallFullHeight / 2, width: width } as Dimension)
       const found = relationComponents.find(_obj => _obj.key === relation.key)
       if (found) {
         found.scale = scale
@@ -61,7 +63,7 @@ export const prepareCustomStory = async (_dataSources: DataSources, _storyId: st
   let frame = await getCustomFrame(_dataSources, _storyId)
   if (frame) {
     frame = setIdAs_Key(frame) as Entity
-    await updatedRelationsForFrame(_dataSources, frame.id)
-    await addScaleToAssets(_dataSources, frame.id)
+    const updated = await updatedRelationsForFrame(_dataSources, frame.id)
+    await addScaleToAssets(_dataSources, updated, frame.id)
   }
 }
