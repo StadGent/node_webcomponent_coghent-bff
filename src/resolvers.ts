@@ -43,6 +43,7 @@ import { getBasketEntityRelationsAsEntities } from './resolvers/entities';
 import { createRelationTypeFromData } from './parsers/storybox';
 import { prepareCustomStory } from './resolvers/customStory';
 import { getVisiterOfEntity } from './resolvers/boxVisiter';
+import { getRelationsForUpload } from './resolvers/search';
 export const resolvers: Resolvers<Context> = {
   Query: {
     PrintBoxTicket: (_source, { code }, { dataSources }) => {
@@ -184,6 +185,10 @@ export const resolvers: Resolvers<Context> = {
     ) => {
       const parentEntity = await dataSources.EntitiesAPI.getEntity(id)
       return await getVisiterOfEntity(parentEntity, dataSources);
+    },
+    GetUploadRelations: async (_source, { searchValue }, { dataSources }) => {
+      const filters = getRelationsForUpload(searchValue)
+      return await dataSources.SearchAPI.getByAdvancedFilters(10, filters)
     },
   },
   Mutation: {

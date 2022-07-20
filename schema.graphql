@@ -49,7 +49,10 @@ enum EntityTypes {
   frame
   story
   box_visit
-  contains
+  contains  
+  asset
+  thesaurus
+  person
 }
 
 enum RelationType {
@@ -279,6 +282,27 @@ input SearchFilter {
   and_filter: Boolean
 }
 
+input TextInput {
+  value: String
+}
+
+input MultiSelectInput {
+  value: [String]
+  AndOrValue: Boolean
+}
+
+enum AdvancedInputType {
+  TextInput
+  MultiSelectInput
+}
+
+input FilterInput {
+  key: String!
+  type: AdvancedInputType!
+  textInput: TextInput
+  multiSelectInput: MultiSelectInput
+}
+
 type User {
   id: String!
   email: String!
@@ -365,6 +389,7 @@ type Query {
   LinkTestimoniToAsset(assetId: String!, testimoniId: String!): [Relation]
   LinkFrameToVisiter(frameId: String!): BoxVisiter
   GetvisiterOfEntity(id: String!): BoxVisiter
+  GetUploadRelations(searchValue: String!): EntitiesResults
 }
 
 type Mutation {
