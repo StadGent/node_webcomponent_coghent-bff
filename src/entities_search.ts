@@ -40,7 +40,6 @@ export class SearchAPI extends AuthRESTDataSource<Context> {
     _limit: number,
     _advancedFilters?: Array<ParsedFilter>
   ): Promise<EntitiesResults | null> {
-    console.log(`/_advancedFilters`, _advancedFilters)
     let data = await this.post(
       `${this.ADVANCED_SEARCH}?limit=${_limit}&skip=0`,
       _advancedFilters

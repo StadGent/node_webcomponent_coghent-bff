@@ -16,6 +16,7 @@ import {
   MimeType,
   StoryboxBuild,
   EntityInfo,
+  EntityTypes,
 } from './type-defs';
 import { Context, DataSources } from './types';
 import { AuthenticationError } from 'apollo-server';
@@ -188,7 +189,15 @@ export const resolvers: Resolvers<Context> = {
     },
     GetUploadRelations: async (_source, { searchValue }, { dataSources }) => {
       const filters = getRelationsForUpload(searchValue)
-      return await dataSources.SearchAPI.getByAdvancedFilters(10, filters)
+      const data = await dataSources.SearchAPI.getByAdvancedFilters(5, filters)
+      if (data && data.results) {
+        for (const entity of data.results) {
+          if (entity?.type === EntityTypes.Thesaurus || entity?.type === EntityTypes.Person) {
+            entity!.id = `entities/${entity?.id}`
+          }
+        }
+      }
+      return data
     },
   },
   Mutation: {
