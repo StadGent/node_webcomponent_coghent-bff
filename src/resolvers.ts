@@ -97,6 +97,7 @@ export const resolvers: Resolvers<Context> = {
     },
     CreateBoxVisiter: async (_source, { storyId }, { dataSources }) => {
       const visiter = await dataSources.BoxVisitersAPI.create(storyId);
+      visiter.storyboxes = [];
       return visiter;
     },
     Stories: async (_source, _args, { dataSources }) => {
@@ -211,16 +212,19 @@ export const resolvers: Resolvers<Context> = {
       return await getVisiterOfEntity(parentEntity, dataSources);
     },
     GetUploadRelations: async (_source, { searchValue }, { dataSources }) => {
-      const filters = getRelationsForUpload(searchValue)
-      const data = await dataSources.SearchAPI.getByAdvancedFilters(5, filters)
+      const filters = getRelationsForUpload(searchValue);
+      const data = await dataSources.SearchAPI.getByAdvancedFilters(5, filters);
       if (data && data.results) {
         for (const entity of data.results) {
-          if (entity?.type === EntityTypes.Thesaurus || entity?.type === EntityTypes.Person) {
-            entity!.id = `entities/${entity?.id}`
+          if (
+            entity?.type === EntityTypes.Thesaurus ||
+            entity?.type === EntityTypes.Person
+          ) {
+            entity!.id = `entities/${entity?.id}`;
           }
         }
       }
-      return data
+      return data;
     },
   },
   Mutation: {
@@ -367,18 +371,6 @@ export const resolvers: Resolvers<Context> = {
       return await dataSources.BoxVisitersAPI.updatedScanned(code);
     },
   },
-  //   DeleteBoxVisiterRelation: async (
-  //     _source,
-  //     { code, relationsToDelete },
-  //     { dataSources }
-  //   ) => {
-  //     const relations = await dataSources.BoxVisitersAPI.deleteRelation(
-  //       code,
-  //       relationsToDelete
-  //     );
-  //     return relations;
-  //   },
-  // },
   BoxVisiter: {
     async relations(parent, _args, { dataSources }) {
       return await dataSources.BoxVisitersAPI.getRelations(parent.code);

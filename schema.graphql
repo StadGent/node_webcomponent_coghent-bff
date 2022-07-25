@@ -399,10 +399,6 @@ type Mutation {
   AddStoryToBoxVisiter(code: String!, storyId: String!): BoxVisiter
   AddFrameToStoryBoxVisiter(code: String!, frameInput: FrameInput!): BoxVisiter
   DeleteBoxVisiterBasketItem(code: String!, relationId: String!): [Relation]!
-  # DeleteBoxVisiterRelation(
-  #   code: String!
-  #   relationsToDelete: [RelationInput!]!
-  # ): [Relation]!
   UpdateBoxVisiterTouchtableTime(
     code: String!
     touchTableTime: String!
