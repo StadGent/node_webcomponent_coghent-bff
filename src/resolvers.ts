@@ -22,7 +22,11 @@ import { Context, DataSources } from './types';
 import { AuthenticationError } from 'apollo-server';
 import 'apollo-cache-control';
 import { environment } from './environment';
-import { filterByRelationTypes, filterOutRelationTypes, getRelationsFromMetadata } from './parsers/entities';
+import {
+  filterByRelationTypes,
+  filterOutRelationTypes,
+  getRelationsFromMetadata,
+} from './parsers/entities';
 import {
   setEntitiesIdPrefix,
   setIdAs_Key,
@@ -66,6 +70,16 @@ export const resolvers: Resolvers<Context> = {
     },
     BoxVisiterByCode: async (_source, { code }, { dataSources }) => {
       const visiter = await dataSources.BoxVisitersAPI.getByCode(code);
+      const relations = await dataSources.BoxVisitersAPI.getRelations(code);
+      const storyBoxes = filterByRelationTypes(relations, [
+        RelationType.StoryBox,
+      ]).reverse();
+      if (storyBoxes && visiter) {
+        let entity = await dataSources.EntitiesAPI.getEntitiesOfRelationIds(
+          storyBoxes.map((_relation) => _relation.key)
+        );
+        visiter.storyboxes = entity;
+      }
       return visiter;
     },
     BoxVisiterRelationsByType: async (
@@ -75,6 +89,11 @@ export const resolvers: Resolvers<Context> = {
     ) => {
       const relations = await dataSources.BoxVisitersAPI.getRelations(code);
       return filterByRelationTypes(relations, [type]).reverse();
+    },
+    BasketByCustomFrameId: async (_source, { frameId }, { dataSources }) => {
+      const relations =
+        await dataSources.BoxVisitersAPI.getBasketItemsByFrameId(frameId);
+      return relations;
     },
     CreateBoxVisiter: async (_source, { storyId }, { dataSources }) => {
       const visiter = await dataSources.BoxVisitersAPI.create(storyId);
@@ -89,12 +108,14 @@ export const resolvers: Resolvers<Context> = {
       return story;
     },
     CreateEntity: async (_source, { entityInfo }, { dataSources }) => {
-      const entity = await dataSources.EntitiesAPI.createEntity(entityInfo as EntityInfo);
+      const entity = await dataSources.EntitiesAPI.createEntity(
+        entityInfo as EntityInfo
+      );
       return entity;
     },
     Entity: async (_source, { id }, { dataSources }, info) => {
       info.cacheControl.setCacheHint({ maxAge: 3600 });
-      return id ? dataSources.EntitiesAPI.getEntity(id) : null
+      return id ? dataSources.EntitiesAPI.getEntity(id) : null;
     },
     Entities: async (
       _source,
@@ -108,7 +129,7 @@ export const resolvers: Resolvers<Context> = {
         fetchPolicy || ''
       );
     },
-    User: async (_source, { }, { dataSources, session }) => {
+    User: async (_source, {}, { dataSources, session }) => {
       if (!session.auth.accessToken) {
         throw new AuthenticationError('Not authenticated');
       }
@@ -117,8 +138,16 @@ export const resolvers: Resolvers<Context> = {
     RelationsAsEntities: async (_source, { id }, { dataSources }) => {
       return await getBasketEntityRelationsAsEntities(id, dataSources);
     },
-    LinkStorybox: async (_source, { code, title, description }, { dataSources }) => {
-      return await dataSources.StoryBoxAPI.linkStorybox(code, title, description);
+    LinkStorybox: async (
+      _source,
+      { code, title, description },
+      { dataSources }
+    ) => {
+      return await dataSources.StoryBoxAPI.linkStorybox(
+        code,
+        title,
+        description
+      );
     },
     CreateStorybox: async (_source, { storyboxInfo }, { dataSources }) => {
       console.log(`\n\n STORYBOX FRONTEND`, storyboxInfo);
@@ -172,19 +201,13 @@ export const resolvers: Resolvers<Context> = {
       );
       return relations;
     },
-    LinkFrameToVisiter: async (
-      _source,
-      { frameId },
-      { dataSources }
-    ) => {
-      return frameId != '' ? await dataSources.StoryBoxAPI.linkFrameToVisiter(frameId) : null;
+    LinkFrameToVisiter: async (_source, { frameId }, { dataSources }) => {
+      return frameId != ''
+        ? await dataSources.StoryBoxAPI.linkFrameToVisiter(frameId)
+        : null;
     },
-    GetvisiterOfEntity: async (
-      _source,
-      { id },
-      { dataSources }
-    ) => {
-      const parentEntity = await dataSources.EntitiesAPI.getEntity(id)
+    GetvisiterOfEntity: async (_source, { id }, { dataSources }) => {
+      const parentEntity = await dataSources.EntitiesAPI.getEntity(id);
       return await getVisiterOfEntity(parentEntity, dataSources);
     },
     GetUploadRelations: async (_source, { searchValue }, { dataSources }) => {
@@ -249,59 +272,99 @@ export const resolvers: Resolvers<Context> = {
       { code, assetId, type },
       { dataSources }
     ) => {
-      const visiter = await dataSources.BoxVisitersAPI.getByCode(code)
-      let storyboxId: string | null = null
-      let storyboxAssets: Array<Relation> = []
+      const visiter = await dataSources.BoxVisitersAPI.getByCode(code);
+      let storyboxId: string | null = null;
+      let storyboxAssets: Array<Relation> = [];
       if (visiter && type === RelationType.Components) {
-        const boxVisiterRelations: Relation[] = await dataSources.BoxVisitersAPI.getRelations(code);
+        const boxVisiterRelations: Relation[] =
+          await dataSources.BoxVisitersAPI.getRelations(code);
 
-        let storyboxRelations = filterByRelationTypes(boxVisiterRelations, [RelationType.StoryBox])
-        storyboxRelations.length === 1 ? storyboxId = setEntitiesIdPrefix(storyboxRelations[0].key, false) : null
+        let storyboxRelations = filterByRelationTypes(boxVisiterRelations, [
+          RelationType.StoryBox,
+        ]);
+        storyboxRelations.length === 1
+          ? (storyboxId = setEntitiesIdPrefix(storyboxRelations[0].key, false))
+          : null;
 
-        if (storyboxId != null) {
-          const assetRelation = createRelationTypeFromData(type, assetId, 'entities/')
-          await dataSources.EntitiesAPI.addRelation(storyboxId, assetRelation)
-          storyboxAssets = await dataSources.EntitiesAPI.getRelationOfType(storyboxId, RelationType.Components)
-        } else {
-          const frame = await dataSources.StoryBoxAPI.createFrame('Verhaal', 'Verhaal gecreeerd op de touchtable in de Coghent box.');
-          const storyboxRelation = createRelationTypeFromData(RelationType.StoryBox, frame.id, 'entities/')
-          storyboxAssets = await dataSources.EntitiesAPI.addRelation(visiter.id, storyboxRelation, 'box_visits')
+        if (storyboxId == null) {
+          const frame = await dataSources.StoryBoxAPI.createFrame(
+            'Verhaal',
+            'Verhaal gecreeerd op de touchtable in de Coghent box.'
+          );
+          storyboxId = frame.id;
+          const storyboxRelation = createRelationTypeFromData(
+            RelationType.StoryBox,
+            frame.id,
+            'entities/'
+          );
+          storyboxAssets = await dataSources.EntitiesAPI.addRelation(
+            visiter.id,
+            storyboxRelation,
+            'box_visits'
+          );
         }
+        const assetRelation = createRelationTypeFromData(
+          type,
+          assetId,
+          'entities/'
+        );
+        await dataSources.EntitiesAPI.addRelation(storyboxId, assetRelation);
+        storyboxAssets = await dataSources.EntitiesAPI.getRelationOfType(
+          storyboxId,
+          RelationType.Components
+        );
       } else if (visiter && type === RelationType.Visited) {
-        const visitedRelation = createRelationTypeFromData(type, assetId, 'entities/')
-        storyboxAssets = await dataSources.EntitiesAPI.addRelation(visiter.id, visitedRelation, 'box_visits')
+        const visitedRelation = createRelationTypeFromData(
+          type,
+          assetId,
+          'entities/'
+        );
+        await dataSources.EntitiesAPI.addRelation(
+          visiter.id,
+          visitedRelation,
+          'box_visits'
+        );
+        storyboxAssets = await dataSources.EntitiesAPI.getRelations(visiter.id);
       }
-      return storyboxAssets
+      return storyboxAssets;
     },
-    DeleteBoxVisiterRelation: async (
+    DeleteBoxVisiterBasketItem: async (
       _source,
       { code, relationId },
       { dataSources }
     ) => {
-      const visiterRelations = await dataSources.EntitiesAPI.getRelations(code, 'box_visits')
+      const visiterRelations = await dataSources.EntitiesAPI.getRelations(
+        code,
+        'box_visits'
+      );
+      let updatedRelations: Relation[] = [];
       if (visiterRelations.length > 0) {
-        const found = visiterRelations.find(relation => relation.type === RelationType.StoryBox)
-        if (found) {
-          const frame = await dataSources.EntitiesAPI.getEntity(setEntitiesIdPrefix(found.key, false))
-          const frameRelations = await dataSources.EntitiesAPI.getRelations(frame.id)
-          const updatedFrameRelations: Array<Relation> = []
-          const otherRelations = filterOutRelationTypes(frameRelations, [RelationType.Components])
-          const componentRelations = filterByRelationTypes(frameRelations, [RelationType.Components])
-          const updatedComponentRelations: Array<Relation> = []
-          for (const rel of componentRelations) {
-            if (rel.key !== setEntitiesIdPrefix(relationId, true)) updatedComponentRelations.push(rel)
+        try {
+          const found = visiterRelations.find(
+            (relation) => relation.type === RelationType.StoryBox
+          );
+          if (found) {
+            const frameId: string = found.key.replace('entities/', '');
+            await dataSources.EntitiesAPI.deleteRelations(frameId, [
+              { key: 'entities/' + relationId, type: RelationType.Components },
+            ]);
+            updatedRelations = await dataSources.EntitiesAPI.getRelations(
+              frameId
+            );
           }
-          updatedFrameRelations.push(...otherRelations, ...updatedComponentRelations)
-          await dataSources.EntitiesAPI.replaceRelations(frame.id, updatedFrameRelations)
+        } catch (error) {
+          console.error(
+            `Could not find storybox for boxvisit with code: ${code}`
+          );
         }
       }
-      return visiterRelations;
+      return updatedRelations;
     },
     DeleteEntity: async (_source, { id }, { dataSources }) => {
       return await dataSources.EntitiesAPI.deleteEntity(id);
     },
     UpdatedScannedOfBoxvisiter: async (_source, { code }, { dataSources }) => {
-      return await dataSources.BoxVisitersAPI.updatedScanned(code)
+      return await dataSources.BoxVisitersAPI.updatedScanned(code);
     },
   },
   //   DeleteBoxVisiterRelation: async (
@@ -496,7 +559,10 @@ export const resolvers: Resolvers<Context> = {
       return components;
     },
     assets: async (parent, _args, { dataSources }) => {
-      const relations = getRelationsFromMetadata(parent, RelationType.Components)
+      const relations = getRelationsFromMetadata(
+        parent,
+        RelationType.Components
+      );
 
       let assets = await dataSources.EntitiesAPI.getEntitiesOfRelationIds(
         relations.map((_relation) => _relation.key)
@@ -505,7 +571,7 @@ export const resolvers: Resolvers<Context> = {
       return assets;
     },
     frames: async (parent, _args, { dataSources }) => {
-      const relations = getRelationsFromMetadata(parent, RelationType.Frames)
+      const relations = getRelationsFromMetadata(parent, RelationType.Frames);
 
       return await dataSources.EntitiesAPI.getEntitiesOfRelationIds(
         relations.map((_relation) => _relation.key)
@@ -539,7 +605,7 @@ export const resolvers: Resolvers<Context> = {
       let mimetype = { type: '', mime: undefined } as any;
       if (parent.mimetype) {
         mimetype.type = parent.mimetype;
-        for (let index = 0;index < Object.values(MIMETYPES).length;index++) {
+        for (let index = 0; index < Object.values(MIMETYPES).length; index++) {
           if (Object.values(MIMETYPES)[index] === parent.mimetype) {
             mimetype.mime = Object.keys(MIMETYPES)[index];
             checkEnumOnType(mimetype.type, AudioMIME)

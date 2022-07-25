@@ -33,6 +33,11 @@ export class BoxVisitersAPI extends EntitiesAPI {
     return visiter;
   }
 
+  async getBasketItemsByFrameId(_id: string): Promise<Array<Relation>> {
+    const frameRelations = this.getEntityRelations(_id);
+    return frameRelations;
+  }
+
   async getRelations(_code: string): Promise<Array<Relation>> {
     return await this.get<Array<Relation>>(
       `${this.BOX_VISITS}/${_code}/relations`
@@ -104,42 +109,6 @@ export class BoxVisitersAPI extends EntitiesAPI {
     return relation;
   }
 
-  async deleteRelation(
-    _code: string,
-    _relationId: string
-  ): Promise<Relation[]> {
-    let relations: Relation[];
-    try {
-      relations = await this.get(`${this.BOX_VISITS}/${_code}/relations`);
-      if (relations) {
-        relations = relations.filter(
-          (relation: Relation) => !relation.key.includes(_relationId)
-        );
-        await this.put(`${this.BOX_VISITS}/${_code}/relations`, relations);
-      }
-    } catch (error) {
-      console.log(error);
-      throw new PersistedQueryNotFoundError();
-    }
-    return relations;
-  }
-
-  // async deleteRelation(
-  //   _code: string,
-  //   _relationsToDelete: RelationInput[]
-  // ): Promise<Relation[]> {
-  //   let relations: Relation[];
-  //   try {
-  //     relations = await this.delete(`${this.BOX_VISITS}/${_code}/relations`, {
-  //       relations: _relationsToDelete,
-  //     });
-  //   } catch (error) {
-  //     console.log(error);
-  //     throw new PersistedQueryNotFoundError();
-  //   }
-  //   return relations;
-  // }
-
   // async addTouchtableTimeToBoxVisiter(_code: string, _time: string): Promise<BoxVisiter | null>{
 
   // }
@@ -156,7 +125,7 @@ export class BoxVisitersAPI extends EntitiesAPI {
         'entities/'
       );
       await this.addRelation(storybox?.id, relation);
-      newFrame = setIdAs_Key(newFrame)
+      newFrame = setIdAs_Key(newFrame);
       return newFrame;
     }
   }
@@ -252,13 +221,20 @@ export class BoxVisitersAPI extends EntitiesAPI {
   }
 
   async updatedScanned(_code: string): Promise<BoxVisiter | null> {
-    let count = 0
-    let visiter = await this.getByCode(_code)
+    let count = 0;
+    let visiter = await this.getByCode(_code);
     if (visiter !== null) {
-      visiter.ticketUsed != undefined ? count = (visiter.ticketUsed! + 1) : count = 1
-      visiter = await this.addUpdateProperty(visiter.id, "ticketUsed", count, "box_visits") as BoxVisiter
-      visiter = setIdAs_Key(visiter) as BoxVisiter
+      visiter.ticketUsed != undefined
+        ? (count = visiter.ticketUsed! + 1)
+        : (count = 1);
+      visiter = (await this.addUpdateProperty(
+        visiter.id,
+        'ticketUsed',
+        count,
+        'box_visits'
+      )) as BoxVisiter;
+      visiter = setIdAs_Key(visiter) as BoxVisiter;
     }
-    return visiter
+    return visiter;
   }
 }

@@ -49,7 +49,7 @@ enum EntityTypes {
   frame
   story
   box_visit
-  contains  
+  contains
   asset
   thesaurus
   person
@@ -323,6 +323,7 @@ type BoxVisiter {
   start_time: String
   touch_table_time: String
   ticketUsed: Int
+  storyboxes: [Entity]
 }
 
 type Ticket {
@@ -390,13 +391,14 @@ type Query {
   LinkFrameToVisiter(frameId: String!): BoxVisiter
   GetvisiterOfEntity(id: String!): BoxVisiter
   GetUploadRelations(searchValue: String!): EntitiesResults
+  BasketByCustomFrameId(frameId: String!): [Relation]
 }
 
 type Mutation {
   replaceMetadata(id: String!, metadata: [MetadataInput!]!): [Metadata!]!
   AddStoryToBoxVisiter(code: String!, storyId: String!): BoxVisiter
   AddFrameToStoryBoxVisiter(code: String!, frameInput: FrameInput!): BoxVisiter
-  DeleteBoxVisiterRelation(code: String!, relationId: String!): [Relation]!
+  DeleteBoxVisiterBasketItem(code: String!, relationId: String!): [Relation]!
   # DeleteBoxVisiterRelation(
   #   code: String!
   #   relationsToDelete: [RelationInput!]!
