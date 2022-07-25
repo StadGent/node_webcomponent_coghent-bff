@@ -8,12 +8,18 @@ import {
   RelationType,
   EntityInfo,
   BoxVisiter,
+  RelationInput,
 } from './type-defs';
 import { Context } from './types';
 import { environment as env } from './environment';
 import { setIdAs_Key, setIdsAs_Key } from './common';
 import { AuthRESTDataSource } from 'inuits-apollo-server-auth';
-import { createBaseEntity, setIdAndObjectId, setObjectIdToEntity } from './parsers/entities';
+import {
+  createBaseEntity,
+  setIdAndObjectId,
+  setObjectIdToEntity,
+} from './parsers/entities';
+import { request } from 'express';
 
 export class EntitiesAPI extends AuthRESTDataSource<Context> {
   public baseURL = `${env.api.collectionAPIUrl}/`;
@@ -46,11 +52,14 @@ export class EntitiesAPI extends AuthRESTDataSource<Context> {
     let data = await this.get<Entity>('entities' + (id ? '/' + id : ''));
     // setId(data);
     // data = setIdAs_Key(data) as Entity;
-    data = setIdAndObjectId(data)
+    data = setIdAndObjectId(data);
     return data;
   }
 
-  async getRelations(id: string, _collection: 'entities' | 'box_visits' = 'entities'): Promise<Relation[]> {
+  async getRelations(
+    id: string,
+    _collection: 'entities' | 'box_visits' = 'entities'
+  ): Promise<Relation[]> {
     return await this.get(`${_collection}/${id}/relations/all`);
   }
 
@@ -170,15 +179,32 @@ export class EntitiesAPI extends AuthRESTDataSource<Context> {
     return relationsOfEntity;
   }
 
+  async deleteRelations(_entityId: string, relationsToRemove: RelationInput[]) {
+    const result = await this.delete(
+      `entities/${_entityId}/relations`,
+      undefined,
+      {
+        body: JSON.stringify(relationsToRemove),
+        headers: { 'Content-Type': 'application/json' },
+      }
+    );
+    return result;
+  }
+
   async deleteEntity(_id: string): Promise<string> {
     await this.delete(`entities/${_id}`);
     return `Deleted entity with id ${_id}`;
   }
 
-  async addUpdateProperty(_id: string, _property: keyof Entity | keyof BoxVisiter, _value: string | number, _collection: 'entities' | 'box_visits' = 'entities'): Promise<Entity | BoxVisiter> {
-    const obj = {} as any
-    obj[_property] = _value
-    const result = await this.patch(`${_collection}/${_id}`, obj)
-    return result
+  async addUpdateProperty(
+    _id: string,
+    _property: keyof Entity | keyof BoxVisiter,
+    _value: string | number,
+    _collection: 'entities' | 'box_visits' = 'entities'
+  ): Promise<Entity | BoxVisiter> {
+    const obj = {} as any;
+    obj[_property] = _value;
+    const result = await this.patch(`${_collection}/${_id}`, obj);
+    return result;
   }
 }
