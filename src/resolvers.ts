@@ -97,7 +97,6 @@ export const resolvers: Resolvers<Context> = {
     },
     CreateBoxVisiter: async (_source, { storyId }, { dataSources }) => {
       const visiter = await dataSources.BoxVisitersAPI.create(storyId);
-      visiter.storyboxes = [];
       return visiter;
     },
     Stories: async (_source, _args, { dataSources }) => {
