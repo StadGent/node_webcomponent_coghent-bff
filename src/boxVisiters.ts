@@ -109,10 +109,6 @@ export class BoxVisitersAPI extends EntitiesAPI {
     return relation;
   }
 
-  // async addTouchtableTimeToBoxVisiter(_code: string, _time: string): Promise<BoxVisiter | null>{
-
-  // }
-
   async CreateCustomFrameForBoxVisit(_code: string) {
     const storybox = await this.getByCode(_code);
     if (storybox) {
@@ -162,13 +158,21 @@ export class BoxVisitersAPI extends EntitiesAPI {
     return updatedVisiter;
   }
 
-  // async AddTouchTableTime(
-  //   _code: string,
-  //   _touchTableTime: string
-  // ): Promise<BoxVisiter | null> {
-  //   let updatedVisiter: BoxVisiter | null;
-  //   const visiter = await this.getByCode(_code);
-  // }
+  async AddTouchTableTime(
+    _code: string,
+    _touchTableTime: string
+  ): Promise<BoxVisiter | null> {
+    let visiter = await this.getByCode(_code);
+    if (visiter) {
+      visiter = (await this.addUpdateProperty(
+        visiter.id,
+        'touch_table_time',
+        Math.round(Date.now() / 1000),
+        'box_visits'
+      )) as BoxVisiter;
+    }
+    return visiter;
+  }
 
   createSeenFrame(_frameId: string): FrameSeen {
     return { id: `${_frameId}`, date: Math.round(Date.now() / 1000) };
