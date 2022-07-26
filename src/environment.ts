@@ -11,6 +11,7 @@ interface Environment {
   clientSecret: string;
   oauthBaseUrl: string;
   api: {
+    storageAPIUrl: string;
     collectionAPIUrl: string;
     searchAPIUrl: string;
     IiifAPIUrl: string;
@@ -40,6 +41,8 @@ export const environment: Environment = {
   api: {
     collectionAPIUrl:
       process.env.COLLECTION_API_URL || 'http://collection-api:8000',
+    storageAPIUrl:
+      process.env.STORAGE_API_URL || 'http://storage-api:8001',
     searchAPIUrl: process.env.SEARCH_API_URL || 'http://search-api:8002',
     IiifAPIUrl: process.env.IIIF_API_URL || 'http://cantaloupe:8182',
   },

@@ -10,3 +10,4 @@ generates:
       preResolveTypes: true
       scalars:
         Void: void
+      dedupeFragments: true

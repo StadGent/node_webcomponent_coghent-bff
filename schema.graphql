@@ -1,4 +1,10 @@
 scalar Void
+scalar Upload
+
+enum Rights {
+  cc0
+  undetermined
+}
 
 enum MIME {
   AUDIOMPEG
@@ -45,6 +51,17 @@ enum MetaKey {
   likes
 }
 
+extend enum MetaKey {
+  periode
+  maker
+}
+
+extend enum MetaKey {
+  publication_status
+  rights
+  sources
+}
+
 enum EntityTypes {
   frame
   story
@@ -53,6 +70,12 @@ enum EntityTypes {
   asset
   thesaurus
   person
+}
+
+enum Collections {
+  entities
+  box_visits
+  mediafiles
 }
 
 enum RelationType {
@@ -72,6 +95,7 @@ enum RelationType {
   box
   story_box_visits
   story_box
+  userConnected
 }
 
 enum StatusKey {
@@ -109,6 +133,7 @@ input StoryInput {
 
 input RelationInput {
   key: String!
+  value: String
   type: RelationType!
 }
 
@@ -358,6 +383,11 @@ type StoryboxBuild {
   assetTimings: [KeyValuePair]!
 }
 
+input MediaFileInput {
+  filename: String
+  metadata: [MetadataInput!]
+}
+
 type Query {
   PrintBoxTicket(code: String!): Ticket!
   ActiveBox(id: String): EntitiesResults!
@@ -410,4 +440,5 @@ type Mutation {
   ): [Relation]!
   DeleteEntity(id: String!): String
   UpdatedScannedOfBoxvisiter(code: String!): BoxVisiter
+  UploadMediafile(media: MediaFileInput!, file: Upload, relations: [RelationInput], metadata: [MetadataInput]): MediaFile
 }

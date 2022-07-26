@@ -19,6 +19,9 @@ import { BaseRedisCache } from 'apollo-server-cache-redis';
 import { TicketsAPI } from './ticket';
 import { StoryBoxAPI } from './sources/storybox';
 import { TestimoniAPI } from './testimoni';
+import { StorageAPI } from './sources/storage';
+// @ts-ignore
+import graphqlUploadExpress from 'graphql-upload/graphqlUploadExpress.js';
 
 const Redis = require('ioredis');
 
@@ -47,6 +50,7 @@ const apolloServer = new ApolloServer({
   typeDefs: readFileSync('./schema.graphql').toString('utf-8'),
   resolvers,
   dataSources: () => ({
+    StorageAPI: new StorageAPI(),
     EntitiesAPI: new EntitiesAPI(),
     StoryBoxAPI: new StoryBoxAPI(),
     BoxVisitersAPI: new BoxVisitersAPI(),
@@ -62,7 +66,10 @@ const apolloServer = new ApolloServer({
   },
   introspection: environment.apollo.introspection,
   playground: environment.apollo.playground,
+  uploads: false
 });
+
+app.use(graphqlUploadExpress({ maxFileSize: 50000000, maxFiles: 1 }));
 
 applyAuthSession(app, environment.sessionSecret);
 

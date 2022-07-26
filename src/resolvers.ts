@@ -49,7 +49,12 @@ import { createRelationTypeFromData } from './parsers/storybox';
 import { prepareCustomStory } from './resolvers/customStory';
 import { getVisiterOfEntity } from './resolvers/boxVisiter';
 import { getRelationsForUpload } from './resolvers/search';
+
+const GraphQLUpload = require('graphql-upload/GraphQLUpload.js');
+
+
 export const resolvers: Resolvers<Context> = {
+  Upload: GraphQLUpload,
   Query: {
     PrintBoxTicket: (_source, { code }, { dataSources }) => {
       const ticket = dataSources.TicketsAPI.print(code);
@@ -369,6 +374,12 @@ export const resolvers: Resolvers<Context> = {
     UpdatedScannedOfBoxvisiter: async (_source, { code }, { dataSources }) => {
       return await dataSources.BoxVisitersAPI.updatedScanned(code);
     },
+    UploadMediafile: async (_source, { media, file, relations, metadata }, { dataSources }) => {
+      const mediafile = await dataSources.EntitiesAPI.createMediafile(media)
+      const uploaded = await dataSources.StorageAPI.uploadMediafile(mediafile._id, file)
+      console.log(`\n uploaded`, uploaded)
+      return mediafile
+    }
   },
   BoxVisiter: {
     async relations(parent, _args, { dataSources }) {

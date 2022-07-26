@@ -9,6 +9,8 @@ import {
   EntityInfo,
   BoxVisiter,
   RelationInput,
+  MediaFileInput,
+  Collections,
 } from './type-defs';
 import { Context } from './types';
 import { environment as env } from './environment';
@@ -19,7 +21,6 @@ import {
   setIdAndObjectId,
   setObjectIdToEntity,
 } from './parsers/entities';
-import { request } from 'express';
 
 export class EntitiesAPI extends AuthRESTDataSource<Context> {
   public baseURL = `${env.api.collectionAPIUrl}/`;
@@ -206,5 +207,10 @@ export class EntitiesAPI extends AuthRESTDataSource<Context> {
     obj[_property] = _value;
     const result = await this.patch(`${_collection}/${_id}`, obj);
     return result;
+  }
+
+  async createMediafile(_mediafile: MediaFileInput): Promise<MediaFile> {
+    let mediafile = await this.post(`${Collections.Mediafiles}`, _mediafile)
+    return mediafile
   }
 }

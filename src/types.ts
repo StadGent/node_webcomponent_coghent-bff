@@ -7,8 +7,10 @@ import { StoryBoxAPI } from './sources/storybox';
 import { TicketsAPI } from './ticket';
 import { UserAPI } from './user';
 import { TestimoniAPI } from './testimoni';
+import { StorageAPI } from './sources/storage';
 
 export interface DataSources {
+  StorageAPI: StorageAPI;
   EntitiesAPI: EntitiesAPI;
   StoryBoxAPI: StoryBoxAPI;
   BoxVisitersAPI: BoxVisitersAPI;
