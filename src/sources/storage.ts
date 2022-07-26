@@ -7,7 +7,8 @@ import { AuthRESTDataSource } from 'inuits-apollo-server-auth';
 export class StorageAPI extends AuthRESTDataSource<Context> {
   public baseURL = `${_.api.storageAPIUrl}/`;
 
-  async uploadMediafile(_entityId: string, _file: any): Promise<MediaFile> {
+  async uploadMediafile(_entityId: string, _file: any): Promise<MediaFile | null> {
+    let response: null | MediaFile = null
     const form = new FormData()
     const { createReadStream, filename, mimetype, encoding, knownLength } = await _file;
     form.append('file', createReadStream(), {
@@ -18,7 +19,12 @@ export class StorageAPI extends AuthRESTDataSource<Context> {
 
     const formHeaders = form.getHeaders();
 
-    return await this.post(`upload?id=${_entityId.replace(`mediafiles/`, '')}`, form, { headers: formHeaders });
+    this.post(`upload?id=${_entityId.replace(`mediafiles/`, '')}`, form, { headers: formHeaders }).then(result => {
+      response = result
+    }).catch(error => {
+      console.error(`\n Uploading failed`, error.extensions.response.body ? error.extensions.response.body : error)
+    })
+    return response;
   }
 
 }
