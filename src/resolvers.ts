@@ -52,7 +52,6 @@ import { getRelationsForUpload } from './resolvers/search';
 
 const GraphQLUpload = require('graphql-upload/GraphQLUpload.js');
 
-
 export const resolvers: Resolvers<Context> = {
   Upload: GraphQLUpload,
   Query: {
@@ -366,12 +365,24 @@ export const resolvers: Resolvers<Context> = {
     UpdatedScannedOfBoxvisiter: async (_source, { code }, { dataSources }) => {
       return await dataSources.BoxVisitersAPI.updatedScanned(code);
     },
-    UploadMediafile: async (_source, { media, file, relations, metadata }, { dataSources }) => {
-      const mediafile = await dataSources.EntitiesAPI.createMediafile(media)
-      const uploaded = await dataSources.StorageAPI.uploadMediafile(mediafile._id, file)
-      console.log(`\n uploaded`, uploaded)
-      return mediafile
-    }
+    UploadMediafile: async (
+      _source,
+      { media, file, relations, metadata },
+      { dataSources }
+    ) => {
+      const mediafile = await dataSources.EntitiesAPI.createMediafile(media);
+      const uploaded = await dataSources.StorageAPI.uploadMediafile(
+        mediafile._id,
+        file
+      );
+      console.log(`\n uploaded`, uploaded);
+      return mediafile;
+    },
+    AddTouchTableTime: async (_source, { _code }, { dataSources }) => {
+      const updatedVisitor =
+        dataSources.BoxVisitersAPI.AddTouchTableTime(_code);
+      return updatedVisitor;
+    },
   },
   BoxVisiter: {
     async relations(parent, _args, { dataSources }) {
