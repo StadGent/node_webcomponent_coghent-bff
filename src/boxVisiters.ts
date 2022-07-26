@@ -158,10 +158,7 @@ export class BoxVisitersAPI extends EntitiesAPI {
     return updatedVisiter;
   }
 
-  async AddTouchTableTime(
-    _code: string,
-    _touchTableTime: string
-  ): Promise<BoxVisiter | null> {
+  async AddTouchTableTime(_code: string): Promise<BoxVisiter | null> {
     let visiter = await this.getByCode(_code);
     if (visiter) {
       visiter = (await this.addUpdateProperty(
