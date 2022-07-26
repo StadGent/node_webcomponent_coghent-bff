@@ -12,10 +12,7 @@ import {
   RelationType,
   StoryboxBuild,
 } from '../type-defs';
-import {
-  createEntityBody,
-  filterOutRelationTypes,
-} from '../parsers/entities';
+import { createEntityBody, filterOutRelationTypes } from '../parsers/entities';
 import {
   createRelationsOfStorybox,
   setIdAndCustomObjectId,
@@ -36,16 +33,17 @@ export class StoryBoxAPI extends EntitiesAPI {
     return storybox;
   }
 
-  async linkStorybox(_code: string, _title: string, _description: string): Promise<Entity> {
+  async linkStorybox(_code: string): Promise<Entity> {
     let linkedStorybox: Entity = await this.post(
       `${this.STORY_BOX}/link/${_code}`
     );
     if (linkedStorybox != undefined) {
       linkedStorybox = setIdAs_Key(linkedStorybox) as Entity;
       linkedStorybox = setObjectIdToCustomStorybox(linkedStorybox);
-      linkedStorybox.metadata.push({ key: MetaKey.Title, value: _title } as Metadata)
-      linkedStorybox.metadata.push({ key: MetaKey.Description, value: _description } as Metadata)
-      await this.replaceMetadata(linkedStorybox.id, linkedStorybox.metadata as Array<MetadataInput>)
+      await this.replaceMetadata(
+        linkedStorybox.id,
+        linkedStorybox.metadata as Array<MetadataInput>
+      );
     }
     return linkedStorybox;
   }
@@ -63,7 +61,7 @@ export class StoryBoxAPI extends EntitiesAPI {
   async createFrame(_title: string, _description: string): Promise<Entity> {
     const frameBody = createEntityBody(EntityTypes.Frame, _title, _description);
     let newFrame = await this.post(`entities`, JSON.parse(frameBody));
-    newFrame = setIdAs_Key(newFrame)
+    newFrame = setIdAs_Key(newFrame);
     return newFrame;
   }
 
@@ -87,10 +85,7 @@ export class StoryBoxAPI extends EntitiesAPI {
       RelationType.Components,
     ]);
 
-    const updatedRelationsAll = [
-      ...otherRelations,
-      ...relationsFromStorybox,
-    ];
+    const updatedRelationsAll = [...otherRelations, ...relationsFromStorybox];
 
     await this.replaceRelations(_storyboxInfo.frameId!, updatedRelationsAll);
     let newmetadata: Array<Metadata> = originalMetadata as Array<Metadata>;
@@ -113,8 +108,8 @@ export class StoryBoxAPI extends EntitiesAPI {
   }
 
   async linkFrameToVisiter(_frameId: string): Promise<BoxVisiter> {
-    let visiter = await this.post(`/story_box/publish/${_frameId}`)
-    visiter = setIdAs_Key(visiter) as BoxVisiter
-    return visiter
+    let visiter = await this.post(`/story_box/publish/${_frameId}`);
+    visiter = setIdAs_Key(visiter) as BoxVisiter;
+    return visiter;
   }
 }

@@ -412,7 +412,7 @@ type Query {
   User: User
   StoryBox: Entity
   RelationsAsEntities(id: String!): [Entity]
-  LinkStorybox(code: String!, title: String!, description: String!): Entity
+  LinkStorybox(code: String!): Entity
   CreateStorybox(storyboxInfo: StoryboxBuildInput!): Entity
   Storybox: EntitiesResults
   AddEntityAsRelation(entityId: String!, entityRelationId: String!): [Relation]
@@ -429,10 +429,7 @@ type Mutation {
   AddStoryToBoxVisiter(code: String!, storyId: String!): BoxVisiter
   AddFrameToStoryBoxVisiter(code: String!, frameInput: FrameInput!): BoxVisiter
   DeleteBoxVisiterBasketItem(code: String!, relationId: String!): [Relation]!
-  UpdateBoxVisiterTouchtableTime(
-    code: String!
-    touchTableTime: String!
-  ): BoxVisiter
+  AddTouchTableTime(_code: String!): BoxVisiter
   AddAssetToBoxVisiter(
     code: String!
     assetId: String!
