@@ -1,4 +1,6 @@
 import {
+  EntitiesResults,
+  Entity,
   User
 } from './type-defs'
 import { AuthRESTDataSource, getMe } from 'inuits-apollo-server-auth';
@@ -19,5 +21,9 @@ export class UserAPI extends AuthRESTDataSource<Context> {
       preferred_username: data.preferred_username
     }
     return user;
+  }
+
+  async myUploads(): Promise<EntitiesResults> {
+    return {}
   }
 }

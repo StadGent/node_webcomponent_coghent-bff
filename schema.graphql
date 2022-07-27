@@ -423,6 +423,7 @@ type Query {
   GetvisiterOfEntity(id: String!): BoxVisiter
   GetUploadRelations(searchValue: String!): EntitiesResults
   BasketByCustomFrameId(frameId: String!): [Relation]
+  GetMyUploadedAssets: EntitiesResults
 }
 
 type Mutation {

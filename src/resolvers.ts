@@ -224,6 +224,10 @@ export const resolvers: Resolvers<Context> = {
       }
       return data;
     },
+    GetMyUploadedAssets: async (_source, { }, { dataSources }) => {
+      const uploadedEntities = await dataSources.UserAPI.myUploads()
+      return uploadedEntities
+    },
   },
   Mutation: {
     replaceMetadata: async (_source, { id, metadata }, { dataSources }) => {
