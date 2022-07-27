@@ -219,6 +219,7 @@ type MimeType {
 
 type MediaFile {
   _id: String!
+  _key: String!
   original_file_location: String
   thumbnail_file_location: String
   filename: String

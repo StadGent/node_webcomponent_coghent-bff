@@ -19,11 +19,11 @@ export class StorageAPI extends AuthRESTDataSource<Context> {
 
     const formHeaders = form.getHeaders();
 
-    this.post(`upload?id=${_entityId.replace(`mediafiles/`, '')}`, form, { headers: formHeaders }).then(result => {
-      response = result
-    }).catch(error => {
+    try {
+      response = await this.post(`upload?id=${_entityId.replace(`mediafiles/`, '')}`, form, { headers: formHeaders })
+    } catch (error: any) {
       console.error(`\n Uploading failed`, error.extensions.response.body ? error.extensions.response.body : error)
-    })
+    }
     return response;
   }
 

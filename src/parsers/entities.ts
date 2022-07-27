@@ -52,6 +52,14 @@ export const createBaseEntity = (
   return body;
 };
 
+export const minimalEntity = (_type: EntityTypes) => {
+  return {
+    type: _type,
+    metadata: [],
+    data: {}
+  }
+}
+
 export const createEntityBody = (
   _type: EntityTypes,
   _title: string,

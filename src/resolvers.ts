@@ -17,6 +17,9 @@ import {
   StoryboxBuild,
   EntityInfo,
   EntityTypes,
+  RelationInput,
+  Collections,
+  MediaFile,
 } from './type-defs';
 import { Context, DataSources } from './types';
 import { AuthenticationError } from 'apollo-server';
@@ -133,7 +136,7 @@ export const resolvers: Resolvers<Context> = {
         fetchPolicy || ''
       );
     },
-    User: async (_source, {}, { dataSources, session }) => {
+    User: async (_source, { }, { dataSources, session }) => {
       if (!session.auth.accessToken) {
         throw new AuthenticationError('Not authenticated');
       }
@@ -365,24 +368,25 @@ export const resolvers: Resolvers<Context> = {
     UpdatedScannedOfBoxvisiter: async (_source, { code }, { dataSources }) => {
       return await dataSources.BoxVisitersAPI.updatedScanned(code);
     },
-    UploadMediafile: async (
-      _source,
-      { media, file, relations, metadata },
-      { dataSources }
-    ) => {
-      const mediafile = await dataSources.EntitiesAPI.createMediafile(media);
-      const uploaded = await dataSources.StorageAPI.uploadMediafile(
-        mediafile._id,
-        file
-      );
-      console.log(`\n uploaded`, uploaded);
-      return mediafile;
-    },
     AddTouchTableTime: async (_source, { _code }, { dataSources }) => {
       const updatedVisitor =
         dataSources.BoxVisitersAPI.AddTouchTableTime(_code);
       return updatedVisitor;
     },
+    UploadMediafile: async (_source, { media, file, relations, metadata }, { dataSources }) => {
+      let uploadedFile: null | MediaFile = null
+      const mediafile = await dataSources.EntitiesAPI.createMediafile(media)
+      const uploaded = await dataSources.StorageAPI.uploadMediafile(mediafile._key, file)
+      if (uploaded !== null) {
+        const entity = await dataSources.EntitiesAPI.createFullEntity(EntityTypes.Asset, metadata as Array<Metadata>, relations as Array<Relation>)
+        if (entity) {
+          const mediaFileEntity = await dataSources.EntitiesAPI.getEntity(mediafile._key, Collections.Mediafiles) as unknown as MediaFile
+          await dataSources.EntitiesAPI.addMediafilesToEntity(entity.id, mediaFileEntity)
+          uploadedFile = mediaFileEntity
+        }
+      }
+      return uploadedFile
+    }
   },
   BoxVisiter: {
     async relations(parent, _args, { dataSources }) {
@@ -610,7 +614,7 @@ export const resolvers: Resolvers<Context> = {
       let mimetype = { type: '', mime: undefined } as any;
       if (parent.mimetype) {
         mimetype.type = parent.mimetype;
-        for (let index = 0; index < Object.values(MIMETYPES).length; index++) {
+        for (let index = 0;index < Object.values(MIMETYPES).length;index++) {
           if (Object.values(MIMETYPES)[index] === parent.mimetype) {
             mimetype.mime = Object.keys(MIMETYPES)[index];
             checkEnumOnType(mimetype.type, AudioMIME)

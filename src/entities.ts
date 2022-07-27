@@ -11,6 +11,7 @@ import {
   RelationInput,
   MediaFileInput,
   Collections,
+  EntityTypes,
 } from './type-defs';
 import { Context } from './types';
 import { environment as env } from './environment';
@@ -18,6 +19,7 @@ import { setIdAs_Key, setIdsAs_Key } from './common';
 import { AuthRESTDataSource } from 'inuits-apollo-server-auth';
 import {
   createBaseEntity,
+  minimalEntity,
   setIdAndObjectId,
   setObjectIdToEntity,
 } from './parsers/entities';
@@ -49,8 +51,8 @@ export class EntitiesAPI extends AuthRESTDataSource<Context> {
     return data;
   }
 
-  async getEntity(id: string): Promise<Entity> {
-    let data = await this.get<Entity>('entities' + (id ? '/' + id : ''));
+  async getEntity(id: string, _collection: Collections = Collections.Entities): Promise<Entity> {
+    let data = await this.get<Entity>(_collection + (id ? '/' + id : ''));
     // setId(data);
     // data = setIdAs_Key(data) as Entity;
     data = setIdAndObjectId(data);
@@ -76,9 +78,9 @@ export class EntitiesAPI extends AuthRESTDataSource<Context> {
     return await this.get(`entities/${id}/mediafiles`);
   }*/
 
-  async getMediafiles(id: string): Promise<MediaFile[]> {
+  async getMediafiles(id: string, _public: boolean = true): Promise<MediaFile[]> {
     if (id !== 'noid') {
-      const mediafiles = await this.get(`entities/${id}/mediafiles`);
+      const mediafiles = await this.get(`entities/${id}/mediafiles${_public === true ? '' : '?non_public=1'}`);
       // a Set to track seen mediafiles
       const seen = new Set();
 
@@ -192,9 +194,9 @@ export class EntitiesAPI extends AuthRESTDataSource<Context> {
     return result;
   }
 
-  async deleteEntity(_id: string): Promise<string> {
-    await this.delete(`entities/${_id}`);
-    return `Deleted entity with id ${_id}`;
+  async deleteEntity(_id: string, _collection: Collections = Collections.Entities): Promise<string> {
+    await this.delete(`${_collection}/${_id}`);
+    return `Deleted entity with id ${_id} from collection: ${_collection}`;
   }
 
   async addUpdateProperty(
@@ -212,5 +214,24 @@ export class EntitiesAPI extends AuthRESTDataSource<Context> {
   async createMediafile(_mediafile: MediaFileInput): Promise<MediaFile> {
     let mediafile = await this.post(`${Collections.Mediafiles}`, _mediafile)
     return mediafile
+  }
+
+  async createFullEntity(_type: EntityTypes, _metadata: Array<Metadata>, _relations: Array<Relation>): Promise<Entity | null> {
+    let entity = await this.post(Collections.Entities, minimalEntity(_type));
+    let relations: null | Array<Relation> = null
+    let metadata: null | Array<Metadata> = null
+    if (entity) {
+      entity = setIdAs_Key(entity)
+      Promise.allSettled([
+        _relations.length >= 1 ? relations = await this.replaceRelations(entity.id!, _relations) : null,
+        _metadata.length >= 1 ? metadata = await this.replaceMetadata(entity.id!, _metadata as Array<MetadataInput>) : null,
+      ])
+    }
+    return entity
+  }
+
+  async addMediafilesToEntity(_entityId: string, _mediafile: MediaFile): Promise<Array<MediaFile>> {
+    let mediafiles = await this.post(`${Collections.Entities}/${_entityId}/mediafiles`, _mediafile);
+    return mediafiles
   }
 }
