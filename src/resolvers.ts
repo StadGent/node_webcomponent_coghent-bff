@@ -27,7 +27,6 @@ import 'apollo-cache-control';
 import { environment } from './environment';
 import {
   filterByRelationTypes,
-  filterOutRelationTypes,
   getRelationsFromMetadata,
 } from './parsers/entities';
 import {
@@ -226,6 +225,16 @@ export const resolvers: Resolvers<Context> = {
     },
     GetMyUploadedAssets: async (_source, { }, { dataSources }) => {
       const uploadedEntities = await dataSources.UserAPI.myUploads()
+      // const results = []
+      // Promise.allSettled([
+      //   results.push(await dataSources.EntitiesAPI.getEntity(`cbad1d56-c5db-41c1-aacc-e488b514f993`)),
+      //   results.push(await dataSources.EntitiesAPI.getEntity(`129cfb68-18da-4dba-97fd-15718aebe110`)),
+      // ])
+      // return {
+      //   limit: 10,
+      //   count: 2,
+      //   results: results
+      // }
       return uploadedEntities
     },
   },
@@ -408,6 +417,9 @@ export const resolvers: Resolvers<Context> = {
   Entity: {
     mediafiles(parent, _args, { dataSources }) {
       return dataSources.EntitiesAPI.getMediafiles(parent.id);
+    },
+    nonPublicMediafiles(parent, _args, { dataSources }) {
+      return dataSources.EntitiesAPI.getMediafiles(parent.id, false);
     },
     metadata(parent, { key }, { dataSources }) {
       if (key) {

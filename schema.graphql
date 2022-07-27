@@ -62,6 +62,12 @@ extend enum MetaKey {
   sources
 }
 
+enum Publication {
+  public
+  private
+  validate
+}
+
 enum EntityTypes {
   frame
   story
@@ -189,6 +195,7 @@ type Entity {
   assets: [Entity]
   frames: [Entity]
   mediafiles: [MediaFile]
+  nonPublicMediafiles: [MediaFile]
   primary_mediafile: String
   primary_transcode: String
   primary_transcode_location: String
