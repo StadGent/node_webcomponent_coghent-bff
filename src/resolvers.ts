@@ -369,8 +369,10 @@ export const resolvers: Resolvers<Context> = {
       return await dataSources.BoxVisitersAPI.updatedScanned(code);
     },
     AddTouchTableTime: async (_source, { _code }, { dataSources }) => {
-      const updatedVisitor =
-        dataSources.BoxVisitersAPI.AddTouchTableTime(_code);
+      const updatedVisitor = await dataSources.BoxVisitersAPI.AddTouchTableTime(
+        _code
+      );
+      console.log(updatedVisitor);
       return updatedVisitor;
     },
     UploadMediafile: async (_source, { media, file, relations, metadata }, { dataSources }) => {

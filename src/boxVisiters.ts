@@ -164,10 +164,17 @@ export class BoxVisitersAPI extends EntitiesAPI {
       visiter = (await this.addUpdateProperty(
         visiter.id,
         'touch_table_time',
-        Math.round(Date.now() / 1000),
+        new Date().toLocaleString('en-US', {
+          hour12: false,
+          hour: 'numeric',
+          minute: 'numeric',
+        }),
         'box_visits'
       )) as BoxVisiter;
     }
+    visiter != null
+      ? (visiter = setIdAs_Key(visiter) as BoxVisiter)
+      : (visiter = null);
     return visiter;
   }
 
