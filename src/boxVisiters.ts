@@ -164,11 +164,7 @@ export class BoxVisitersAPI extends EntitiesAPI {
       visiter = (await this.addUpdateProperty(
         visiter.id,
         'touch_table_time',
-        new Date().toLocaleString('en-US', {
-          hour12: false,
-          hour: 'numeric',
-          minute: 'numeric',
-        }),
+        new Date().toISOString(),
         'box_visits'
       )) as BoxVisiter;
     }
