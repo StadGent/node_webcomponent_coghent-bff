@@ -20,6 +20,8 @@ import {
   RelationInput,
   Collections,
   MediaFile,
+  Publication,
+  UploadComposable,
 } from './type-defs';
 import { Context, DataSources } from './types';
 import { AuthenticationError } from 'apollo-server';
@@ -27,6 +29,7 @@ import 'apollo-cache-control';
 import { environment } from './environment';
 import {
   filterByRelationTypes,
+  getMetadataOfKey,
   getRelationsFromMetadata,
 } from './parsers/entities';
 import {
@@ -51,6 +54,7 @@ import { createRelationTypeFromData } from './parsers/storybox';
 import { prepareCustomStory } from './resolvers/customStory';
 import { getVisiterOfEntity } from './resolvers/boxVisiter';
 import { getRelationsForUpload } from './resolvers/search';
+import { getMediafileLink, getPublicationKeyFromValue } from './resolvers/upload';
 
 const GraphQLUpload = require('graphql-upload/GraphQLUpload.js');
 
@@ -237,6 +241,33 @@ export const resolvers: Resolvers<Context> = {
       // }
       return uploadedEntities
     },
+    UploadObjectFromEntity: async (_source, { entityId }, { dataSources }) => {
+      const uploadComposable: UploadComposable = {}
+      const entity = await dataSources.EntitiesAPI.getEntity(entityId)
+      if (entity) {
+        Promise.allSettled([
+          uploadComposable.metadata = await dataSources.EntitiesAPI.getMetadata(entity.id),
+          uploadComposable.relations = await dataSources.EntitiesAPI.getRelations(entity.id)
+        ])
+
+        if (uploadComposable.metadata && uploadComposable.metadata.length >= 1) {
+          const publicationStatus = getMetadataOfKey(entity, MetaKey.PublicationStatus)
+
+          if (publicationStatus !== undefined) {
+            const key = await getPublicationKeyFromValue(publicationStatus!.value!)
+            let mediafiles: Array<MediaFile> = []
+            if (key === Publication.Public) {
+              mediafiles = await dataSources.EntitiesAPI.getMediafiles(entity.id)
+            } else if (key === Publication.Private || key === Publication.Validate) {
+              mediafiles = await dataSources.EntitiesAPI.getMediafiles(entity.id, false)
+            }
+            mediafiles.length >= 1 ? uploadComposable.file_location = getMediafileLink(mediafiles) : null
+          }
+        }
+
+      }
+      return uploadComposable
+    }
   },
   Mutation: {
     replaceMetadata: async (_source, { id, metadata }, { dataSources }) => {
