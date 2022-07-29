@@ -54,7 +54,7 @@ import { createRelationTypeFromData } from './parsers/storybox';
 import { prepareCustomStory } from './resolvers/customStory';
 import { getVisiterOfEntity } from './resolvers/boxVisiter';
 import { getRelationsForUpload } from './resolvers/search';
-import { getMediafileLink, getPublicationKeyFromValue } from './resolvers/upload';
+import { getMediafileLink, getPublicationKeyFromValue, getRightFromMediafile, removePrefixFromMetadata } from './resolvers/upload';
 
 const GraphQLUpload = require('graphql-upload/GraphQLUpload.js');
 
@@ -234,6 +234,8 @@ export const resolvers: Resolvers<Context> = {
       // Promise.allSettled([
       //   results.push(await dataSources.EntitiesAPI.getEntity(`cbad1d56-c5db-41c1-aacc-e488b514f993`)),
       //   results.push(await dataSources.EntitiesAPI.getEntity(`129cfb68-18da-4dba-97fd-15718aebe110`)),
+      //   results.push(await dataSources.EntitiesAPI.getEntity(`309b4deb-4541-4880-ab61-901e824d8caf`)),
+      //   results.push(await dataSources.EntitiesAPI.getEntity(`81425c81-d72f-4ffd-bc09-57f167fd0553`)),
       // ])
       // return {
       //   limit: 10,
@@ -247,12 +249,13 @@ export const resolvers: Resolvers<Context> = {
       const entity = await dataSources.EntitiesAPI.getEntity(entityId)
       if (entity) {
         Promise.allSettled([
-          uploadComposable.metadata = await dataSources.EntitiesAPI.getMetadata(entity.id),
+          uploadComposable.metadata = removePrefixFromMetadata(await dataSources.EntitiesAPI.getMetadata(entity.id)),
           uploadComposable.relations = await dataSources.EntitiesAPI.getRelations(entity.id)
         ])
 
         if (uploadComposable.metadata && uploadComposable.metadata.length >= 1) {
-          const publicationStatus = getMetadataOfKey(entity, MetaKey.PublicationStatus)
+          let publicationStatus: null | Metadata = null
+          entity !== undefined ? publicationStatus = getMetadataOfKey(entity, MetaKey.PublicationStatus) : null
 
           if (publicationStatus !== undefined) {
             const key = await getPublicationKeyFromValue(publicationStatus!.value!)
@@ -263,6 +266,8 @@ export const resolvers: Resolvers<Context> = {
               mediafiles = await dataSources.EntitiesAPI.getMediafiles(entity.id, false)
             }
             mediafiles.length >= 1 ? uploadComposable.file_location = getMediafileLink(mediafiles) : null
+            const right = getRightFromMediafile(mediafiles, uploadComposable.file_location as string | null)
+            right !== null ? uploadComposable.liscense = right.value : uploadComposable.liscense = right
           }
         }
 

@@ -1,5 +1,6 @@
+import { getMetadataOfKey } from '../parsers/entities'
 import { PublicationStatus } from '../sources/constants'
-import { MediaFile, Publication } from '../type-defs'
+import { Entity, KeyValuePair, MediaFile, Metadata, MetaKey, Publication, Relation } from '../type-defs'
 
 const USER_MEDIAFILE_NAME_PREFIX = 'user-uploaded-'
 const NO_IMAGE_PATH = './no-image.png'
@@ -25,4 +26,32 @@ export const getMediafileLink = (_mediafiles: Array<MediaFile>) => {
   }
   mediafileLink = encodeURI(mediafileLink)
   return mediafileLink
+}
+
+export const getRightFromMediafile = (_mediafiles: Array<MediaFile>, _fileLocation: string | null) => {
+  let rights = null
+  if (_mediafiles.length >= 1 && _fileLocation !== null) {
+    const mediafile = _mediafiles.find(mediafile => mediafile.primary_transcode_location === _fileLocation || mediafile.original_file_location === _fileLocation)
+    mediafile !== undefined ? rights = getMetadataOfKey(mediafile as unknown as Entity, MetaKey.Rights) : null
+  }
+  return rights
+}
+
+export const removePrefixFromMetadata = (_metadata: Array<Metadata>) => {
+  const updatedMetadata = []
+  for (const metadata of _metadata) {
+    let stripped = metadata.value
+
+    if (metadata.value !== null) {
+      if (stripped!.includes(USER_MEDIAFILE_NAME_PREFIX)) {
+        stripped = stripped!.replace(USER_MEDIAFILE_NAME_PREFIX, "")
+      }
+    }
+    updatedMetadata.push({
+      key: metadata.key,
+      value: stripped,
+      label: metadata.label,
+    } as Metadata)
+  }
+  return updatedMetadata
 }
