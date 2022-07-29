@@ -229,7 +229,7 @@ export const resolvers: Resolvers<Context> = {
       return data;
     },
     GetMyUploadedAssets: async (_source, { }, { dataSources }) => {
-      const uploadedEntities = await dataSources.UserAPI.myUploads()
+      const uploadedEntities = await dataSources.UserAPI.myAssetCreations()
       // const results = []
       // Promise.allSettled([
       //   results.push(await dataSources.EntitiesAPI.getEntity(`cbad1d56-c5db-41c1-aacc-e488b514f993`)),
@@ -239,10 +239,10 @@ export const resolvers: Resolvers<Context> = {
       // ])
       // return {
       //   limit: 10,
-      //   count: 2,
+      //   count: 4,
       //   results: results
       // }
-      return uploadedEntities
+      return null
     },
     UploadObjectFromEntity: async (_source, { entityId }, { dataSources }) => {
       const uploadComposable: UploadComposable = {}
@@ -255,6 +255,7 @@ export const resolvers: Resolvers<Context> = {
 
         if (uploadComposable.metadata && uploadComposable.metadata.length >= 1) {
           let publicationStatus: null | Metadata = null
+
           entity !== undefined ? publicationStatus = getMetadataOfKey(entity, MetaKey.PublicationStatus) : null
 
           if (publicationStatus !== undefined) {
@@ -265,7 +266,7 @@ export const resolvers: Resolvers<Context> = {
             } else if (key === Publication.Private || key === Publication.Validate) {
               mediafiles = await dataSources.EntitiesAPI.getMediafiles(entity.id, false)
             }
-            mediafiles.length >= 1 ? uploadComposable.file_location = getMediafileLink(mediafiles) : null
+            uploadComposable.file_location = getMediafileLink(mediafiles)
             const right = getRightFromMediafile(mediafiles, uploadComposable.file_location as string | null)
             right !== null ? uploadComposable.liscense = right.value : uploadComposable.liscense = right
           }

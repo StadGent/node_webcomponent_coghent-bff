@@ -290,6 +290,13 @@ type EntitiesResults {
   limit: Int
 }
 
+type MediafilesResults {
+  results: [MediaFile]
+  relations: [Relation]
+  count: Int
+  limit: Int
+}
+
 type BoxVisitersResults {
   results: [BoxVisiter]
   relations: [Relation]
