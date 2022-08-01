@@ -5,6 +5,7 @@ import {
   Entity,
   EntityInfo,
   MetaKey,
+  Publication,
   Relation,
   RelationType,
   StatusKey,
@@ -27,13 +28,18 @@ export class TestimoniAPI extends EntitiesAPI {
     );
     const testimoniSpecificMetadata = [
       {
-        key: MetaKey.Status,
-        value: StatusKey.Shown,
+        key: MetaKey.PublicationStatus,
+        value: Publication.Public,
         lang: 'en',
       },
       {
         key: MetaKey.Likes,
         value: 1,
+        lang: 'en',
+      },
+      {
+        key: MetaKey.Date,
+        value: new Date().toISOString(),
         lang: 'en',
       },
     ];
@@ -49,10 +55,11 @@ export class TestimoniAPI extends EntitiesAPI {
     testimoniId: string
   ): Promise<Relation[]> {
     const relation = createRelationTypeFromData(
-      RelationType.Components,
+      RelationType.Testimoni,
       testimoniId,
       'entities/'
     );
+    console.log({ relation });
     return await this.addRelation(assetId, relation);
   }
 }

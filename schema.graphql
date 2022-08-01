@@ -49,6 +49,7 @@ enum MetaKey {
   boxCode
   status
   likes
+  date
 }
 
 extend enum MetaKey {
@@ -102,6 +103,7 @@ enum RelationType {
   story_box_visits
   story_box
   userConnected
+  testimoni
 }
 
 enum StatusKey {
@@ -404,11 +406,11 @@ input MediaFileInput {
 }
 
 type UploadComposable {
-  file_location: String,
-  base64Image: String,
-  metadata (key: [MetaKey]): [Metadata],
-  relations: [Relation],
-  liscense: String,
+  file_location: String
+  base64Image: String
+  metadata(key: [MetaKey]): [Metadata]
+  relations: [Relation]
+  liscense: String
 }
 
 type Query {
@@ -462,5 +464,10 @@ type Mutation {
   ): [Relation]!
   DeleteEntity(id: String!): String
   UpdatedScannedOfBoxvisiter(code: String!): BoxVisiter
-  UploadMediafile(media: MediaFileInput!, file: Upload, relations: [RelationInput], metadata: [MetadataInput]): MediaFile
+  UploadMediafile(
+    media: MediaFileInput!
+    file: Upload
+    relations: [RelationInput]
+    metadata: [MetadataInput]
+  ): MediaFile
 }
