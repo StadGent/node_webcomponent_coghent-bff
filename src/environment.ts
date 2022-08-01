@@ -24,6 +24,7 @@ interface Environment {
   activeBoxEntity: string;
   maxStories: number | string;
   codePostfix: string;
+  zesdeCollectie: string;
 }
 
 export const environment: Environment = {
@@ -54,4 +55,5 @@ export const environment: Environment = {
   activeBoxEntity: process.env.BOX_ENTITY || 'c0a577c6-071b-4051-bad8-4f4fbe40537b',
   maxStories: process.env.BOX_MAX_STORIES || 4,
   codePostfix: process.env.BOX_CODE_POSTFIX || 'visit',
+  zesdeCollectie: process.env.ZESDE_COLLECTIE_ID || '',
 };

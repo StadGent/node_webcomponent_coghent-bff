@@ -219,8 +219,10 @@ export class EntitiesAPI extends AuthRESTDataSource<Context> {
     return mediafile
   }
 
-  async createFullEntity(_type: EntityTypes, _metadata: Array<Metadata>, _relations: Array<Relation>): Promise<Entity | null> {
-    let entity = await this.post(Collections.Entities, minimalEntity(_type));
+  async createFullEntity(_type: EntityTypes, _metadata: Array<Metadata>, _relations: Array<Relation>, _objectId?: string): Promise<Entity | null> {
+    let entityTemplate = minimalEntity(_type) as unknown as Entity
+    _objectId ? entityTemplate.object_id = _objectId : null
+    let entity = await this.post(Collections.Entities, entityTemplate);
     let relations: null | Array<Relation> = null
     let metadata: null | Array<Metadata> = null
     if (entity) {
@@ -236,5 +238,9 @@ export class EntitiesAPI extends AuthRESTDataSource<Context> {
   async addMediafilesToEntity(_entityId: string, _mediafile: MediaFile): Promise<Array<MediaFile>> {
     let mediafiles = await this.post(`${Collections.Entities}/${_entityId}/mediafiles`, _mediafile);
     return mediafiles
+  }
+
+  async getSixthCollection() {
+    return await this.get(`${Collections.Entities}/sixthcollection/id`)
   }
 }

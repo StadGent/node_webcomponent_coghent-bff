@@ -22,6 +22,7 @@ import {
   Publication,
   UploadComposable,
   MetadataInput,
+  RelationInput,
 } from './type-defs';
 import { Context, DataSources } from './types';
 import { AuthenticationError } from 'apollo-server';
@@ -251,9 +252,11 @@ export const resolvers: Resolvers<Context> = {
       // const results = []
       // Promise.allSettled([
       //   results.push(await dataSources.EntitiesAPI.getEntity(`cbad1d56-c5db-41c1-aacc-e488b514f993`)),
-      //   results.push(await dataSources.EntitiesAPI.getEntity(`129cfb68-18da-4dba-97fd-15718aebe110`)),
-      //   results.push(await dataSources.EntitiesAPI.getEntity(`309b4deb-4541-4880-ab61-901e824d8caf`)),
-      //   results.push(await dataSources.EntitiesAPI.getEntity(`81425c81-d72f-4ffd-bc09-57f167fd0553`)),
+      //  results.push(await dataSources.EntitiesAPI.getEntity(`129cfb68-18da-4dba-97fd-15718aebe110`)),
+      //  results.push(await dataSources.EntitiesAPI.getEntity(`309b4deb-4541-4880-ab61-901e824d8caf`)),
+      //  results.push(await dataSources.EntitiesAPI.getEntity(`81425c81-d72f-4ffd-bc09-57f167fd0553`)),
+      //  results.push(await dataSources.EntitiesAPI.getEntity(`ec9b793b-772a-4590-be6d-e1413ee3ae4f`)),
+      //  results.push(await dataSources.EntitiesAPI.getEntity(`7cadf39e-f9ac-4501-b8f3-8f90d1d331ac`)),
       // ])
       // return {
       //   limit: 10,
@@ -299,17 +302,9 @@ export const resolvers: Resolvers<Context> = {
             );
             let mediafiles: Array<MediaFile> = [];
             if (key === Publication.Public) {
-              mediafiles = await dataSources.EntitiesAPI.getMediafiles(
-                entity.id
-              );
-            } else if (
-              key === Publication.Private ||
-              key === Publication.Validate
-            ) {
-              mediafiles = await dataSources.EntitiesAPI.getMediafiles(
-                entity.id,
-                false
-              );
+              mediafiles.push(...await dataSources.EntitiesAPI.getMediafiles(entity.id))
+            } else if (key === Publication.Private || key === Publication.Validate) {
+              mediafiles.push(...await dataSources.EntitiesAPI.getMediafiles(entity.id, false))
             }
             uploadComposable.file_location = getMediafileLink(mediafiles);
             const right = getRightFromMediafile(
@@ -483,19 +478,34 @@ export const resolvers: Resolvers<Context> = {
       { media, file, relations, metadata },
       { dataSources }
     ) => {
+      relations ? relations : relations = []
+
       let uploadedFile: null | MediaFile = null;
       const mediafile = await dataSources.EntitiesAPI.createMediafile(media);
       const uploaded = await dataSources.StorageAPI.uploadMediafile(
         mediafile._key,
         file
       );
+
+      if (environment.zesdeCollectie) {
+        relations.push({
+          key: environment.zesdeCollectie,
+          type: RelationType.IsIn,
+          label: `Zesde collectie`
+        } as RelationInput)
+      }
+
       if (uploaded !== null) {
         const entity = await dataSources.EntitiesAPI.createFullEntity(
           EntityTypes.Asset,
           metadata as Array<Metadata>,
-          relations as Array<Relation>
-        );
+          relations as Array<Relation>)
+        //   await dataSources.EntitiesAPI.getSixthCollection()
+        // );
+
         if (entity) {
+          environment.zesdeCollectie ? null : console.log(`Couldn't add sixth collection as a relation for entity ${entity.id}. Id not set in environments.`)
+          console.log(`created entity`, entity);
           const mediaFileEntity = (await dataSources.EntitiesAPI.getEntity(
             mediafile._key,
             Collections.Mediafiles
