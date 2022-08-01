@@ -443,7 +443,7 @@ type Query {
   CreateStorybox(storyboxInfo: StoryboxBuildInput!): Entity
   Storybox: EntitiesResults
   AddEntityAsRelation(entityId: String!, entityRelationId: String!): [Relation]
-  CreateTestimoni(entityInfo: EntityInfo!): Entity
+  CreateTestimoni(entityInfo: EntityInfo!, assetId: String!): Entity
   LinkTestimoniToAsset(assetId: String!, testimoniId: String!): [Relation]
   LinkFrameToVisiter(frameId: String!): BoxVisiter
   GetvisiterOfEntity(id: String!): BoxVisiter

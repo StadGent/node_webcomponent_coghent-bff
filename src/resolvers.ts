@@ -50,12 +50,21 @@ import {
 } from './sources/enum';
 import { setMediafileOnAsset } from './resolvers/relationMetadata';
 import { sortRelationmetadataOnTimestampStart } from './parsers/story';
-import { getBasketEntityRelationsAsEntities, getEntityData, setRelationValueToDefaultTitleOrFullname } from './resolvers/entities';
+import {
+  getBasketEntityRelationsAsEntities,
+  getEntityData,
+  setRelationValueToDefaultTitleOrFullname,
+} from './resolvers/entities';
 import { createRelationTypeFromData } from './parsers/storybox';
 import { prepareCustomStory } from './resolvers/customStory';
 import { getVisiterOfEntity } from './resolvers/boxVisiter';
 import { getRelationsForUpload } from './resolvers/search';
-import { getMediafileLink, getPublicationKeyFromValue, getRightFromMediafile, removePrefixFromMetadata } from './resolvers/upload';
+import {
+  getMediafileLink,
+  getPublicationKeyFromValue,
+  getRightFromMediafile,
+  removePrefixFromMetadata,
+} from './resolvers/upload';
 
 const GraphQLUpload = require('graphql-upload/GraphQLUpload.js');
 
@@ -140,7 +149,7 @@ export const resolvers: Resolvers<Context> = {
         fetchPolicy || ''
       );
     },
-    User: async (_source, { }, { dataSources, session }) => {
+    User: async (_source, {}, { dataSources, session }) => {
       if (!session.auth.accessToken) {
         throw new AuthenticationError('Not authenticated');
       }
@@ -188,9 +197,17 @@ export const resolvers: Resolvers<Context> = {
       );
       return await dataSources.EntitiesAPI.addRelation(entityId, relation);
     },
-    CreateTestimoni: async (_source, { entityInfo }, { dataSources }) => {
+    CreateTestimoni: async (
+      _source,
+      { entityInfo, assetId },
+      { dataSources }
+    ) => {
       const testimoni = await dataSources.TestimoniAPI.createTestimoni(
         entityInfo
+      );
+      await dataSources.TestimoniAPI.linkTestimoniWithAsset(
+        assetId,
+        testimoni.id
       );
       return testimoni;
     },
@@ -229,8 +246,8 @@ export const resolvers: Resolvers<Context> = {
       }
       return data;
     },
-    GetMyUploadedAssets: async (_source, { }, { dataSources }) => {
-      const uploadedEntities = await dataSources.UserAPI.myAssetCreations()
+    GetMyUploadedAssets: async (_source, {}, { dataSources }) => {
+      const uploadedEntities = await dataSources.UserAPI.myAssetCreations();
       // const results = []
       // Promise.allSettled([
       //   results.push(await dataSources.EntitiesAPI.getEntity(`cbad1d56-c5db-41c1-aacc-e488b514f993`)),
@@ -243,40 +260,70 @@ export const resolvers: Resolvers<Context> = {
       //   count: 4,
       //   results: results
       // }
-      return uploadedEntities
+      return uploadedEntities;
     },
     UploadObjectFromEntity: async (_source, { entityId }, { dataSources }) => {
-      const uploadComposable: UploadComposable = {}
-      const entity = await dataSources.EntitiesAPI.getEntity(entityId)
+      const uploadComposable: UploadComposable = {};
+      const entity = await dataSources.EntitiesAPI.getEntity(entityId);
       if (entity) {
         Promise.allSettled([
-          uploadComposable.metadata = removePrefixFromMetadata(await dataSources.EntitiesAPI.getMetadata(entity.id)),
-          uploadComposable.relations = await dataSources.EntitiesAPI.getRelations(entity.id)
-        ])
-        uploadComposable.relations.length >= 1 ? await setRelationValueToDefaultTitleOrFullname(uploadComposable.relations as Array<Relation>, dataSources) : null
+          (uploadComposable.metadata = removePrefixFromMetadata(
+            await dataSources.EntitiesAPI.getMetadata(entity.id)
+          )),
+          (uploadComposable.relations =
+            await dataSources.EntitiesAPI.getRelations(entity.id)),
+        ]);
+        uploadComposable.relations.length >= 1
+          ? await setRelationValueToDefaultTitleOrFullname(
+              uploadComposable.relations as Array<Relation>,
+              dataSources
+            )
+          : null;
 
-        if (uploadComposable.metadata && uploadComposable.metadata.length >= 1) {
-          let publicationStatus: null | Metadata = null
+        if (
+          uploadComposable.metadata &&
+          uploadComposable.metadata.length >= 1
+        ) {
+          let publicationStatus: null | Metadata = null;
 
-          entity !== undefined ? publicationStatus = getMetadataOfKey(entity, MetaKey.PublicationStatus) : null
+          entity !== undefined
+            ? (publicationStatus = getMetadataOfKey(
+                entity,
+                MetaKey.PublicationStatus
+              ))
+            : null;
 
           if (publicationStatus !== undefined) {
-            const key = await getPublicationKeyFromValue(publicationStatus!.value!)
-            let mediafiles: Array<MediaFile> = []
+            const key = await getPublicationKeyFromValue(
+              publicationStatus!.value!
+            );
+            let mediafiles: Array<MediaFile> = [];
             if (key === Publication.Public) {
-              mediafiles = await dataSources.EntitiesAPI.getMediafiles(entity.id)
-            } else if (key === Publication.Private || key === Publication.Validate) {
-              mediafiles = await dataSources.EntitiesAPI.getMediafiles(entity.id, false)
+              mediafiles = await dataSources.EntitiesAPI.getMediafiles(
+                entity.id
+              );
+            } else if (
+              key === Publication.Private ||
+              key === Publication.Validate
+            ) {
+              mediafiles = await dataSources.EntitiesAPI.getMediafiles(
+                entity.id,
+                false
+              );
             }
-            uploadComposable.file_location = getMediafileLink(mediafiles)
-            const right = getRightFromMediafile(mediafiles, uploadComposable.file_location as string | null)
-            right !== null ? uploadComposable.liscense = right.value : uploadComposable.liscense = right
+            uploadComposable.file_location = getMediafileLink(mediafiles);
+            const right = getRightFromMediafile(
+              mediafiles,
+              uploadComposable.file_location as string | null
+            );
+            right !== null
+              ? (uploadComposable.liscense = right.value)
+              : (uploadComposable.liscense = right);
           }
         }
-
       }
-      return uploadComposable
-    }
+      return uploadComposable;
+    },
   },
   Mutation: {
     replaceMetadata: async (_source, { id, metadata }, { dataSources }) => {
@@ -462,17 +509,34 @@ export const resolvers: Resolvers<Context> = {
       }
       return uploadedFile;
     },
-    UpdateEntity: async (parent, { id, metadata, relations }, { dataSources }) => {
-      const original_entity = await getEntityData(id, dataSources)
+    UpdateEntity: async (
+      parent,
+      { id, metadata, relations },
+      { dataSources }
+    ) => {
+      const original_entity = await getEntityData(id, dataSources);
       let updatedRelations: Array<Relation> = [];
-      const mergedMetadata = mergeMetadata(original_entity.metadata, metadata as Array<Metadata>)
+      const mergedMetadata = mergeMetadata(
+        original_entity.metadata,
+        metadata as Array<Metadata>
+      );
 
       Promise.allSettled([
-        relations.length >= 1 ? updatedRelations = await dataSources.EntitiesAPI.replaceRelations(id, relations as Array<Relation>) : null,
-        metadata.length >= 1 ? await dataSources.EntitiesAPI.replaceMetadata(id, mergedMetadata as Array<MetadataInput>) : null,
-      ])
-      const entity = await dataSources.EntitiesAPI.getEntity(id)
-      return entity
+        relations.length >= 1
+          ? (updatedRelations = await dataSources.EntitiesAPI.replaceRelations(
+              id,
+              relations as Array<Relation>
+            ))
+          : null,
+        metadata.length >= 1
+          ? await dataSources.EntitiesAPI.replaceMetadata(
+              id,
+              mergedMetadata as Array<MetadataInput>
+            )
+          : null,
+      ]);
+      const entity = await dataSources.EntitiesAPI.getEntity(id);
+      return entity;
     },
   },
   BoxVisiter: {
@@ -704,7 +768,7 @@ export const resolvers: Resolvers<Context> = {
       let mimetype = { type: '', mime: undefined } as any;
       if (parent.mimetype) {
         mimetype.type = parent.mimetype;
-        for (let index = 0;index < Object.values(MIMETYPES).length;index++) {
+        for (let index = 0; index < Object.values(MIMETYPES).length; index++) {
           if (Object.values(MIMETYPES)[index] === parent.mimetype) {
             mimetype.mime = Object.keys(MIMETYPES)[index];
             checkEnumOnType(mimetype.type, AudioMIME)
