@@ -50,9 +50,9 @@ export class TestimoniAPI extends EntitiesAPI {
   ): Promise<Relation[]> {
     const relation = createRelationTypeFromData(
       RelationType.Components,
-      assetId,
+      testimoniId,
       'entities/'
     );
-    return await this.addRelation(testimoniId, relation);
+    return await this.addRelation(assetId, relation);
   }
 }
