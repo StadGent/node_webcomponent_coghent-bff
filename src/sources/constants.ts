@@ -10,3 +10,5 @@ export const PublicationStatus: Record<Publication, string> = {
   [Publication.Private]: "niet-publiek",
   [Publication.Validate]: "te valideren",
 }
+
+export const SKIP_RELATIONS = 'skip_relations'

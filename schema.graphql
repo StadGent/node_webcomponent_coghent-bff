@@ -143,6 +143,7 @@ input RelationInput {
   key: String!
   value: String
   type: RelationType!
+  label: String
 }
 
 type Story {
@@ -171,6 +172,7 @@ input MetadataInput {
   key: MetaKey!
   value: String!
   lang: String
+  label: String
 }
 
 type MetadataCollection {
@@ -464,10 +466,6 @@ type Mutation {
   ): [Relation]!
   DeleteEntity(id: String!): String
   UpdatedScannedOfBoxvisiter(code: String!): BoxVisiter
-  UploadMediafile(
-    media: MediaFileInput!
-    file: Upload
-    relations: [RelationInput]
-    metadata: [MetadataInput]
-  ): MediaFile
+  UploadMediafile(media: MediaFileInput!, file: Upload, relations: [RelationInput], metadata: [MetadataInput]): MediaFile
+  UpdateEntity(id: String!, metadata: [MetadataInput]! ,relations: [RelationInput]!): Entity
 }

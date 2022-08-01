@@ -8,6 +8,11 @@ import {
   RelationType,
 } from '../type-defs';
 
+export type EntityData = {
+  metadata: Array<Metadata>,
+  relations: Array<Relation>,
+}
+
 export const filterByRelationTypes = (
   _relations: Array<Relation>,
   _types: Array<RelationType>
@@ -141,3 +146,23 @@ export const getRelationsFromMetadata = (_entity: Entity, _type: RelationType) =
   }
   return relations
 }
+
+export const mergeMetadata = (
+  _originalMetadata: Array<Metadata>,
+  _metadata: Array<Metadata>
+) => {
+  let mergedMetadata = _originalMetadata;
+  if (_metadata.length >= 1) {
+    for (const updated of _metadata) {
+      const found = _originalMetadata.find(
+        (_rel) =>
+          _rel.key === updated.key && _rel.key === updated.key
+      );
+      if (found) {
+        const index = mergedMetadata.indexOf(found);
+        Object.assign(mergedMetadata[index], updated);
+      } else mergedMetadata.push(updated);
+    }
+  }
+  return mergedMetadata;
+};

@@ -23,6 +23,7 @@ import {
   setIdAndObjectId,
   setObjectIdToEntity,
 } from './parsers/entities';
+import { SKIP_RELATIONS } from './sources/constants';
 
 export class EntitiesAPI extends AuthRESTDataSource<Context> {
   public baseURL = `${env.api.collectionAPIUrl}/`;
@@ -51,6 +52,8 @@ export class EntitiesAPI extends AuthRESTDataSource<Context> {
     return data;
   }
 
+  // async getEntity(id: string, _collection: Collections = Collections.Entities, _skipRelations: 1 | 0 = 0): Promise<Entity> {
+  //   let data = await this.get<Entity>(_collection + (id ? '/' + id : '') + `?${SKIP_RELATIONS}=${_skipRelations}`);
   async getEntity(id: string, _collection: Collections = Collections.Entities): Promise<Entity> {
     let data = await this.get<Entity>(_collection + (id ? '/' + id : ''));
     // setId(data);

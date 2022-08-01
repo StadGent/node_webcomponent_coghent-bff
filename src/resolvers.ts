@@ -17,11 +17,11 @@ import {
   StoryboxBuild,
   EntityInfo,
   EntityTypes,
-  RelationInput,
   Collections,
   MediaFile,
   Publication,
   UploadComposable,
+  MetadataInput,
 } from './type-defs';
 import { Context, DataSources } from './types';
 import { AuthenticationError } from 'apollo-server';
@@ -31,6 +31,7 @@ import {
   filterByRelationTypes,
   getMetadataOfKey,
   getRelationsFromMetadata,
+  mergeMetadata,
 } from './parsers/entities';
 import {
   setEntitiesIdPrefix,
@@ -49,7 +50,7 @@ import {
 } from './sources/enum';
 import { setMediafileOnAsset } from './resolvers/relationMetadata';
 import { sortRelationmetadataOnTimestampStart } from './parsers/story';
-import { getBasketEntityRelationsAsEntities } from './resolvers/entities';
+import { getBasketEntityRelationsAsEntities, getEntityData, setRelationValueToDefaultTitleOrFullname } from './resolvers/entities';
 import { createRelationTypeFromData } from './parsers/storybox';
 import { prepareCustomStory } from './resolvers/customStory';
 import { getVisiterOfEntity } from './resolvers/boxVisiter';
@@ -139,7 +140,7 @@ export const resolvers: Resolvers<Context> = {
         fetchPolicy || ''
       );
     },
-    User: async (_source, {}, { dataSources, session }) => {
+    User: async (_source, { }, { dataSources, session }) => {
       if (!session.auth.accessToken) {
         throw new AuthenticationError('Not authenticated');
       }
@@ -242,7 +243,7 @@ export const resolvers: Resolvers<Context> = {
       //   count: 4,
       //   results: results
       // }
-      return null
+      return uploadedEntities
     },
     UploadObjectFromEntity: async (_source, { entityId }, { dataSources }) => {
       const uploadComposable: UploadComposable = {}
@@ -252,6 +253,7 @@ export const resolvers: Resolvers<Context> = {
           uploadComposable.metadata = removePrefixFromMetadata(await dataSources.EntitiesAPI.getMetadata(entity.id)),
           uploadComposable.relations = await dataSources.EntitiesAPI.getRelations(entity.id)
         ])
+        uploadComposable.relations.length >= 1 ? await setRelationValueToDefaultTitleOrFullname(uploadComposable.relations as Array<Relation>, dataSources) : null
 
         if (uploadComposable.metadata && uploadComposable.metadata.length >= 1) {
           let publicationStatus: null | Metadata = null
@@ -459,6 +461,18 @@ export const resolvers: Resolvers<Context> = {
         }
       }
       return uploadedFile;
+    },
+    UpdateEntity: async (parent, { id, metadata, relations }, { dataSources }) => {
+      const original_entity = await getEntityData(id, dataSources)
+      let updatedRelations: Array<Relation> = [];
+      const mergedMetadata = mergeMetadata(original_entity.metadata, metadata as Array<Metadata>)
+
+      Promise.allSettled([
+        relations.length >= 1 ? updatedRelations = await dataSources.EntitiesAPI.replaceRelations(id, relations as Array<Relation>) : null,
+        metadata.length >= 1 ? await dataSources.EntitiesAPI.replaceMetadata(id, mergedMetadata as Array<MetadataInput>) : null,
+      ])
+      const entity = await dataSources.EntitiesAPI.getEntity(id)
+      return entity
     },
   },
   BoxVisiter: {
@@ -690,7 +704,7 @@ export const resolvers: Resolvers<Context> = {
       let mimetype = { type: '', mime: undefined } as any;
       if (parent.mimetype) {
         mimetype.type = parent.mimetype;
-        for (let index = 0; index < Object.values(MIMETYPES).length; index++) {
+        for (let index = 0;index < Object.values(MIMETYPES).length;index++) {
           if (Object.values(MIMETYPES)[index] === parent.mimetype) {
             mimetype.mime = Object.keys(MIMETYPES)[index];
             checkEnumOnType(mimetype.type, AudioMIME)
