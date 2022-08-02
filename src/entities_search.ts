@@ -16,6 +16,7 @@ export class SearchAPI extends AuthRESTDataSource<Context> {
     searchValue: SearchFilter,
     fetchPolicy: string
   ): Promise<EntitiesResults> {
+    console.log(`\n CONTEXT GET ENTITIES`, this.context);
     let body = searchValue;
     const data = await this.post(
       `${this.SEARCH}/collection?limit=${limit}&skip=${skip}`,
