@@ -488,7 +488,6 @@ export const resolvers: Resolvers<Context> = {
         mediafile._key,
         file
       );
-
       if (environment.zesdeCollectie) {
         relations.push({
           key: environment.zesdeCollectie,
@@ -501,9 +500,9 @@ export const resolvers: Resolvers<Context> = {
         const entity = await dataSources.EntitiesAPI.createFullEntity(
           EntityTypes.Asset,
           metadata as Array<Metadata>,
-          relations as Array<Relation>)
-        //   await dataSources.EntitiesAPI.getSixthCollection()
-        // );
+          relations as Array<Relation>,
+          await dataSources.EntitiesAPI.getSixthCollection()
+        );
 
         if (entity) {
           environment.zesdeCollectie ? null : console.log(`Couldn't add sixth collection as a relation for entity ${entity.id}. Id not set in environments.`)
