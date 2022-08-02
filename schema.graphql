@@ -103,7 +103,8 @@ enum RelationType {
   story_box_visits
   story_box
   userConnected
-  testimoni
+  isTestimonyFor
+  hasTestimony
 }
 
 enum StatusKey {
@@ -208,6 +209,8 @@ type Entity {
   primary_mediafile_location: String
   primary_width: String
   primary_height: String
+  testimonies: [Entity]
+  user: String
 }
 
 type MediaInfo {
@@ -444,8 +447,7 @@ type Query {
   CreateStorybox(storyboxInfo: StoryboxBuildInput!): Entity
   Storybox: EntitiesResults
   AddEntityAsRelation(entityId: String!, entityRelationId: String!): [Relation]
-  CreateTestimoni(entityInfo: EntityInfo!, assetId: String!): Entity
-  LinkTestimoniToAsset(assetId: String!, testimoniId: String!): [Relation]
+  LinkTestimonyToAsset(assetId: String!, testimonyId: String!): [Relation]
   LinkFrameToVisiter(frameId: String!): BoxVisiter
   GetvisiterOfEntity(id: String!): BoxVisiter
   GetUploadRelations(searchValue: String!): EntitiesResults
@@ -467,6 +469,16 @@ type Mutation {
   ): [Relation]!
   DeleteEntity(id: String!): String
   UpdatedScannedOfBoxvisiter(code: String!): BoxVisiter
-  UploadMediafile(media: MediaFileInput!, file: Upload, relations: [RelationInput], metadata: [MetadataInput]): MediaFile
-  UpdateEntity(id: String!, metadata: [MetadataInput]! ,relations: [RelationInput]!): Entity
+  UploadMediafile(
+    media: MediaFileInput!
+    file: Upload
+    relations: [RelationInput]
+    metadata: [MetadataInput]
+  ): MediaFile
+  UpdateEntity(
+    id: String!
+    metadata: [MetadataInput]!
+    relations: [RelationInput]!
+  ): Entity
+  CreateTestimony(entityInfo: EntityInfo!, assetId: String!): Entity
 }

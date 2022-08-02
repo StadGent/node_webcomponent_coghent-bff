@@ -15,18 +15,18 @@ import { createBaseEntity, setObjectIdToEntity } from './parsers/entities';
 import { EntitiesAPI } from './entities';
 import { createRelationTypeFromData } from './parsers/storybox';
 
-export class TestimoniAPI extends EntitiesAPI {
+export class TestimonyAPI extends EntitiesAPI {
   public baseURL = `${env.api.collectionAPIUrl}/`;
 
-  async createTestimoni(entityInfo: EntityInfo): Promise<Entity> {
-    const testimoniBody = JSON.parse(
+  async createTestimony(entityInfo: EntityInfo): Promise<Entity> {
+    const testimonyBody = JSON.parse(
       createBaseEntity(
         entityInfo.type,
         entityInfo.title,
         entityInfo.description
       )
     );
-    const testimoniSpecificMetadata = [
+    const testimonySpecificMetadata = [
       {
         key: MetaKey.PublicationStatus,
         value: Publication.Public,
@@ -43,20 +43,20 @@ export class TestimoniAPI extends EntitiesAPI {
         lang: 'en',
       },
     ];
-    testimoniBody.metadata.push(...testimoniSpecificMetadata);
-    let data = await this.post(`entities`, testimoniBody);
+    testimonyBody.metadata.push(...testimonySpecificMetadata);
+    let data = await this.post(`entities`, testimonyBody);
     data = setIdAs_Key(data) as Entity;
     data = setObjectIdToEntity(data);
     return data;
   }
 
-  async linkTestimoniWithAsset(
+  async linkTestimonyWithAsset(
     assetId: string,
-    testimoniId: string
+    testimonyId: string
   ): Promise<Relation[]> {
     const relation = createRelationTypeFromData(
-      RelationType.Testimoni,
-      testimoniId,
+      RelationType.HasTestimony,
+      testimonyId,
       'entities/'
     );
     console.log({ relation });

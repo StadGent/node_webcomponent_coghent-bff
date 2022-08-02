@@ -6,7 +6,7 @@ import { IiifAPI } from './iiif';
 import { StoryBoxAPI } from './sources/storybox';
 import { TicketsAPI } from './ticket';
 import { UserAPI } from './user';
-import { TestimoniAPI } from './testimoni';
+import { TestimonyAPI } from './testimony';
 import { StorageAPI } from './sources/storage';
 
 export interface DataSources {
@@ -18,7 +18,7 @@ export interface DataSources {
   IiifAPI: IiifAPI;
   SearchAPI: SearchAPI;
   UserAPI: UserAPI;
-  TestimoniAPI: TestimoniAPI;
+  TestimonyAPI: TestimonyAPI;
 }
 
 export interface Context {

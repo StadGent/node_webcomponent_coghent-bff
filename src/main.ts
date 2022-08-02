@@ -18,7 +18,7 @@ import { BoxVisitersAPI } from './boxVisiters';
 import { BaseRedisCache } from 'apollo-server-cache-redis';
 import { TicketsAPI } from './ticket';
 import { StoryBoxAPI } from './sources/storybox';
-import { TestimoniAPI } from './testimoni';
+import { TestimonyAPI } from './testimony';
 import { StorageAPI } from './sources/storage';
 // @ts-ignore
 import graphqlUploadExpress from 'graphql-upload/graphqlUploadExpress.js';
@@ -54,7 +54,7 @@ const apolloServer = new ApolloServer({
     EntitiesAPI: new EntitiesAPI(),
     StoryBoxAPI: new StoryBoxAPI(),
     BoxVisitersAPI: new BoxVisitersAPI(),
-    TestimoniAPI: new TestimoniAPI(),
+    TestimonyAPI: new TestimonyAPI(),
     TicketsAPI: new TicketsAPI(),
     IiifAPI: new IiifAPI(),
     SearchAPI: new SearchAPI(),
@@ -66,7 +66,7 @@ const apolloServer = new ApolloServer({
   },
   introspection: environment.apollo.introspection,
   playground: environment.apollo.playground,
-  uploads: false
+  uploads: false,
 });
 
 app.use(graphqlUploadExpress({ maxFileSize: 50000000, maxFiles: 1 }));

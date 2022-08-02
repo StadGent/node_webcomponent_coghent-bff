@@ -200,28 +200,14 @@ export const resolvers: Resolvers<Context> = {
       );
       return await dataSources.EntitiesAPI.addRelation(entityId, relation);
     },
-    CreateTestimoni: async (
+    LinkTestimonyToAsset: async (
       _source,
-      { entityInfo, assetId },
+      { assetId, testimonyId },
       { dataSources }
     ) => {
-      const testimoni = await dataSources.TestimoniAPI.createTestimoni(
-        entityInfo
-      );
-      await dataSources.TestimoniAPI.linkTestimoniWithAsset(
+      const relations = await dataSources.TestimonyAPI.linkTestimonyWithAsset(
         assetId,
-        testimoni.id
-      );
-      return testimoni;
-    },
-    LinkTestimoniToAsset: async (
-      _source,
-      { assetId, testimoniId },
-      { dataSources }
-    ) => {
-      const relations = await dataSources.TestimoniAPI.linkTestimoniWithAsset(
-        assetId,
-        testimoniId
+        testimonyId
       );
       return relations;
     },
@@ -519,6 +505,23 @@ export const resolvers: Resolvers<Context> = {
         }
       }
       return uploadedFile;
+    },
+    CreateTestimony: async (
+      _source,
+      { entityInfo, assetId },
+      { dataSources }
+    ) => {
+      const testimony = await dataSources.TestimonyAPI.createTestimony(
+        entityInfo
+      );
+      await dataSources.TestimonyAPI.linkTestimonyWithAsset(
+        assetId,
+        testimony.id
+      );
+      const assetWithTestimony = await dataSources.EntitiesAPI.getEntity(
+        assetId
+      );
+      return assetWithTestimony;
     },
     UpdateEntity: async (
       parent,

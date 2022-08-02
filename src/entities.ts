@@ -12,6 +12,7 @@ import {
   MediaFileInput,
   Collections,
   EntityTypes,
+  MetaKey,
 } from './type-defs';
 import { Context } from './types';
 import { environment as env } from './environment';
@@ -54,10 +55,24 @@ export class EntitiesAPI extends AuthRESTDataSource<Context> {
 
   // async getEntity(id: string, _collection: Collections = Collections.Entities, _skipRelations: 1 | 0 = 0): Promise<Entity> {
   //   let data = await this.get<Entity>(_collection + (id ? '/' + id : '') + `?${SKIP_RELATIONS}=${_skipRelations}`);
-  async getEntity(id: string, _collection: Collections = Collections.Entities): Promise<Entity> {
+  async getEntity(
+    id: string,
+    _collection: Collections = Collections.Entities
+  ): Promise<Entity> {
     let data = await this.get<Entity>(_collection + (id ? '/' + id : ''));
     // setId(data);
     // data = setIdAs_Key(data) as Entity;
+    const testimonyRelations = await this.getRelationOfType(
+      id,
+      RelationType.HasTestimony
+    );
+    const testimonyIds = testimonyRelations.map((rel: Relation) =>
+      rel.key.replace('entities/', '')
+    );
+    const allTestimonies = await this.getEntitiesOfRelationIds(testimonyIds);
+    console.log(allTestimonies);
+    data.testimonies = allTestimonies;
+    // data.testimonies = allTestimonies.filter((testimony: Entity) => testimony.)
     data = setIdAndObjectId(data);
     return data;
   }
@@ -81,9 +96,14 @@ export class EntitiesAPI extends AuthRESTDataSource<Context> {
     return await this.get(`entities/${id}/mediafiles`);
   }*/
 
-  async getMediafiles(id: string, _public: boolean = true): Promise<MediaFile[]> {
+  async getMediafiles(
+    id: string,
+    _public: boolean = true
+  ): Promise<MediaFile[]> {
     if (id !== 'noid') {
-      const mediafiles = await this.get(`entities/${id}/mediafiles${_public === true ? '' : '?non_public=1'}`);
+      const mediafiles = await this.get(
+        `entities/${id}/mediafiles${_public === true ? '' : '?non_public=1'}`
+      );
       // a Set to track seen mediafiles
       const seen = new Set();
 
@@ -197,7 +217,10 @@ export class EntitiesAPI extends AuthRESTDataSource<Context> {
     return result;
   }
 
-  async deleteEntity(_id: string, _collection: Collections = Collections.Entities): Promise<string> {
+  async deleteEntity(
+    _id: string,
+    _collection: Collections = Collections.Entities
+  ): Promise<string> {
     await this.delete(`${_collection}/${_id}`);
     return `Deleted entity with id ${_id} from collection: ${_collection}`;
   }
@@ -215,32 +238,50 @@ export class EntitiesAPI extends AuthRESTDataSource<Context> {
   }
 
   async createMediafile(_mediafile: MediaFileInput): Promise<MediaFile> {
-    let mediafile = await this.post(`${Collections.Mediafiles}`, _mediafile)
-    return mediafile
+    let mediafile = await this.post(`${Collections.Mediafiles}`, _mediafile);
+    return mediafile;
   }
 
-  async createFullEntity(_type: EntityTypes, _metadata: Array<Metadata>, _relations: Array<Relation>, _objectId?: string): Promise<Entity | null> {
-    let entityTemplate = minimalEntity(_type) as unknown as Entity
-    _objectId ? entityTemplate.object_id = _objectId : null
+  async createFullEntity(
+    _type: EntityTypes,
+    _metadata: Array<Metadata>,
+    _relations: Array<Relation>,
+    _objectId?: string
+  ): Promise<Entity | null> {
+    let entityTemplate = minimalEntity(_type) as unknown as Entity;
+    _objectId ? (entityTemplate.object_id = _objectId) : null;
     let entity = await this.post(Collections.Entities, entityTemplate);
-    let relations: null | Array<Relation> = null
-    let metadata: null | Array<Metadata> = null
+    let relations: null | Array<Relation> = null;
+    let metadata: null | Array<Metadata> = null;
     if (entity) {
-      entity = setIdAs_Key(entity)
+      entity = setIdAs_Key(entity);
       Promise.allSettled([
-        _relations.length >= 1 ? relations = await this.replaceRelations(entity.id!, _relations) : null,
-        _metadata.length >= 1 ? metadata = await this.replaceMetadata(entity.id!, _metadata as Array<MetadataInput>) : null,
-      ])
+        _relations.length >= 1
+          ? (relations = await this.replaceRelations(entity.id!, _relations))
+          : null,
+        _metadata.length >= 1
+          ? (metadata = await this.replaceMetadata(
+              entity.id!,
+              _metadata as Array<MetadataInput>
+            ))
+          : null,
+      ]);
     }
-    return entity
+    return entity;
   }
 
-  async addMediafilesToEntity(_entityId: string, _mediafile: MediaFile): Promise<Array<MediaFile>> {
-    let mediafiles = await this.post(`${Collections.Entities}/${_entityId}/mediafiles`, _mediafile);
-    return mediafiles
+  async addMediafilesToEntity(
+    _entityId: string,
+    _mediafile: MediaFile
+  ): Promise<Array<MediaFile>> {
+    let mediafiles = await this.post(
+      `${Collections.Entities}/${_entityId}/mediafiles`,
+      _mediafile
+    );
+    return mediafiles;
   }
 
   async getSixthCollection() {
-    return await this.get(`${Collections.Entities}/sixthcollection/id`)
+    return await this.get(`${Collections.Entities}/sixthcollection/id`);
   }
 }
