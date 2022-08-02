@@ -30,9 +30,11 @@ import 'apollo-cache-control';
 import { environment } from './environment';
 import {
   filterByRelationTypes,
+  filterOutRelationTypes,
   getMetadataOfKey,
   getRelationsFromMetadata,
   mergeMetadata,
+  mergeRelations,
 } from './parsers/entities';
 import {
   setEntitiesIdPrefix,
@@ -150,7 +152,7 @@ export const resolvers: Resolvers<Context> = {
         fetchPolicy || ''
       );
     },
-    User: async (_source, {}, { dataSources, session }) => {
+    User: async (_source, { }, { dataSources, session }) => {
       if (!session.auth.accessToken) {
         throw new AuthenticationError('Not authenticated');
       }
@@ -247,16 +249,16 @@ export const resolvers: Resolvers<Context> = {
       }
       return data;
     },
-    GetMyUploadedAssets: async (_source, {}, { dataSources }) => {
+    GetMyUploadedAssets: async (_source, { }, { dataSources }) => {
       const uploadedEntities = await dataSources.UserAPI.myAssetCreations();
       // const results = []
       // Promise.allSettled([
       //   results.push(await dataSources.EntitiesAPI.getEntity(`cbad1d56-c5db-41c1-aacc-e488b514f993`)),
-      //  results.push(await dataSources.EntitiesAPI.getEntity(`129cfb68-18da-4dba-97fd-15718aebe110`)),
-      //  results.push(await dataSources.EntitiesAPI.getEntity(`309b4deb-4541-4880-ab61-901e824d8caf`)),
-      //  results.push(await dataSources.EntitiesAPI.getEntity(`81425c81-d72f-4ffd-bc09-57f167fd0553`)),
-      //  results.push(await dataSources.EntitiesAPI.getEntity(`ec9b793b-772a-4590-be6d-e1413ee3ae4f`)),
-      //  results.push(await dataSources.EntitiesAPI.getEntity(`7cadf39e-f9ac-4501-b8f3-8f90d1d331ac`)),
+      //   results.push(await dataSources.EntitiesAPI.getEntity(`129cfb68-18da-4dba-97fd-15718aebe110`)),
+      //   results.push(await dataSources.EntitiesAPI.getEntity(`309b4deb-4541-4880-ab61-901e824d8caf`)),
+      //   results.push(await dataSources.EntitiesAPI.getEntity(`81425c81-d72f-4ffd-bc09-57f167fd0553`)),
+      //   results.push(await dataSources.EntitiesAPI.getEntity(`ec9b793b-772a-4590-be6d-e1413ee3ae4f`)),
+      //   results.push(await dataSources.EntitiesAPI.getEntity(`7cadf39e-f9ac-4501-b8f3-8f90d1d331ac`)),
       // ])
       // return {
       //   limit: 10,
@@ -274,13 +276,13 @@ export const resolvers: Resolvers<Context> = {
             await dataSources.EntitiesAPI.getMetadata(entity.id)
           )),
           (uploadComposable.relations =
-            await dataSources.EntitiesAPI.getRelations(entity.id)),
+            await dataSources.EntitiesAPI.getRelationOfType(entity.id, RelationType.Components)),
         ]);
         uploadComposable.relations.length >= 1
           ? await setRelationValueToDefaultTitleOrFullname(
-              uploadComposable.relations as Array<Relation>,
-              dataSources
-            )
+            uploadComposable.relations as Array<Relation>,
+            dataSources
+          )
           : null;
 
         if (
@@ -291,9 +293,9 @@ export const resolvers: Resolvers<Context> = {
 
           entity !== undefined
             ? (publicationStatus = getMetadataOfKey(
-                entity,
-                MetaKey.PublicationStatus
-              ))
+              entity,
+              MetaKey.PublicationStatus
+            ))
             : null;
 
           if (publicationStatus !== undefined) {
@@ -530,19 +532,23 @@ export const resolvers: Resolvers<Context> = {
         original_entity.metadata,
         metadata as Array<Metadata>
       );
+      const otherRelations = filterOutRelationTypes(original_entity.relations, [RelationType.Components])
+      const componentRelations = filterByRelationTypes(original_entity.relations, [RelationType.Components])
+      const mergedComponentRelations = mergeRelations(componentRelations, relations as Array<Relation>)
+      updatedRelations = [...otherRelations, ...mergedComponentRelations]
 
       Promise.allSettled([
         relations.length >= 1
           ? (updatedRelations = await dataSources.EntitiesAPI.replaceRelations(
-              id,
-              relations as Array<Relation>
-            ))
+            id,
+            updatedRelations as Array<Relation>
+          ))
           : null,
         metadata.length >= 1
           ? await dataSources.EntitiesAPI.replaceMetadata(
-              id,
-              mergedMetadata as Array<MetadataInput>
-            )
+            id,
+            mergedMetadata as Array<MetadataInput>
+          )
           : null,
       ]);
       const entity = await dataSources.EntitiesAPI.getEntity(id);
@@ -778,7 +784,7 @@ export const resolvers: Resolvers<Context> = {
       let mimetype = { type: '', mime: undefined } as any;
       if (parent.mimetype) {
         mimetype.type = parent.mimetype;
-        for (let index = 0; index < Object.values(MIMETYPES).length; index++) {
+        for (let index = 0;index < Object.values(MIMETYPES).length;index++) {
           if (Object.values(MIMETYPES)[index] === parent.mimetype) {
             mimetype.mime = Object.keys(MIMETYPES)[index];
             checkEnumOnType(mimetype.type, AudioMIME)

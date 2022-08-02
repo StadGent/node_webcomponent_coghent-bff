@@ -190,6 +190,7 @@ type Entity {
   metadataByLabel(key: [String]): [Metadata]!
   metadataCollection(key: [MetaKey], label: [String]): [MetadataCollection]
   title: [Metadata]!
+  publicationStatus: [Metadata]
   scopeNote: [Metadata]!
   collections: [Relation]!
   relations: [Relation]
