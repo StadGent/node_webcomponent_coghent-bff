@@ -13,6 +13,7 @@ import {
   Collections,
   EntityTypes,
   MetaKey,
+  Publication,
 } from './type-defs';
 import { Context } from './types';
 import { environment as env } from './environment';
@@ -20,6 +21,7 @@ import { setIdAs_Key, setIdsAs_Key } from './common';
 import { AuthRESTDataSource } from 'inuits-apollo-server-auth';
 import {
   createBaseEntity,
+  getMetadataOfKey,
   minimalEntity,
   setIdAndObjectId,
   setObjectIdToEntity,
@@ -70,8 +72,11 @@ export class EntitiesAPI extends AuthRESTDataSource<Context> {
       rel.key.replace('entities/', '')
     );
     const allTestimonies = await this.getEntitiesOfRelationIds(testimonyIds);
-    console.log(allTestimonies);
-    data.testimonies = allTestimonies;
+    data.testimonies = allTestimonies.filter(
+      (testimony: Entity) =>
+        getMetadataOfKey(testimony, MetaKey.PublicationStatus)?.value ==
+        Publication.Public
+    );
     // data.testimonies = allTestimonies.filter((testimony: Entity) => testimony.)
     data = setIdAndObjectId(data);
     return data;
