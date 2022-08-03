@@ -34,7 +34,7 @@ export class TestimonyAPI extends EntitiesAPI {
       },
       {
         key: MetaKey.Likes,
-        value: 1,
+        value: '0',
         lang: 'en',
       },
       {
