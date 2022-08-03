@@ -82,6 +82,11 @@ export class EntitiesAPI extends AuthRESTDataSource<Context> {
     return data;
   }
 
+  async getEntitiesByEntityType(entityType: EntityTypes): Promise<Entity[]> {
+    const entities: Entity[] = await this.get(`entities?type=${entityType}`);
+    return entities;
+  }
+
   async getRelations(
     id: string,
     _collection: 'entities' | 'box_visits' = 'entities'
