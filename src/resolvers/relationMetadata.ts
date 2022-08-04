@@ -1,30 +1,43 @@
 import { setEntitiesIdPrefix } from '../common';
-import { Entity, Relation, RelationType } from '../type-defs';
+import { relationsWithExcludedCollections } from '../parsers/entities';
+import { Collections, Entity, MediaFile, Relation, RelationType } from '../type-defs';
 import { DataSources } from '../types';
 
 export const setMediafileOnAsset = async (_dataSources: DataSources, _assets: Array<Entity>, _frameId: string) => {
-  let components = await _dataSources.EntitiesAPI.getEntityRelations(_frameId);
-  for (const _component of components) {
+  const updatedAssets: Array<Entity> = _assets
+  let components = await _dataSources.EntitiesAPI.getRelationOfType(_frameId, RelationType.Components);
+  components = relationsWithExcludedCollections(components, [Collections.Mediafiles])
+  const itemsToUpdate: Array<{ id: string, index: number, mediaFile: MediaFile, setMediafile: number }> = []
+  for (const [index, _component] of components.entries()) {
     if (_component.setMediafile && _component.setMediafile != 1 && !_component.key.includes('mediafiles')) {
       const mediafiles = await _dataSources.EntitiesAPI.getMediafiles(
         setEntitiesIdPrefix(_component.key)
       )
       if (mediafiles[_component.setMediafile - 1]) {
         const mediafile = mediafiles[_component.setMediafile - 1]
-        _assets.map(asset => {
-          if (asset.id === setEntitiesIdPrefix(_component.key)) {
-            asset.primary_mediafile_location = mediafile.original_file_location
-            asset.primary_mediafile = mediafile.filename
-            asset.primary_height = mediafile.img_height
-            asset.primary_width = mediafile.img_width
-            asset.primary_transcode = mediafile.transcode_filename
-            asset.primary_transcode_location = mediafile.primary_transcode_location
-          }
+        itemsToUpdate.push({
+          id: setEntitiesIdPrefix(_component.key, false),
+          index: index,
+          mediaFile: mediafile,
+          setMediafile: _component.setMediafile
         })
       }
     }
   }
-  return _assets
+  if (itemsToUpdate.length >= 1) {
+    for (const item of itemsToUpdate) {
+      if (updatedAssets[item.index] && updatedAssets[item.index].id === item.id) {
+        updatedAssets[item.index].primary_mediafile_location = item.mediaFile.original_file_location
+        updatedAssets[item.index].primary_mediafile = item.mediaFile.filename
+        updatedAssets[item.index].primary_height = item.mediaFile.img_height
+        updatedAssets[item.index].primary_width = item.mediaFile.img_width
+        updatedAssets[item.index].primary_transcode = item.mediaFile.transcode_filename
+        updatedAssets[item.index].primary_transcode_location = item.mediaFile.primary_transcode_location
+      }
+    }
+
+  }
+  return updatedAssets
 }
 
 export const createRelationOfId = (_entityId: string, _relationType: RelationType) => {

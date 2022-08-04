@@ -1,5 +1,6 @@
 import { setIdAs_Key } from '../common';
 import {
+  Collections,
   Entity,
   EntityTypes,
   Metadata,
@@ -166,3 +167,23 @@ export const mergeMetadata = (
   }
   return mergedMetadata;
 };
+
+export const relationsWithExcludedCollections = (_relations: Array<Relation>, _excludedCollections: Array<Collections>) => {
+  const relations: Array<Relation> = []
+  for (const relation of _relations) {
+    if (relation.key.indexOf(`/`) !== -1) {
+      const collection = relation.key.substring(0, relation.key.indexOf('/'))
+      let collectionOfType: Collections;
+      let key: keyof typeof Collections
+      for (key in Collections) {
+        if (Collections[key] === collection) {
+          collectionOfType = Collections[key]
+          if (!_excludedCollections.includes(collectionOfType)) {
+            relations.push(relation)
+          }
+        }
+      }
+    }
+  }
+  return relations
+}

@@ -152,7 +152,7 @@ export const resolvers: Resolvers<Context> = {
         fetchPolicy || ''
       );
     },
-    User: async (_source, {}, { dataSources, session }) => {
+    User: async (_source, { }, { dataSources, session }) => {
       if (!session.auth.accessToken) {
         throw new AuthenticationError('Not authenticated');
       }
@@ -211,7 +211,7 @@ export const resolvers: Resolvers<Context> = {
       );
       return relations;
     },
-    GetTestimoniesOfUser: async (_source, {}, { dataSources }) => {
+    GetTestimoniesOfUser: async (_source, { }, { dataSources }) => {
       const userTestimonies: Entity[] =
         await dataSources.EntitiesAPI.getEntitiesByEntityType(
           EntityTypes.Testimony
@@ -242,7 +242,7 @@ export const resolvers: Resolvers<Context> = {
       }
       return data;
     },
-    GetMyUploadedAssets: async (_source, {}, { dataSources }) => {
+    GetMyUploadedAssets: async (_source, { }, { dataSources }) => {
       const uploadedEntities = await dataSources.UserAPI.myAssetCreations();
       // const results = []
       // Promise.allSettled([
@@ -276,9 +276,9 @@ export const resolvers: Resolvers<Context> = {
         ]);
         uploadComposable.relations.length >= 1
           ? await setRelationValueToDefaultTitleOrFullname(
-              uploadComposable.relations as Array<Relation>,
-              dataSources
-            )
+            uploadComposable.relations as Array<Relation>,
+            dataSources
+          )
           : null;
 
         if (
@@ -289,9 +289,9 @@ export const resolvers: Resolvers<Context> = {
 
           entity !== undefined
             ? (publicationStatus = getMetadataOfKey(
-                entity,
-                MetaKey.PublicationStatus
-              ))
+              entity,
+              MetaKey.PublicationStatus
+            ))
             : null;
 
           if (publicationStatus !== undefined) {
@@ -514,8 +514,8 @@ export const resolvers: Resolvers<Context> = {
           environment.zesdeCollectie
             ? null
             : console.log(
-                `Couldn't add sixth collection as a relation for entity ${entity.id}. Id not set in environments.`
-              );
+              `Couldn't add sixth collection as a relation for entity ${entity.id}. Id not set in environments.`
+            );
           console.log(`created entity`, entity);
           const mediaFileEntity = (await dataSources.EntitiesAPI.getEntity(
             mediafile._key,
@@ -574,15 +574,15 @@ export const resolvers: Resolvers<Context> = {
       Promise.allSettled([
         relations.length >= 1
           ? (updatedRelations = await dataSources.EntitiesAPI.replaceRelations(
-              id,
-              updatedRelations as Array<Relation>
-            ))
+            id,
+            updatedRelations as Array<Relation>
+          ))
           : null,
         metadata.length >= 1
           ? await dataSources.EntitiesAPI.replaceMetadata(
-              id,
-              mergedMetadata as Array<MetadataInput>
-            )
+            id,
+            mergedMetadata as Array<MetadataInput>
+          )
           : null,
       ]);
       const entity = await dataSources.EntitiesAPI.getEntity(id);
@@ -780,8 +780,9 @@ export const resolvers: Resolvers<Context> = {
       let assets = await dataSources.EntitiesAPI.getEntitiesOfRelationIds(
         relations.map((_relation) => _relation.key)
       );
-      assets = await setMediafileOnAsset(dataSources, assets, parent.id);
-      return assets;
+      const updatedAssets = await setMediafileOnAsset(dataSources, assets, parent.id);
+
+      return updatedAssets;
     },
     frames: async (parent, _args, { dataSources }) => {
       const relations = getRelationsFromMetadata(parent, RelationType.Frames);
@@ -818,7 +819,7 @@ export const resolvers: Resolvers<Context> = {
       let mimetype = { type: '', mime: undefined } as any;
       if (parent.mimetype) {
         mimetype.type = parent.mimetype;
-        for (let index = 0; index < Object.values(MIMETYPES).length; index++) {
+        for (let index = 0;index < Object.values(MIMETYPES).length;index++) {
           if (Object.values(MIMETYPES)[index] === parent.mimetype) {
             mimetype.mime = Object.keys(MIMETYPES)[index];
             checkEnumOnType(mimetype.type, AudioMIME)
