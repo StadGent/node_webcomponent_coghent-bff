@@ -23,6 +23,7 @@ import {
   UploadComposable,
   MetadataInput,
   RelationInput,
+  UserAction,
 } from './type-defs';
 import { Context, DataSources } from './types';
 import { AuthenticationError } from 'apollo-server';
@@ -280,6 +281,9 @@ export const resolvers: Resolvers<Context> = {
             dataSources
           )
           : null;
+
+        const action = getMetadataOfKey(entity, MetaKey.UserAction)
+        action !== undefined ? uploadComposable.action = action?.value! as UserAction : null
 
         if (
           uploadComposable.metadata &&

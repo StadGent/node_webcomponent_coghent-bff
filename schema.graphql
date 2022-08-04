@@ -61,12 +61,19 @@ extend enum MetaKey {
   publication_status
   rights
   sources
+  user_action
 }
 
 enum Publication {
   public
   private
   validate
+}
+
+enum UserAction {
+  created
+  updated
+  deleted
 }
 
 enum EntityTypes {
@@ -418,6 +425,7 @@ type UploadComposable {
   metadata(key: [MetaKey]): [Metadata]
   relations: [Relation]
   liscense: String
+  action: UserAction
 }
 
 type Query {
