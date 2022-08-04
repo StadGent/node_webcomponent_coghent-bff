@@ -59,7 +59,6 @@ export class TestimonyAPI extends EntitiesAPI {
       testimonyId,
       'entities/'
     );
-    console.log({ relation });
     return await this.addRelation(assetId, relation);
   }
 }
