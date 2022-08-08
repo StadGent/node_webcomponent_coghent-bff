@@ -1,6 +1,7 @@
 import { setIdAs_Key } from '../common';
 import {
   Collections,
+  EntitiesResults,
   Entity,
   EntityTypes,
   Metadata,
@@ -186,4 +187,20 @@ export const relationsWithExcludedCollections = (_relations: Array<Relation>, _e
     }
   }
   return relations
+}
+
+export const filterOnEntityType = (_entitiesResults: EntitiesResults, _entityTypes: Array<EntityTypes>) => {
+  let updated = {} as EntitiesResults
+  Object.assign(updated, _entitiesResults)
+  if (_entitiesResults.results) {
+    updated.results = []
+
+    for (const entity of _entitiesResults.results) {
+      if (entity && _entityTypes.includes(entity.type as EntityTypes)) {
+        updated.results.push(entity)
+      }
+    }
+
+  }
+  return updated
 }

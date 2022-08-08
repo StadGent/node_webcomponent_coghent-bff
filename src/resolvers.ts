@@ -31,6 +31,7 @@ import 'apollo-cache-control';
 import { environment } from './environment';
 import {
   filterByRelationTypes,
+  filterOnEntityType,
   filterOutRelationTypes,
   getMetadataOfKey,
   getRelationsFromMetadata,
@@ -244,8 +245,9 @@ export const resolvers: Resolvers<Context> = {
       return data;
     },
     GetMyUploadedAssets: async (_source, { }, { dataSources }) => {
-      const uploadedEntities = await dataSources.UserAPI.myAssetCreations();
-      // const results = []
+      let uploadedEntities = await dataSources.UserAPI.myAssetCreations();
+      uploadedEntities ? uploadedEntities = filterOnEntityType(uploadedEntities, [EntityTypes.Asset]) : null
+      const results = []
       // Promise.allSettled([
       //   results.push(await dataSources.EntitiesAPI.getEntity(`cbad1d56-c5db-41c1-aacc-e488b514f993`)),
       //   results.push(await dataSources.EntitiesAPI.getEntity(`129cfb68-18da-4dba-97fd-15718aebe110`)),
