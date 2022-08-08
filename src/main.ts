@@ -22,6 +22,7 @@ import { TestimonyAPI } from './testimony';
 import { StorageAPI } from './sources/storage';
 // @ts-ignore
 import graphqlUploadExpress from 'graphql-upload/graphqlUploadExpress.js';
+import { createProxyMiddleware } from 'http-proxy-middleware';
 
 const Redis = require('ioredis');
 
@@ -37,7 +38,7 @@ if (environment.redisHost) {
   console.log('No Redis cache');
 }
 
-const app = express();
+export const app = express();
 app.use(express.json());
 app.use(
   cors({
@@ -72,6 +73,23 @@ const apolloServer = new ApolloServer({
 app.use(graphqlUploadExpress({ maxFileSize: 50000000, maxFiles: 1 }));
 
 applyAuthSession(app, environment.sessionSecret);
+
+// Proxy for storage API
+const addJwt = (proxyReq: any, req: any, res: any) => {
+  proxyReq.setHeader('Authorization', 'Bearer ' + environment.staticToken);
+};
+
+app.use(
+  '/api/mediafile',
+  createProxyMiddleware({
+    target: environment.api.storageAPIUrl + '/storage/v1/download/',
+    changeOrigin: true,
+    pathRewrite: {
+      '^/api/mediafile': '/',
+    },
+    onProxyReq: addJwt,
+  })
+);
 
 apolloServer.applyMiddleware({
   app,
