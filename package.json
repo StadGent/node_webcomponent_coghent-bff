@@ -27,6 +27,7 @@
     "express-session": "^1.17.2",
     "form-data": "^4.0.0",
     "graphql-upload": "15.0.2",
+    "http-proxy-middleware": "^2.0.6",
     "inuits-apollo-server-auth": "^1.0.5",
     "ioredis": "^4.28.3",
     "jwt-decode": "^3.1.2"

@@ -5,3 +5,5 @@ declare module 'express-session' {
     tokenMgr: TokenManager;
   }
 }
+
+declare module 'http-proxy-middleware'
