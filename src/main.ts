@@ -82,7 +82,7 @@ const addJwt = (proxyReq: any, req: any, res: any) => {
 app.use(
   '/api/mediafile',
   createProxyMiddleware({
-    target: environment.api.storageAPIUrl + '/storage/v1/download/',
+    target: environment.api.storageAPIUrl + '/download/',
     changeOrigin: true,
     pathRewrite: {
       '^/api/mediafile': '/',
