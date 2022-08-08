@@ -32,10 +32,17 @@ export class UserAPI extends AuthRESTDataSource<Context> {
     files = setIdsAs_Key(files) as MediafilesResults
     return files
   }
-  
+
   async myAssetCreations(): Promise<EntitiesResults> {
-    let files = await this.get(Collections.Entities)
-    files = setIdsAs_Key(files) as EntitiesResults
+    let files = null
+    try {
+      files = await this.get(Collections.Entities)
+      files = setIdsAs_Key(files) as EntitiesResults
+    } catch (error) {
+      files.results = []
+      files.count = 0
+    }
+
     return files
   }
 }
