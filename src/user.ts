@@ -39,8 +39,7 @@ export class UserAPI extends AuthRESTDataSource<Context> {
       files = await this.get(Collections.Entities)
       files = setIdsAs_Key(files) as EntitiesResults
     } catch (error) {
-      files.results = []
-      files.count = 0
+      console.error(`ERROR get assets from user`, error)
     }
 
     return files
