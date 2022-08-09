@@ -112,4 +112,10 @@ export class StoryBoxAPI extends EntitiesAPI {
     visiter = setIdAs_Key(visiter) as BoxVisiter;
     return visiter;
   }
+
+  async publishStorybox(_frameId: string): Promise<BoxVisiter> {
+    let visiter = await this.post('/story_box/publish/' + _frameId);
+    visiter = setIdAs_Key(visiter) as BoxVisiter;
+    return visiter;
+  }
 }
