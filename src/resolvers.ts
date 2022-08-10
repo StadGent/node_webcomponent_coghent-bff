@@ -70,8 +70,10 @@ import {
   getRightFromMediafile,
   removePrefixFromMetadata,
 } from './resolvers/upload';
+import { SIXTH_COLLECTION } from './sources/constants';
 
 const GraphQLUpload = require('graphql-upload/GraphQLUpload.js');
+let sixthCollectionId: null | string = null
 
 export const resolvers: Resolvers<Context> = {
   Upload: GraphQLUpload,
@@ -251,20 +253,6 @@ export const resolvers: Resolvers<Context> = {
           EntityTypes.Asset,
         ]))
         : null;
-      const results = [];
-      // Promise.allSettled([
-      //   results.push(await dataSources.EntitiesAPI.getEntity(`cbad1d56-c5db-41c1-aacc-e488b514f993`)),
-      //   results.push(await dataSources.EntitiesAPI.getEntity(`129cfb68-18da-4dba-97fd-15718aebe110`)),
-      //   results.push(await dataSources.EntitiesAPI.getEntity(`309b4deb-4541-4880-ab61-901e824d8caf`)),
-      //   results.push(await dataSources.EntitiesAPI.getEntity(`81425c81-d72f-4ffd-bc09-57f167fd0553`)),
-      //   results.push(await dataSources.EntitiesAPI.getEntity(`ec9b793b-772a-4590-be6d-e1413ee3ae4f`)),
-      //   results.push(await dataSources.EntitiesAPI.getEntity(`7cadf39e-f9ac-4501-b8f3-8f90d1d331ac`)),
-      // ])
-      // return {
-      //   limit: 10,
-      //   count: 4,
-      //   results: results
-      // }
       return uploadedEntities;
     },
     UploadObjectFromEntity: async (_source, { entityId }, { dataSources }) => {
@@ -509,11 +497,12 @@ export const resolvers: Resolvers<Context> = {
         mediafile._key,
         file
       );
-      if (environment.zesdeCollectie) {
+      sixthCollectionId === null ? sixthCollectionId = await dataSources.EntitiesStaticAPI.getEntityIdOfEntityType(EntityTypes.Museum, SIXTH_COLLECTION) : null
+      if (sixthCollectionId) {
         relations.push({
-          key: setEntitiesIdPrefix(environment.zesdeCollectie, true),
+          key: setEntitiesIdPrefix(sixthCollectionId, true),
           type: RelationType.IsIn,
-          label: `Zesde collectie`,
+          label: SIXTH_COLLECTION,
         } as RelationInput);
       }
 
@@ -526,12 +515,11 @@ export const resolvers: Resolvers<Context> = {
         );
 
         if (entity) {
-          environment.zesdeCollectie
+          sixthCollectionId
             ? null
             : console.log(
-              `Couldn't add sixth collection as a relation for entity ${entity.id}. Id not set in environments.`
+              `Couldn't add ${SIXTH_COLLECTION} as a relation for entity ${entity.id}. Museum not found`
             );
-          console.log(`created entity`, entity);
           const mediaFileEntity = (await dataSources.EntitiesAPI.getEntity(
             mediafile._key,
             Collections.Mediafiles

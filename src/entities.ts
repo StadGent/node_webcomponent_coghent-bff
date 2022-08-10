@@ -254,9 +254,7 @@ export class EntitiesAPI extends AuthRESTDataSource<Context> {
   }
 
   async createMediafile(_mediafile: MediaFileInput): Promise<MediaFile> {
-    console.log(` STARTING CREATE MEDAFILE`);
     let mediafile = await this.post(`${Collections.Mediafiles}`, _mediafile);
-    console.log(`\n CREATED MEDIAFILE`, mediafile)
     return mediafile;
   }
 
