@@ -505,7 +505,7 @@ export const resolvers: Resolvers<Context> = {
 
       let uploadedFile: null | MediaFile = null;
       const mediafile = await dataSources.EntitiesAPI.createMediafile(media);
-      const uploaded = await dataSources.StorageAPI.uploadMediafile(
+      const uploaded = await dataSources.StorageStaticAPI.uploadMediafile(
         mediafile._key,
         file
       );
@@ -522,7 +522,7 @@ export const resolvers: Resolvers<Context> = {
           EntityTypes.Asset,
           metadata as Array<Metadata>,
           relations as Array<Relation>,
-          await dataSources.EntitiesAPI.getSixthCollection()
+          await dataSources.EntitiesStaticAPI.getSixthCollectionObjectId()
         );
 
         if (entity) {

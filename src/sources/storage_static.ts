@@ -2,9 +2,9 @@ import { environment as _ } from '../environment';
 import { Context } from '../types';
 import FormData from 'form-data';
 import { MediaFile } from '../type-defs';
-import { AuthRESTDataSource } from 'inuits-apollo-server-auth';
+import { RESTDataSourceWithStaticToken } from '../RestDataSourceWithStaticToken';
 
-export class StorageAPI extends AuthRESTDataSource<Context> {
+export class StorageStaticAPI extends RESTDataSourceWithStaticToken<Context> {
   public baseURL = `${_.api.storageAPIUrl}/`;
 
   async uploadMediafile(_entityId: string, _file: any): Promise<MediaFile | null> {

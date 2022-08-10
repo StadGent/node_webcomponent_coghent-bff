@@ -7,11 +7,13 @@ import { StoryBoxAPI } from './sources/storybox';
 import { TicketsAPI } from './ticket';
 import { UserAPI } from './user';
 import { TestimonyAPI } from './testimony';
-import { StorageAPI } from './sources/storage';
+import { StorageStaticAPI } from './sources/storage_static';
+import EntitiesStaticAPI from './sources/entities_static';
 
 export interface DataSources {
-  StorageAPI: StorageAPI;
+  StorageStaticAPI: StorageStaticAPI;
   EntitiesAPI: EntitiesAPI;
+  EntitiesStaticAPI: EntitiesStaticAPI;
   StoryBoxAPI: StoryBoxAPI;
   BoxVisitersAPI: BoxVisitersAPI;
   TicketsAPI: TicketsAPI;
