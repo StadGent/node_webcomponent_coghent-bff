@@ -576,15 +576,7 @@ export const resolvers: Resolvers<Context> = {
       const otherRelations = filterOutRelationTypes(original_entity.relations, [
         RelationType.Components,
       ]);
-      const componentRelations = filterByRelationTypes(
-        original_entity.relations,
-        [RelationType.Components]
-      );
-      const mergedComponentRelations = mergeRelations(
-        componentRelations,
-        relations as Array<Relation>
-      );
-      updatedRelations = [...otherRelations, ...mergedComponentRelations];
+      updatedRelations = [...otherRelations, ...relations as Array<Relation>];
 
       Promise.allSettled([
         relations.length >= 1
