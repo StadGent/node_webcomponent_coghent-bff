@@ -36,7 +36,7 @@ export class UserAPI extends AuthRESTDataSource<Context> {
   async myAssetCreations(): Promise<EntitiesResults> {
     let files = null
     try {
-      files = await this.get(Collections.Entities)
+      files = await this.get(`${Collections.Entities}?type=asset`)
       files = setIdsAs_Key(files) as EntitiesResults
     } catch (error) {
       console.error(`ERROR get assets from user`, error)
