@@ -62,22 +62,23 @@ export class EntitiesAPI extends AuthRESTDataSource<Context> {
     _collection: Collections = Collections.Entities
   ): Promise<Entity> {
     let data = await this.get<Entity>(_collection + (id ? '/' + id : ''));
-    // setId(data);
-    // data = setIdAs_Key(data) as Entity;
-    const testimonyRelations = await this.getRelationOfType(
-      id,
-      RelationType.HasTestimony
-    );
-    const testimonyIds = testimonyRelations.map((rel: Relation) =>
-      rel.key.replace('entities/', '')
-    );
-    const allTestimonies = await this.getEntitiesOfRelationIds(testimonyIds);
-    data.testimonies = allTestimonies.filter(
-      (testimony: Entity) =>
-        getMetadataOfKey(testimony, MetaKey.PublicationStatus)?.value ==
-        Publication.Public
-    );
-    // data.testimonies = allTestimonies.filter((testimony: Entity) => testimony.)
+
+    if (_collection === Collections.Entities) {
+      const testimonyRelations = await this.getRelationOfType(
+        id,
+        RelationType.HasTestimony
+      );
+      const testimonyIds = testimonyRelations.map((rel: Relation) =>
+        rel.key.replace('entities/', '')
+      );
+      const allTestimonies = await this.getEntitiesOfRelationIds(testimonyIds);
+      data.testimonies = allTestimonies.filter(
+        (testimony: Entity) =>
+          getMetadataOfKey(testimony, MetaKey.PublicationStatus)?.value ==
+          Publication.Public
+      );
+      // data.testimonies = allTestimonies.filter((testimony: Entity) => testimony.)
+    }
     data = setIdAndObjectId(data);
     return data;
   }
@@ -253,7 +254,9 @@ export class EntitiesAPI extends AuthRESTDataSource<Context> {
   }
 
   async createMediafile(_mediafile: MediaFileInput): Promise<MediaFile> {
+    console.log(` STARTING CREATE MEDAFILE`);
     let mediafile = await this.post(`${Collections.Mediafiles}`, _mediafile);
+    console.log(`\n CREATED MEDIAFILE`, mediafile)
     return mediafile;
   }
 
@@ -276,9 +279,9 @@ export class EntitiesAPI extends AuthRESTDataSource<Context> {
           : null,
         _metadata.length >= 1
           ? (metadata = await this.replaceMetadata(
-              entity.id!,
-              _metadata as Array<MetadataInput>
-            ))
+            entity.id!,
+            _metadata as Array<MetadataInput>
+          ))
           : null,
       ]);
     }
@@ -294,9 +297,5 @@ export class EntitiesAPI extends AuthRESTDataSource<Context> {
       _mediafile
     );
     return mediafiles;
-  }
-
-  async getSixthCollection() {
-    return await this.get(`${Collections.Entities}/sixthcollection/id`);
   }
 }
