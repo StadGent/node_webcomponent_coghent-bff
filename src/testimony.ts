@@ -11,7 +11,11 @@ import {
   StatusKey,
 } from './type-defs';
 import { setIdAs_Key } from './common';
-import { createBaseEntity, setObjectIdToEntity } from './parsers/entities';
+import {
+  createBaseEntity,
+  getMetadataOfKey,
+  setObjectIdToEntity,
+} from './parsers/entities';
 import { EntitiesAPI } from './entities';
 import { createRelationTypeFromData } from './parsers/storybox';
 
@@ -59,6 +63,37 @@ export class TestimonyAPI extends EntitiesAPI {
       testimonyId,
       'entities/'
     );
+    const backwardsRelation = createRelationTypeFromData(
+      RelationType.IsTestimonyFor,
+      assetId,
+      'entities/'
+    );
+    console.log(backwardsRelation);
+    await this.addRelation(testimonyId, backwardsRelation);
     return await this.addRelation(assetId, relation);
+  }
+
+  async getTestimoniesByAssetId(assetId: string): Promise<Entity[]> {
+    try {
+      const testimonyRelations = await this.getRelationOfType(
+        assetId,
+        RelationType.HasTestimony
+      );
+      const testimonyIds = testimonyRelations.map((rel: Relation) =>
+        rel.key.replace('entities/', '')
+      );
+      const allTestimonies = await this.getEntitiesOfRelationIds(testimonyIds);
+      console.log('All Testimonies');
+      console.log(allTestimonies);
+      const publicTestimonies = allTestimonies.filter(
+        (testimony: Entity) =>
+          getMetadataOfKey(testimony, MetaKey.PublicationStatus)?.value ==
+          Publication.Public
+      ) as Entity[];
+      return publicTestimonies;
+    } catch (er) {
+      console.log(er);
+      return [];
+    }
   }
 }
