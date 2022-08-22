@@ -25,7 +25,7 @@ import graphqlUploadExpress from 'graphql-upload/graphqlUploadExpress.js';
 import { createProxyMiddleware } from 'http-proxy-middleware';
 import EntitiesStaticAPI from './sources/entities_static';
 
-console.log(`>inuits-apollo-server-auth: v1.0.15`)
+console.log(`>inuits-apollo-server-auth: v1.0.16`)
 const Redis = require('ioredis');
 
 let redisCache = undefined;
