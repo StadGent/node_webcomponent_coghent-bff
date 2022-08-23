@@ -6,7 +6,6 @@ import {
   User
 } from './type-defs'
 import { AuthRESTDataSource, getMe } from 'inuits-apollo-server-auth';
-import { RESTDataSource } from 'apollo-datasource-rest';
 import { Context } from './types';
 import { environment as _ } from './environment';
 import { setIdsAs_Key } from './common';
@@ -35,13 +34,8 @@ export class UserAPI extends AuthRESTDataSource<Context> {
 
   async myAssetCreations(): Promise<EntitiesResults> {
     let files = null
-    try {
-      files = await this.get(`${Collections.Entities}?type=asset`)
-      files = setIdsAs_Key(files) as EntitiesResults
-    } catch (error) {
-      console.error(`ERROR get assets from user`, error)
-    }
-
+    files = await this.get(`${Collections.Entities}?type=asset`)
+    files = setIdsAs_Key(files) as EntitiesResults
     return files
   }
 }
