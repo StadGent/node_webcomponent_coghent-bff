@@ -215,7 +215,8 @@ export const resolvers: Resolvers<Context> = {
     GetTestimoniesOfUser: async (_source, { }, { dataSources }) => {
       const userTestimonies: Entity[] =
         await dataSources.EntitiesAPI.getEntitiesByEntityType(
-          EntityTypes.Testimony
+          EntityTypes.Testimony,
+          true
         );
       return userTestimonies;
     },

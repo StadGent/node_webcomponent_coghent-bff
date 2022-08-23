@@ -67,10 +67,11 @@ export class EntitiesAPI extends AuthRESTDataSource<Context> {
   }
 
   async getEntitiesByEntityType(
-    entityType: EntityTypes
+    entityType: EntityTypes,
+    onlyOwnEntities: Boolean = false
   ): Promise<Entity[] | any[]> {
     let entities: EntitiesResults = await this.get(
-      `entities?type=${entityType}`
+      `entities?type=${entityType}&only_own=${onlyOwnEntities ? 1 : 0}`
     );
     entities = setIdsAs_Key(entities) as EntitiesResults;
     return entities.results || [];
