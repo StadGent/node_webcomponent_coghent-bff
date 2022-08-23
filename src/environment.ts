@@ -5,6 +5,7 @@ interface Environment {
     graphqlPath: string;
     introspection: boolean;
     playground: boolean;
+    tokenLogging: string;
   };
   port: number | string;
   sessionSecret: string;
@@ -31,6 +32,7 @@ export const environment: Environment = {
     graphqlPath: process.env.APOLLO_GRAPHQL_PATH || '/api/graphql',
     introspection: process.env.APOLLO_INTROSPECTION === 'true',
     playground: process.env.APOLLO_PLAYGROUND === 'true',
+    tokenLogging: process.env.APOLLO_TOKENLOGGING || 'false',
   },
   port: process.env.PORT || defaultPort,
   sessionSecret: process.env.APOLLO_SESSION_SECRET || 'heelgeheim',

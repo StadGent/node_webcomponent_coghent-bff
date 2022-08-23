@@ -6,6 +6,8 @@ import cors from 'cors';
 import {
   applyAuthEndpoints,
   applyAuthSession,
+  applyEnvironmentConfig,
+  EnvConfig,
 } from 'inuits-apollo-server-auth';
 import { environment } from './environment';
 import { EntitiesAPI } from './entities';
@@ -102,6 +104,10 @@ apolloServer.applyMiddleware({
     origin: [environment.webPortal, environment.boxFrontend],
   },
 });
+applyEnvironmentConfig({
+  tokenLogging: environment.apollo.tokenLogging,
+  staticJWT: environment.staticToken,
+} as EnvConfig)
 
 applyAuthEndpoints(app, environment.oauthBaseUrl, environment.clientSecret);
 
