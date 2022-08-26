@@ -13,6 +13,7 @@ import {
 import { setIdAs_Key } from './common';
 import {
   createBaseEntity,
+  filterByRelationTypes,
   getMetadataOfKey,
   setObjectIdToEntity,
 } from './parsers/entities';
@@ -95,5 +96,21 @@ export class TestimonyAPI extends EntitiesAPI {
       console.log(er);
       return [];
     }
+  }
+
+  async getParentEntityForTestimony(testimony: Entity) {
+    try {
+      const testimonyMetadataOfParent = filterByRelationTypes(
+        testimony.metadata as Relation[],
+        [RelationType.IsTestimonyFor]
+      );
+      const parentEntity = await this.getEntitiesOfRelationIds([
+        testimonyMetadataOfParent[0].key.replace('entities/', ''),
+      ]);
+      testimony.linkedParentEntity = parentEntity[0];
+    } catch (e) {
+      console.log(e);
+    }
+    return testimony;
   }
 }

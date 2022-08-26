@@ -156,7 +156,7 @@ export const resolvers: Resolvers<Context> = {
         fetchPolicy || ''
       );
     },
-    User: async (_source, { }, { dataSources, session }) => {
+    User: async (_source, {}, { dataSources, session }) => {
       if (!session.auth?.accessToken) {
         throw new AuthenticationError('Not authenticated');
       }
@@ -212,12 +212,17 @@ export const resolvers: Resolvers<Context> = {
       );
       return relations;
     },
-    GetTestimoniesOfUser: async (_source, { }, { dataSources }) => {
+    GetTestimoniesOfUser: async (_source, {}, { dataSources }) => {
       const userTestimonies: Entity[] =
         await dataSources.EntitiesAPI.getEntitiesByEntityType(
           EntityTypes.Testimony,
           true
         );
+      await Promise.all(
+        userTestimonies.map(async (testimony) => {
+          await dataSources.TestimonyAPI.getParentEntityForTestimony(testimony);
+        })
+      );
       return userTestimonies;
     },
     GetTestimoniesOfAsset: async (_source, { assetId }, { dataSources }) => {
@@ -247,12 +252,12 @@ export const resolvers: Resolvers<Context> = {
       }
       return data;
     },
-    GetMyUploadedAssets: async (_source, { }, { dataSources }) => {
+    GetMyUploadedAssets: async (_source, {}, { dataSources }) => {
       let uploadedEntities = await dataSources.UserAPI.myAssetCreations();
       uploadedEntities
         ? (uploadedEntities = filterOnEntityType(uploadedEntities, [
-          EntityTypes.Asset,
-        ]))
+            EntityTypes.Asset,
+          ]))
         : null;
       return uploadedEntities;
     },
@@ -272,9 +277,9 @@ export const resolvers: Resolvers<Context> = {
         ]);
         uploadComposable.relations.length >= 1
           ? await setRelationValueToDefaultTitleOrFullname(
-            uploadComposable.relations as Array<Relation>,
-            dataSources
-          )
+              uploadComposable.relations as Array<Relation>,
+              dataSources
+            )
           : null;
 
         const action = getMetadataOfKey(entity, MetaKey.UserAction);
@@ -290,9 +295,9 @@ export const resolvers: Resolvers<Context> = {
 
           entity !== undefined
             ? (publicationStatus = getMetadataOfKey(
-              entity,
-              MetaKey.PublicationStatus
-            ))
+                entity,
+                MetaKey.PublicationStatus
+              ))
             : null;
 
           if (publicationStatus !== undefined) {
@@ -482,7 +487,6 @@ export const resolvers: Resolvers<Context> = {
       const updatedVisitor = await dataSources.BoxVisitersAPI.AddTouchTableTime(
         _code
       );
-      console.log(updatedVisitor);
       return updatedVisitor;
     },
     UploadMediafile: async (
@@ -500,10 +504,10 @@ export const resolvers: Resolvers<Context> = {
       );
       sixthCollectionId === null
         ? (sixthCollectionId =
-          await dataSources.EntitiesStaticAPI.getEntityIdOfEntityType(
-            EntityTypes.Museum,
-            SIXTH_COLLECTION
-          ))
+            await dataSources.EntitiesStaticAPI.getEntityIdOfEntityType(
+              EntityTypes.Museum,
+              SIXTH_COLLECTION
+            ))
         : null;
       if (sixthCollectionId) {
         relations.push({
@@ -525,8 +529,8 @@ export const resolvers: Resolvers<Context> = {
           sixthCollectionId
             ? null
             : console.log(
-              `Couldn't add ${SIXTH_COLLECTION} as a relation for entity ${entity.id}. Museum not found`
-            );
+                `Couldn't add ${SIXTH_COLLECTION} as a relation for entity ${entity.id}. Museum not found`
+              );
           const mediaFileEntity = (await dataSources.EntitiesAPI.getEntity(
             mediafile._key,
             Collections.Mediafiles
@@ -575,15 +579,15 @@ export const resolvers: Resolvers<Context> = {
       Promise.allSettled([
         relations.length >= 1
           ? (updatedRelations = await dataSources.EntitiesAPI.replaceRelations(
-            id,
-            updatedRelations as Array<Relation>
-          ))
+              id,
+              updatedRelations as Array<Relation>
+            ))
           : null,
         metadata.length >= 1
           ? await dataSources.EntitiesAPI.replaceMetadata(
-            id,
-            mergedMetadata as Array<MetadataInput>
-          )
+              id,
+              mergedMetadata as Array<MetadataInput>
+            )
           : null,
       ]);
       const entity = await dataSources.EntitiesAPI.getEntity(id);
@@ -824,7 +828,7 @@ export const resolvers: Resolvers<Context> = {
       let mimetype = { type: '', mime: undefined } as any;
       if (parent.mimetype) {
         mimetype.type = parent.mimetype;
-        for (let index = 0;index < Object.values(MIMETYPES).length;index++) {
+        for (let index = 0; index < Object.values(MIMETYPES).length; index++) {
           if (Object.values(MIMETYPES)[index] === parent.mimetype) {
             mimetype.mime = Object.keys(MIMETYPES)[index];
             checkEnumOnType(mimetype.type, AudioMIME)
@@ -948,3 +952,6 @@ const getActiveStories = async (
   }
   return stories;
 };
+function getEntitiesOfRelationIds() {
+  throw new Error('Function not implemented.');
+}

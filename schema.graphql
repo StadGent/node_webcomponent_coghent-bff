@@ -50,6 +50,8 @@ enum MetaKey {
   status
   likes
   date
+  isTestimonyFor
+  hasTestimony
 }
 
 extend enum MetaKey {
@@ -218,7 +220,7 @@ type Entity {
   primary_mediafile_location: String
   primary_width: String
   primary_height: String
-  testimonies: [Entity]
+  linkedParentEntity: Entity
   user: String
 }
 
