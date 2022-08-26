@@ -239,7 +239,10 @@ export const resolvers: Resolvers<Context> = {
     },
     GetUploadRelations: async (_source, { searchValue }, { dataSources }) => {
       const filters = getRelationsForUpload(searchValue);
-      const data = await dataSources.SearchAPI.getByAdvancedFilters(5, filters);
+      const data = await dataSources.SearchAPI.getByAdvancedFilters(
+        20,
+        filters
+      );
       if (data && data.results) {
         for (const entity of data.results) {
           if (
