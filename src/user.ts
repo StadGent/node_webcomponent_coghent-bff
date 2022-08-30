@@ -3,8 +3,8 @@ import {
   EntitiesResults,
   Entity,
   MediafilesResults,
-  User
-} from './type-defs'
+  User,
+} from './type-defs';
 import { AuthRESTDataSource, getMe } from 'inuits-apollo-server-auth';
 import { Context } from './types';
 import { environment as _ } from './environment';
@@ -14,28 +14,28 @@ export class UserAPI extends AuthRESTDataSource<Context> {
   public baseURL = `${_.api.collectionAPIUrl}/`;
 
   getMe(accessToken: string): User {
-    const data: any = getMe(accessToken)
+    const data: any = getMe(accessToken);
     const user: User = {
       id: data.sub,
       email: data.email,
       family_name: data.family_name,
       given_name: data.given_name,
       name: data.name,
-      preferred_username: data.preferred_username
-    }
+      preferred_username: data.preferred_username,
+    };
     return user;
   }
 
   async myMediafileUploads(): Promise<MediafilesResults> {
-    let files = await this.get(Collections.Mediafiles)
-    files = setIdsAs_Key(files) as MediafilesResults
-    return files
+    let files = await this.get(Collections.Mediafiles);
+    files = setIdsAs_Key(files) as MediafilesResults;
+    return files;
   }
 
   async myAssetCreations(): Promise<EntitiesResults> {
-    let files = null
-    files = await this.get(`${Collections.Entities}?type=asset`)
-    files = setIdsAs_Key(files) as EntitiesResults
-    return files
+    let files = null;
+    files = await this.get(`${Collections.Entities}?type=asset&only_own=1`);
+    files = setIdsAs_Key(files) as EntitiesResults;
+    return files;
   }
 }
