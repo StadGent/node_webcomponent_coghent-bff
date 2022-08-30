@@ -158,6 +158,10 @@ input RelationInput {
   label: String
 }
 
+type StringResult {
+  result: String!
+}
+
 type Story {
   key: String!
   active: Boolean
@@ -469,6 +473,7 @@ type Query {
   GetTestimoniesOfUser: [Entity]
   GetTestimoniesOfAsset(assetId: String!): [Entity]
   PublishStorybox(frameId: String!): BoxVisiter!
+  CheckIfUploadIsDuplicate(base64Image: String!): StringResult!
 }
 
 type Mutation {

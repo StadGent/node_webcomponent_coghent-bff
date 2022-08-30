@@ -237,6 +237,17 @@ export const resolvers: Resolvers<Context> = {
       const parentEntity = await dataSources.EntitiesAPI.getEntity(id);
       return await getVisiterOfEntity(parentEntity, dataSources);
     },
+    CheckIfUploadIsDuplicate: async (
+      _source,
+      { base64Image },
+      { dataSources }
+    ) => {
+      const isDuplicate =
+        await dataSources.StorageStaticAPI.checkIfUploadedIsDuplicate(
+          base64Image
+        );
+      return isDuplicate;
+    },
     GetUploadRelations: async (_source, { searchValue }, { dataSources }) => {
       const filters = getRelationsForUpload(searchValue);
       const data = await dataSources.SearchAPI.getByAdvancedFilters(
