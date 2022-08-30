@@ -28,7 +28,7 @@ export class StoryBoxAPI extends EntitiesAPI {
   async userStorybox(): Promise<EntitiesResults> {
     // console.log(`\n CONTEXT`, this.context.session) // DEV:
 
-    let storybox = await this.get(`${this.STORY_BOX}`);
+    let storybox = await this.get(`${this.STORY_BOX}?only_own=1`);
     storybox = setIdsAs_Key(storybox) as EntitiesResults;
     return storybox;
   }
