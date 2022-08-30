@@ -27,7 +27,7 @@ import graphqlUploadExpress from 'graphql-upload/graphqlUploadExpress.js';
 import { createProxyMiddleware } from 'http-proxy-middleware';
 import EntitiesStaticAPI from './sources/entities_static';
 
-console.log(`>inuits-apollo-server-auth: v1.0.17`)
+console.log(`>inuits-apollo-server-auth: v1.0.17`);
 const Redis = require('ioredis');
 
 let redisCache = undefined;
@@ -43,7 +43,7 @@ if (environment.redisHost) {
 }
 
 export const app = express();
-app.use(express.json());
+app.use(express.json({ limit: '25mb' }));
 app.use(
   cors({
     credentials: false,
@@ -107,7 +107,7 @@ apolloServer.applyMiddleware({
 applyEnvironmentConfig({
   tokenLogging: environment.apollo.tokenLogging,
   staticJWT: environment.staticToken,
-} as EnvConfig)
+} as EnvConfig);
 
 applyAuthEndpoints(app, environment.oauthBaseUrl, environment.clientSecret);
 
