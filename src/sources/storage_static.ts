@@ -3,8 +3,8 @@ import { Context } from '../types';
 import FormData from 'form-data';
 import { MediaFile } from '../type-defs';
 import { RESTDataSourceWithStaticToken } from '../RestDataSourceWithStaticToken';
-import md5 from 'blueimp-md5';
-import { encode, decode } from 'js-base64';
+import CryptoJS from 'crypto-js';
+import { Base64 } from 'js-base64';
 
 export class StorageStaticAPI extends RESTDataSourceWithStaticToken<Context> {
   public baseURL = `${_.api.storageAPIUrl}/`;
@@ -41,8 +41,7 @@ export class StorageStaticAPI extends RESTDataSourceWithStaticToken<Context> {
   }
 
   async checkIfUploadedIsDuplicate(base64Image: string) {
-    const md5sum = md5(decode(base64Image));
-    console.log({ md5sum });
+    const md5sum = CryptoJS.MD5(CryptoJS.enc.Latin1.parse(base64Image));
     const isDuplicate = await this.get(`unique/${md5sum}`);
     return { result: isDuplicate };
   }
