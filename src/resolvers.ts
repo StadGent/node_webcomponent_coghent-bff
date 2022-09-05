@@ -257,7 +257,7 @@ export const resolvers: Resolvers<Context> = {
       if (data && data.results) {
         for (const entity of data.results) {
           if (
-            entity?.type === EntityTypes.Thesaurus ||
+            entity?.type === EntityTypes.Getty ||
             entity?.type === EntityTypes.Person
           ) {
             entity!.id = `entities/${entity?.id}`;
