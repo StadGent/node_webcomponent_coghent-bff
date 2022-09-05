@@ -88,6 +88,7 @@ enum EntityTypes {
   person
   testimony
   museum
+  getty
 }
 
 enum Collections {
