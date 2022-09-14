@@ -10,8 +10,7 @@ export type ParsedFilter = {
 export const getRelationsForUpload = (_searchValue: string) => {
   const itemTypes = [EntityTypes.Getty, EntityTypes.Person];
 
-  const filters: Array<ParsedFilter> = [];
-  const titleFilter = [
+  return [
     {
       type: AdvancedInputType.TextInput,
       item_types: itemTypes,
@@ -22,7 +21,4 @@ export const getRelationsForUpload = (_searchValue: string) => {
       key: 'title',
     },
   ];
-
-  filters.push(titleFilter as unknown as ParsedFilter);
-  return filters;
 };
