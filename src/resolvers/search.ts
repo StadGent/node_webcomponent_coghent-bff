@@ -10,15 +10,17 @@ export type ParsedFilter = {
 export const getRelationsForUpload = (_searchValue: string) => {
   const itemTypes = [EntityTypes.Getty, EntityTypes.Person];
 
-  return [
-    {
-      type: AdvancedInputType.TextInput,
-      item_types: itemTypes,
-    },
-    {
-      type: AdvancedInputType.TextInput,
-      value: _searchValue,
-      key: 'title',
-    },
-  ];
+  const filters: Array<ParsedFilter> = [];
+  const typesFilter = {
+    type: AdvancedInputType.TextInput,
+    item_types: itemTypes,
+  };
+  const titleFilter = {
+    type: AdvancedInputType.TextInput,
+    value: _searchValue,
+    key: 'title',
+  };
+  filters.push(typesFilter as unknown as ParsedFilter);
+  filters.push(titleFilter as unknown as ParsedFilter);
+  return filters;
 };
