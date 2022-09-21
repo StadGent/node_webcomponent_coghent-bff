@@ -70,6 +70,7 @@ enum Publication {
   public
   private
   validate
+  declined
 }
 
 enum UserAction {
@@ -480,6 +481,11 @@ type Query {
 type Mutation {
   replaceMetadata(id: String!, metadata: [MetadataInput!]!): [Metadata!]!
   AddStoryToBoxVisiter(code: String!, storyId: String!): BoxVisiter
+  AddRelation(
+    entityId: String!
+    relation: RelationInput!
+    collection: String
+  ): [Relation]!
   AddFrameToStoryBoxVisiter(code: String!, frameInput: FrameInput!): BoxVisiter
   DeleteBoxVisiterBasketItem(code: String!, relationId: String!): [Relation]!
   AddTouchTableTime(_code: String!): BoxVisiter
