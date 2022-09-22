@@ -68,7 +68,6 @@ import {
   getMediafileLink,
   getPublicationKeyFromValue,
   getRightFromMediafile,
-  removePrefixFromMetadata,
 } from './resolvers/upload';
 import { SIXTH_COLLECTION } from './sources/constants';
 
@@ -280,9 +279,8 @@ export const resolvers: Resolvers<Context> = {
       const entity = await dataSources.EntitiesAPI.getEntity(entityId);
       if (entity) {
         Promise.allSettled([
-          (uploadComposable.metadata = removePrefixFromMetadata(
-            await dataSources.EntitiesAPI.getMetadata(entity.id)
-          )),
+          (uploadComposable.metadata =
+            await dataSources.EntitiesAPI.getMetadata(entity.id)),
           (uploadComposable.relations =
             await dataSources.EntitiesAPI.getRelationOfType(
               entity.id,
@@ -387,6 +385,17 @@ export const resolvers: Resolvers<Context> = {
         } as StoryInput);
       }
       return updatedVisiter;
+    },
+    AddRelation: async (
+      _source,
+      { entityId, relation, collection },
+      { dataSources }
+    ) => {
+      return await dataSources.EntitiesAPI.addRelation(
+        entityId,
+        relation,
+        collection == 'entities' ? 'entities' : 'box_visits'
+      );
     },
     AddFrameToStoryBoxVisiter: async (
       _source,

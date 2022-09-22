@@ -56,22 +56,3 @@ export const getRightFromMediafile = (
   }
   return rights;
 };
-
-export const removePrefixFromMetadata = (_metadata: Array<Metadata>) => {
-  const updatedMetadata = [];
-  for (const metadata of _metadata) {
-    let stripped = metadata.value;
-
-    if (metadata.value !== null) {
-      if (stripped!.includes(USER_MEDIAFILE_NAME_PREFIX)) {
-        stripped = stripped!.replace(USER_MEDIAFILE_NAME_PREFIX, '');
-      }
-    }
-    updatedMetadata.push({
-      key: metadata.key,
-      value: stripped,
-      label: metadata.label,
-    } as Metadata);
-  }
-  return updatedMetadata;
-};
