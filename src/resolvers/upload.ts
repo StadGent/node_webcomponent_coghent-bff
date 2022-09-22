@@ -10,7 +10,6 @@ import {
   Relation,
 } from '../type-defs';
 
-const USER_MEDIAFILE_NAME_PREFIX = 'user-uploaded-';
 const NO_IMAGE_PATH = './no-image.png';
 
 export const getPublicationKeyFromValue = (publication_status: string) => {
