@@ -527,9 +527,12 @@ export const resolvers: Resolvers<Context> = {
             ))
         : null;
 
+      const objectId: string =
+        await dataSources.EntitiesStaticAPI.getSixthCollectionObjectId();
+
       const objectNumber = {
         key: MetaKey.ObjectNumber,
-        value: await dataSources.EntitiesStaticAPI.getSixthCollectionObjectId(),
+        value: objectId.replace('cogent:', ''),
       } as MetadataInput;
 
       media.metadata?.push(objectNumber);
@@ -553,7 +556,7 @@ export const resolvers: Resolvers<Context> = {
           EntityTypes.Asset,
           metadata as Array<Metadata>,
           relations as Array<Relation>,
-          objectNumber.value
+          objectId
         );
 
         if (entity) {
