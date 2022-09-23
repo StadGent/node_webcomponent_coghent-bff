@@ -519,12 +519,6 @@ export const resolvers: Resolvers<Context> = {
     ) => {
       relations ? relations : (relations = []);
 
-      let uploadedFile: null | MediaFile = null;
-      const mediafile = await dataSources.EntitiesAPI.createMediafile(media);
-      const uploaded = await dataSources.StorageStaticAPI.uploadMediafile(
-        mediafile._key,
-        file
-      );
       sixthCollectionId === null
         ? (sixthCollectionId =
             await dataSources.EntitiesStaticAPI.getEntityIdOfEntityType(
@@ -532,6 +526,20 @@ export const resolvers: Resolvers<Context> = {
               SIXTH_COLLECTION
             ))
         : null;
+
+      const objectNumber = {
+        key: MetaKey.ObjectNumber,
+        value: sixthCollectionId,
+      } as MetadataInput;
+
+      media.metadata?.push(objectNumber);
+
+      let uploadedFile: null | MediaFile = null;
+      const mediafile = await dataSources.EntitiesAPI.createMediafile(media);
+      const uploaded = await dataSources.StorageStaticAPI.uploadMediafile(
+        mediafile._key,
+        file
+      );
       if (sixthCollectionId) {
         relations.push({
           key: setEntitiesIdPrefix(sixthCollectionId, true),
