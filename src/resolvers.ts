@@ -532,9 +532,7 @@ export const resolvers: Resolvers<Context> = {
 
       const objectNumber = {
         key: MetaKey.ObjectNumber,
-        value: objectId.includes('cogent:')
-          ? objectId.replace('cogent:', '')
-          : objectId,
+        value: objectId,
       } as MetadataInput;
 
       media.metadata?.push(objectNumber);
