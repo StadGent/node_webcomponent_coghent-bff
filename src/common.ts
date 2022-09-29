@@ -12,11 +12,13 @@ export function setId(entityRaw: any) {
 export function setIdsAs_Key(_entities: EntitiesResults | BoxVisitersResults | MediafilesResults) {
   const entities: Array<Entity | BoxVisiter | MediaFile> = [];
   _entities.results?.forEach((_entity: any) => {
-    const entity = { id: _entity?._key as string } as Entity | BoxVisiter;
-    Object.assign(entity, _entity);
+    let entity = { id: _entity?._key as string } as Entity | BoxVisiter;
+    entity = {..._entity, ...entity};
     entities.push(entity);
   });
+
   Object.assign(_entities.results as Array<any>, entities);
+
   return _entities;
 }
 
