@@ -1,9 +1,24 @@
 scalar Void
 scalar Upload
 
+enum UploadStatus {
+  creating
+  uploaded
+  verified
+  denied
+  waiting
+}
+
 enum Rights {
   cc0
   undetermined
+}
+
+enum Publication {
+  public
+  private
+  validate
+  declined
 }
 
 enum MIME {
@@ -64,13 +79,6 @@ extend enum MetaKey {
   rights
   sources
   user_action
-}
-
-enum Publication {
-  public
-  private
-  validate
-  declined
 }
 
 enum UserAction {
@@ -412,6 +420,7 @@ input StoryboxBuildInput {
   description: String
   assets: [String]
   assetTimings: [KeyValuePairInput]
+  assetDescriptions: [KeyValuePairInput]
 }
 
 type StoryboxBuild {
@@ -421,6 +430,7 @@ type StoryboxBuild {
   description: String
   assets: [Entity]!
   assetTimings: [KeyValuePair]!
+  assetDescriptions: [KeyValuePair]
 }
 
 input MediaFileInput {
@@ -480,12 +490,12 @@ type Query {
 
 type Mutation {
   replaceMetadata(id: String!, metadata: [MetadataInput!]!): [Metadata!]!
-  AddStoryToBoxVisiter(code: String!, storyId: String!): BoxVisiter
   AddRelation(
     entityId: String!
     relation: RelationInput!
     collection: String
   ): [Relation]!
+  AddStoryToBoxVisiter(code: String!, storyId: String!): BoxVisiter
   AddFrameToStoryBoxVisiter(code: String!, frameInput: FrameInput!): BoxVisiter
   DeleteBoxVisiterBasketItem(code: String!, relationId: String!): [Relation]!
   AddTouchTableTime(_code: String!): BoxVisiter
