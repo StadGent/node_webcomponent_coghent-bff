@@ -11,9 +11,9 @@ import {
 } from '../type-defs';
 
 export type EntityData = {
-  metadata: Array<Metadata>,
-  relations: Array<Relation>,
-}
+  metadata: Array<Metadata>;
+  relations: Array<Relation>;
+};
 
 export const filterByRelationTypes = (
   _relations: Array<Relation>,
@@ -31,7 +31,7 @@ export const filterByRelationTypes = (
 };
 
 export const setObjectIdToEntity = (_entity: Entity) => {
-  _entity.object_id ? null : _entity.object_id = `${_entity.id}`;
+  _entity.object_id ? null : (_entity.object_id = `${_entity.id}`);
   return _entity;
 };
 
@@ -63,9 +63,9 @@ export const minimalEntity = (_type: EntityTypes) => {
   return {
     type: _type,
     metadata: [],
-    data: {}
-  }
-}
+    data: {},
+  };
+};
 
 export const createEntityBody = (
   _type: EntityTypes,
@@ -127,27 +127,38 @@ export const filterOutRelationTypes = (
 
 export const setIdAndObjectId = (_entity: Entity) => {
   _entity = setIdAs_Key(_entity) as Entity;
-  _entity = setObjectIdToEntity(_entity)
-  return _entity
-}
+  _entity = setObjectIdToEntity(_entity);
+  return _entity;
+};
 
-export const getMetadataOfKey = (_entity: Entity, _type: MetaKey): Metadata | null => {
-  const found = _entity.metadata.find(meta => meta?.key === _type)
-  return found ? found : null
-}
+export const getMetadataOfKey = (
+  _entity: Entity,
+  _type: MetaKey
+): Metadata | null => {
+  const found = _entity.metadata.find((meta) => meta?.key === _type);
+  return found ? found : null;
+};
 
-export const hasRelationOfType = (_relations: Array<Relation>, _type: RelationType) => {
-  const found = _relations.map(relation => relation.type === _type)
-  return found ? found.some(result => result === true) : false
-}
+export const hasRelationOfType = (
+  _relations: Array<Relation>,
+  _type: RelationType
+) => {
+  const found = _relations.map((relation) => relation.type === _type);
+  return found ? found.some((result) => result === true) : false;
+};
 
-export const getRelationsFromMetadata = (_entity: Entity, _type: RelationType) => {
-  let relations: Array<Metadata> = []
+export const getRelationsFromMetadata = (
+  _entity: Entity,
+  _type: RelationType
+) => {
+  let relations: Array<Metadata> = [];
   if (_entity && _entity.metadata.length >= 1) {
-    relations = _entity.metadata.filter(_meta => _meta?.type === _type) as Array<Metadata>
+    relations = _entity.metadata.filter(
+      (_meta) => _meta?.type === _type
+    ) as Array<Metadata>;
   }
-  return relations
-}
+  return relations;
+};
 
 export const mergeMetadata = (
   _originalMetadata: Array<Metadata>,
@@ -157,8 +168,7 @@ export const mergeMetadata = (
   if (_metadata.length >= 1) {
     for (const updated of _metadata) {
       const found = _originalMetadata.find(
-        (_rel) =>
-          _rel.key === updated.key && _rel.key === updated.key
+        (_rel) => _rel.key === updated.key && _rel.key === updated.key
       );
       if (found) {
         const index = mergedMetadata.indexOf(found);
@@ -169,38 +179,43 @@ export const mergeMetadata = (
   return mergedMetadata;
 };
 
-export const relationsWithExcludedCollections = (_relations: Array<Relation>, _excludedCollections: Array<Collections>) => {
-  const relations: Array<Relation> = []
+export const relationsWithExcludedCollections = (
+  _relations: Array<Relation>,
+  _excludedCollections: Array<Collections>
+) => {
+  const relations: Array<Relation> = [];
   for (const relation of _relations) {
     if (relation.key.indexOf(`/`) !== -1) {
-      const collection = relation.key.substring(0, relation.key.indexOf('/'))
+      const collection = relation.key.substring(0, relation.key.indexOf('/'));
       let collectionOfType: Collections;
-      let key: keyof typeof Collections
+      let key: keyof typeof Collections;
       for (key in Collections) {
         if (Collections[key] === collection) {
-          collectionOfType = Collections[key]
+          collectionOfType = Collections[key];
           if (!_excludedCollections.includes(collectionOfType)) {
-            relations.push(relation)
+            relations.push(relation);
           }
         }
       }
     }
   }
-  return relations
-}
+  return relations;
+};
 
-export const filterOnEntityType = (_entitiesResults: EntitiesResults, _entityTypes: Array<EntityTypes>) => {
-  let updated = {} as EntitiesResults
-  Object.assign(updated, _entitiesResults)
+export const filterOnEntityType = (
+  _entitiesResults: EntitiesResults,
+  _entityTypes: Array<EntityTypes>
+) => {
+  let updated = {} as EntitiesResults;
+  Object.assign(updated, _entitiesResults);
   if (_entitiesResults.results) {
-    updated.results = []
+    updated.results = [];
 
     for (const entity of _entitiesResults.results) {
       if (entity && _entityTypes.includes(entity.type as EntityTypes)) {
-        updated.results.push(entity)
+        updated.results.push(entity);
       }
     }
-
   }
-  return updated
-}
+  return updated;
+};
