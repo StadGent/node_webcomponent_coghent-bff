@@ -25,6 +25,7 @@ interface Environment {
   activeBoxEntity: string;
   maxStories: number | string;
   codePostfix: string;
+  sixthCollection: string;
 }
 
 export const environment: Environment = {
@@ -44,7 +45,7 @@ export const environment: Environment = {
     collectionAPIUrl:
       process.env.COLLECTION_API_URL || 'http://collection-api:8000',
     storageAPIUrl:
-      process.env.STORAGE_API_URL || 'http://storage-api:8001',
+      process.env.STORAGE_API_URL || 'http://api-uat.collectie.gent/storage/v1',
     searchAPIUrl: process.env.SEARCH_API_URL || 'http://search-api:8002',
     IiifAPIUrl: process.env.IIIF_API_URL || 'http://cantaloupe:8182',
   },
@@ -53,7 +54,9 @@ export const environment: Environment = {
   staticToken: process.env.STATIC_TOKEN || false,
   redisHost: process.env.REDIS_HOST || false,
   redisPort: process.env.REDIS_PORT || false,
-  activeBoxEntity: process.env.BOX_ENTITY || 'c0a577c6-071b-4051-bad8-4f4fbe40537b',
+  activeBoxEntity:
+    process.env.BOX_ENTITY || 'c0a577c6-071b-4051-bad8-4f4fbe40537b',
   maxStories: process.env.BOX_MAX_STORIES || 4,
   codePostfix: process.env.BOX_CODE_POSTFIX || 'visit',
+  sixthCollection: process.env.SIXTH_COLLECTION || '',
 };
