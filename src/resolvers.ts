@@ -527,8 +527,7 @@ export const resolvers: Resolvers<Context> = {
             ))
         : null;
 
-      const objectId: string =
-        await dataSources.EntitiesStaticAPI.getSixthCollectionObjectId();
+      const objectId: string = environment.sixthCollection;
 
       const objectNumber = {
         key: MetaKey.ObjectNumber,
