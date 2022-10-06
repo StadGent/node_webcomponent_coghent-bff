@@ -141,7 +141,12 @@ export const resolvers: Resolvers<Context> = {
     },
     Entity: async (_source, { id }, { dataSources }, info) => {
       info.cacheControl.setCacheHint({ maxAge: 3600 });
-      return id ? dataSources.EntitiesAPI.getEntity(id) : null;
+      const result = id ? await dataSources.EntitiesAPI.getEntity(id) : null;
+      if (result) {
+        //@ts-ignore
+        result.ldesResource = result.data['@id'] || '';
+      }
+      return result;
     },
     Entities: async (
       _source,
@@ -708,6 +713,12 @@ export const resolvers: Resolvers<Context> = {
       const data: MetadataCollection[] = [];
       const metaData = await exlcudeMetaData(parent.metadata, key, label);
       metaData.forEach((element) => {
+        // if (element.label === 'vervaardiger.rol') {
+        //   console.log(
+        //     '_____________________________________________________________________'
+        //   );
+        //   console.log({ element });
+        // }
         if (element.value) {
           const label = element.label ? element.label : element.key;
           if (data.some((collectionItem) => collectionItem.label == label)) {

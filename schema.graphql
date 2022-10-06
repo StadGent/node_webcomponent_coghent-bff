@@ -211,6 +211,7 @@ type Entity {
   _key: String
   id: String!
   object_id: String!
+  ldesResource: String
   type: String!
   metadata(key: [MetaKey]): [Metadata]!
   metadataByLabel(key: [String]): [Metadata]!

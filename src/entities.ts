@@ -62,7 +62,6 @@ export class EntitiesAPI extends AuthRESTDataSource<Context> {
     _collection: Collections = Collections.Entities
   ): Promise<Entity> {
     let data = await this.get<Entity>(_collection + (id ? '/' + id : ''));
-    console.log(data);
     data = setIdAndObjectId(data);
     return data;
   }
