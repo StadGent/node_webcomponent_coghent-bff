@@ -145,7 +145,7 @@ export const resolvers: Resolvers<Context> = {
       const result = id ? await dataSources.EntitiesAPI.getEntity(id) : null;
       if (result) {
         //@ts-ignore
-        result.ldesResource = result.data['@id'] || '';
+        result.ldesResource = result.data['foaf:page'] || '';
       }
       return result;
     },
