@@ -1,7 +1,7 @@
 ### Development stage
 FROM node:14-alpine as development-stage
 
-ARG NPM_AUTH_TOKEN
+ARG NPM_CONFIG__AUTH_TOKEN
 
 RUN apk add --no-cache git && adduser --disabled-password --home /app --shell /bin/bash app
 
@@ -21,7 +21,7 @@ EXPOSE 4000
 ### Production stage
 FROM node:14-alpine as production-stage
 
-ARG NPM_AUTH_TOKEN
+ARG NPM_CONFIG__AUTH_TOKEN
 ENV NODE_ENV=production
 
 RUN adduser --disabled-password --home /app --shell /bin/bash app
