@@ -70,6 +70,7 @@ import {
   getRightFromMediafile,
 } from './resolvers/upload';
 import { SIXTH_COLLECTION } from './sources/constants';
+import { isTypeSystemDefinitionNode } from 'graphql';
 
 const GraphQLUpload = require('graphql-upload/GraphQLUpload.js');
 let sixthCollectionId: null | string = null;
@@ -711,16 +712,10 @@ export const resolvers: Resolvers<Context> = {
     },
     metadataCollection: async (parent, { key, label }, { dataSources }) => {
       const data: MetadataCollection[] = [];
-      const metaData = await exlcudeMetaData(parent.metadata, key, label);
+      const metaData = await await exlcudeMetaData(parent.metadata, key, label);
       metaData.forEach((element) => {
-        // if (element.label === 'vervaardiger.rol') {
-        //   console.log(
-        //     '_____________________________________________________________________'
-        //   );
-        //   console.log({ element });
-        // }
         if (element.value) {
-          const label = element.label ? element.label : element.key;
+          const label = element.label || element.key;
           if (data.some((collectionItem) => collectionItem.label == label)) {
             const sameCollectionItem = data.find(
               (collectionItem) => collectionItem.label == label
@@ -817,7 +812,6 @@ export const resolvers: Resolvers<Context> = {
             components.push(component);
         });
       }
-
       return components;
     },
     assets: async (parent, _args, { dataSources }) => {

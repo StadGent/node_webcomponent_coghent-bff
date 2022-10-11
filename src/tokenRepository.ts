@@ -42,8 +42,6 @@ export class TokenManager {
   constructor(private clientId: string, private tokenEndpoint: string) {}
 
   async authenticate(authCode: string, redirectUri: string) {
-    console.log(environment.oauthBaseUrl, this.tokenEndpoint);
-    console.log(this.clientId, environment.clientSecret);
     const res = await fetch(
       `${environment.oauthBaseUrl}${this.tokenEndpoint}`,
       {
