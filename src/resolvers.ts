@@ -537,7 +537,7 @@ export const resolvers: Resolvers<Context> = {
         value: objectId,
       } as MetadataInput;
 
-      media.metadata?.push(objectNumber);
+      metadata?.push(objectNumber);
 
       let uploadedFile: null | MediaFile = null;
       const mediafile = await dataSources.EntitiesAPI.createMediafile(media);
