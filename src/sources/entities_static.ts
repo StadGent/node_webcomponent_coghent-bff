@@ -12,8 +12,12 @@ import { setIdAs_Key } from '../common';
 export default class EntitiesStaticAPI extends RESTDataSourceWithStaticToken<Context> {
   public baseURL = `${_.api.collectionAPIUrl}/`;
 
-  async getSixthCollectionObjectId() {
+  async getNextAvailableSixthCollectionObjectId() {
     return await this.get(`${Collections.Entities}/sixthcollection/id`);
+  }
+
+  async getSixthCollectionEntityId() {
+    return await this.get(`${Collections.Entities}/sixthcollection/entity_id`);
   }
 
   async getEntityIdOfEntityType(

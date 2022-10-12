@@ -525,15 +525,12 @@ export const resolvers: Resolvers<Context> = {
     ) => {
       relations ? relations : (relations = []);
 
-      sixthCollectionId === null
-        ? (sixthCollectionId =
-            await dataSources.EntitiesStaticAPI.getEntityIdOfEntityType(
-              EntityTypes.Museum,
-              SIXTH_COLLECTION
-            ))
-        : null;
-
-      const objectId: string = environment.sixthCollection;
+      if (!sixthCollectionId) {
+        sixthCollectionId =
+          await dataSources.EntitiesStaticAPI.getSixthCollectionEntityId();
+      }
+      const objectId: string =
+        await dataSources.EntitiesStaticAPI.getNextAvailableSixthCollectionObjectId();
 
       const objectNumber = {
         key: MetaKey.ObjectNumber,
