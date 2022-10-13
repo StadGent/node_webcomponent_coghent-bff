@@ -547,16 +547,16 @@ export const resolvers: Resolvers<Context> = {
           label: 'MaterieelDing.beheerder',
         } as RelationInput);
       }
-      if (metadata) {
-        metadata = addObjectNumberToMetadata(objectId, metadata);
-      } else {
-        metadata = [
-          {
-            key: MetaKey.ObjectNumber,
-            value: objectId.replace('cogent:', ''),
-          },
-        ];
-      }
+      // if (metadata) {
+      //   metadata = addObjectNumberToMetadata(objectId, metadata);
+      // } else {
+      //   metadata = [
+      //     {
+      //       key: MetaKey.ObjectNumber,
+      //       value: objectId.replace('cogent:', ''),
+      //     },
+      //   ];
+      // }
       if (uploaded !== null) {
         const entity = await dataSources.EntitiesAPI.createFullEntity(
           EntityTypes.Asset,
