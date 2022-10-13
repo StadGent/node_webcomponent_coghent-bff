@@ -284,10 +284,6 @@ export const resolvers: Resolvers<Context> = {
       const uploadComposable: UploadComposable = {};
       const entity = await dataSources.EntitiesAPI.getEntity(entityId);
       if (entity) {
-        entity.metadata.push({
-          key: MetaKey.ObjectNumber,
-          value: entity.object_id,
-        });
         Promise.allSettled([
           (uploadComposable.metadata =
             await dataSources.EntitiesAPI.getMetadata(entity.id)),
@@ -321,6 +317,11 @@ export const resolvers: Resolvers<Context> = {
                 MetaKey.PublicationStatus
               ))
             : null;
+
+          uploadComposable.metadata.push({
+            key: MetaKey.ObjectNumber,
+            value: entity.object_id,
+          });
 
           if (publicationStatus !== undefined) {
             const key = await getPublicationKeyFromValue(
