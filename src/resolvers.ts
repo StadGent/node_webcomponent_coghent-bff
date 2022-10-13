@@ -556,7 +556,7 @@ export const resolvers: Resolvers<Context> = {
         value: objectId.replace('cogent:', ''),
       };
       const fullMetadata = [];
-      if (metadata) {
+      if (metadata && metadata.length) {
         fullMetadata.push(...metadata, objectNumberMetadataItem);
       } else {
         fullMetadata.push(objectNumberMetadataItem);
