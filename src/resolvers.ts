@@ -300,6 +300,11 @@ export const resolvers: Resolvers<Context> = {
             )
           : null;
 
+        uploadComposable.metadata.push({
+          key: MetaKey.ObjectNumber,
+          value: entity.object_id.replace('cogent:', ''),
+        });
+
         const action = getMetadataOfKey(entity, MetaKey.UserAction);
         action !== undefined
           ? (uploadComposable.action = action?.value! as UserAction)
@@ -317,11 +322,6 @@ export const resolvers: Resolvers<Context> = {
                 MetaKey.PublicationStatus
               ))
             : null;
-
-          uploadComposable.metadata.push({
-            key: MetaKey.ObjectNumber,
-            value: entity.object_id,
-          });
 
           if (publicationStatus !== undefined) {
             const key = await getPublicationKeyFromValue(
