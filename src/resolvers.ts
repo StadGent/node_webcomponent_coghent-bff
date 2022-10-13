@@ -65,6 +65,7 @@ import { prepareCustomStory } from './resolvers/customStory';
 import { getVisiterOfEntity } from './resolvers/boxVisiter';
 import { getRelationsForUpload } from './resolvers/search';
 import {
+  addObjectNumberToMetadata,
   getMediafileLink,
   getPublicationKeyFromValue,
   getRightFromMediafile,
@@ -299,11 +300,6 @@ export const resolvers: Resolvers<Context> = {
               dataSources
             )
           : null;
-
-        uploadComposable.metadata.push({
-          key: MetaKey.ObjectNumber,
-          value: entity.object_id.replace('cogent:', ''),
-        });
 
         const action = getMetadataOfKey(entity, MetaKey.UserAction);
         action !== undefined
@@ -546,8 +542,9 @@ export const resolvers: Resolvers<Context> = {
       if (sixthCollectionId) {
         relations.push({
           key: setEntitiesIdPrefix(sixthCollectionId, true),
+          value: SIXTH_COLLECTION,
           type: RelationType.IsIn,
-          label: SIXTH_COLLECTION,
+          label: 'MaterieelDing.beheerder',
         } as RelationInput);
       }
 
