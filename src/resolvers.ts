@@ -284,6 +284,10 @@ export const resolvers: Resolvers<Context> = {
       const uploadComposable: UploadComposable = {};
       const entity = await dataSources.EntitiesAPI.getEntity(entityId);
       if (entity) {
+        entity.metadata.push({
+          key: MetaKey.ObjectNumber,
+          value: entity.object_id,
+        });
         Promise.allSettled([
           (uploadComposable.metadata =
             await dataSources.EntitiesAPI.getMetadata(entity.id)),
@@ -531,13 +535,6 @@ export const resolvers: Resolvers<Context> = {
       }
       const objectId: string =
         await dataSources.EntitiesStaticAPI.getNextAvailableSixthCollectionObjectId();
-
-      const objectNumber = {
-        key: MetaKey.ObjectNumber,
-        value: objectId,
-      } as MetadataInput;
-
-      metadata?.push(objectNumber);
 
       let uploadedFile: null | MediaFile = null;
       const mediafile = await dataSources.EntitiesAPI.createMediafile(media);
