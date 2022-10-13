@@ -144,10 +144,15 @@ export const resolvers: Resolvers<Context> = {
     Entity: async (_source, { id }, { dataSources }, info) => {
       info.cacheControl.setCacheHint({ maxAge: 3600 });
       const result = id ? await dataSources.EntitiesAPI.getEntity(id) : null;
-      if (result) {
-        //@ts-ignore
-        result.ldesResource = result.data['foaf:page'] || '';
+      try {
+        if (result) {
+          //@ts-ignore
+          result.ldesResource = result.data['foaf:page'] || '';
+        }
+      } catch (e) {
+        console.log(e);
       }
+
       return result;
     },
     Entities: async (
