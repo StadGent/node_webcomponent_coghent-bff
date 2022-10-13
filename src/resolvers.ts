@@ -65,7 +65,6 @@ import { prepareCustomStory } from './resolvers/customStory';
 import { getVisiterOfEntity } from './resolvers/boxVisiter';
 import { getRelationsForUpload } from './resolvers/search';
 import {
-  addObjectNumberToMetadata,
   getMediafileLink,
   getPublicationKeyFromValue,
   getRightFromMediafile,
