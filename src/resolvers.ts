@@ -65,7 +65,6 @@ import { prepareCustomStory } from './resolvers/customStory';
 import { getVisiterOfEntity } from './resolvers/boxVisiter';
 import { getRelationsForUpload } from './resolvers/search';
 import {
-  addObjectNumberToMetadata,
   getMediafileLink,
   getPublicationKeyFromValue,
   getRightFromMediafile,
@@ -552,20 +551,20 @@ export const resolvers: Resolvers<Context> = {
           label: 'MaterieelDing.beheerder',
         } as RelationInput);
       }
+      const objectNumberMetadataItem = {
+        key: MetaKey.ObjectNumber,
+        value: objectId.replace('cogent:', ''),
+      };
+      const fullMetadata = [];
       if (metadata) {
-        metadata = addObjectNumberToMetadata(objectId, metadata);
+        fullMetadata.push(...metadata, objectNumberMetadataItem);
       } else {
-        metadata = [
-          {
-            key: MetaKey.ObjectNumber,
-            value: objectId.replace('cogent:', ''),
-          },
-        ];
+        fullMetadata.push(objectNumberMetadataItem);
       }
       if (uploaded !== null) {
         const entity = await dataSources.EntitiesAPI.createFullEntity(
           EntityTypes.Asset,
-          metadata as Array<Metadata>,
+          fullMetadata as Array<Metadata>,
           relations as Array<Relation>,
           objectId
         );
