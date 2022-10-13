@@ -4,7 +4,6 @@ import FormData from 'form-data';
 import { MediaFile } from '../type-defs';
 import { RESTDataSourceWithStaticToken } from '../RestDataSourceWithStaticToken';
 import CryptoJS from 'crypto-js';
-import { Base64 } from 'js-base64';
 
 export class StorageStaticAPI extends RESTDataSourceWithStaticToken<Context> {
   public baseURL = `${_.api.storageAPIUrl}/`;
