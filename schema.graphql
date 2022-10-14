@@ -104,6 +104,7 @@ enum Collections {
   entities
   box_visits
   mediafiles
+  story_box
 }
 
 enum RelationType {
@@ -487,6 +488,7 @@ type Query {
   GetTestimoniesOfAsset(assetId: String!): [Entity]
   PublishStorybox(frameId: String!): BoxVisiter!
   CheckIfUploadIsDuplicate(base64Image: String!): StringResult!
+  CreateSubtitlesForUpload(frameId: String!): StringResult!
 }
 
 type Mutation {

@@ -258,6 +258,11 @@ export const resolvers: Resolvers<Context> = {
         );
       return isDuplicate;
     },
+    CreateSubtitlesForUpload: async (parent, { frameId }, { dataSources }) => {
+      const subtitlesResult: string =
+        await dataSources.StoryBoxAPI.createSubtitlesForUpload(frameId);
+      return { result: subtitlesResult };
+    },
     GetUploadRelations: async (_source, { searchValue }, { dataSources }) => {
       const filters = getRelationsForUpload(searchValue);
       const data = await dataSources.SearchAPI.getByAdvancedFilters(

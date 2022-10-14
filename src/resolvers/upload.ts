@@ -56,16 +56,3 @@ export const getRightFromMediafile = (
   }
   return rights;
 };
-
-export const addObjectNumberToMetadata = (objectId: String, metadata: any) => {
-  const newMetadata: [Metadata] | any[] = [];
-  if (metadata) {
-    newMetadata.push(metadata);
-  }
-  const metadataItem = {
-    key: MetaKey.ObjectNumber,
-    value: objectId.replace('cogent:', ''),
-  };
-  newMetadata.push(metadataItem);
-  return newMetadata;
-};
