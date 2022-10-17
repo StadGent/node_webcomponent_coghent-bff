@@ -779,10 +779,8 @@ export const resolvers: Resolvers<Context> = {
         const mediafile = await dataSources.EntitiesAPI.getMediafilesById(
           _relation.key.replace('mediafiles/', '')
         );
-        if (mediafile.original_file_location) {
-          const filename = splitFilenameAndExtension(
-            mediafile.original_file_location
-          );
+        if (mediafile.filename) {
+          const filename = splitFilenameAndExtension(mediafile.filename);
           if (
             mediafile.mimetype &&
             getFileType(mediafile.mimetype as string) === 'audio'
