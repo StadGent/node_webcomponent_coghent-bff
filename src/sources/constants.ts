@@ -14,3 +14,7 @@ export const PublicationStatus: Record<Publication, string> = {
 
 export const SKIP_RELATIONS = 'skip_relations';
 export const SIXTH_COLLECTION = 'sixth_collection';
+
+export const proxyLinks = {
+  mediafiles: '/api/mediafile'
+};
