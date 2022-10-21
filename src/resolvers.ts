@@ -69,8 +69,7 @@ import {
   getPublicationKeyFromValue,
   getRightFromMediafile,
 } from './resolvers/upload';
-import { SIXTH_COLLECTION } from './sources/constants';
-import { isTypeSystemDefinitionNode } from 'graphql';
+import { proxyLinks, SIXTH_COLLECTION } from './sources/constants';
 
 const GraphQLUpload = require('graphql-upload/GraphQLUpload.js');
 let sixthCollectionId: null | string = null;
@@ -785,10 +784,11 @@ export const resolvers: Resolvers<Context> = {
             mediafile.mimetype &&
             getFileType(mediafile.mimetype as string) === 'audio'
           ) {
-            _relation['audioFile'] = mediafile.original_file_location;
+            _relation['audioFile'] = `${proxyLinks.mediafiles}/${mediafile.filename}`;
           }
+
           if (subtitleFileExtensions.includes(filename.extension)) {
-            _relation['subtitleFile'] = mediafile.original_file_location;
+            _relation['subtitleFile'] = `${proxyLinks.mediafiles}/${mediafile.filename}`;
           }
         }
       }

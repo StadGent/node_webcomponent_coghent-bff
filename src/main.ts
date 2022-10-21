@@ -26,6 +26,7 @@ import { StorageStaticAPI } from './sources/storage_static';
 import graphqlUploadExpress from 'graphql-upload/graphqlUploadExpress.js';
 import { createProxyMiddleware } from 'http-proxy-middleware';
 import EntitiesStaticAPI from './sources/entities_static';
+import { proxyLinks } from './sources/constants';
 
 console.log(`>inuits-apollo-server-auth: v1.0.17`);
 const Redis = require('ioredis');
@@ -85,7 +86,7 @@ const addJwt = (proxyReq: any, req: any, res: any) => {
 };
 
 app.use(
-  '/api/mediafile',
+  proxyLinks.mediafiles,
   createProxyMiddleware({
     target: environment.api.storageAPIUrl + '/download/',
     changeOrigin: true,
