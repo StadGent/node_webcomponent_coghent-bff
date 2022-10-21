@@ -1,6 +1,7 @@
 import { setEntitiesIdPrefix, setIdAs_Key } from '../common';
 import { calculateScale, calculateSpaceForAssets, Dimension, getUpdateRelations } from '../parsers/customStory';
 import { filterByRelationTypes } from '../parsers/entities';
+import { sortRelationsInEntitiesAndMediafiles } from '../parsers/relations';
 import { Entity, Relation, RelationType } from '../type-defs'
 import { DataSources } from '../types'
 
@@ -22,8 +23,9 @@ export const getCustomFrame = async (_dataSources: DataSources, _id: string) => 
 
 export const updatedRelationsForFrame = async (_dataSources: DataSources, _frameId: string) => {
   const relationsAll = await _dataSources.EntitiesAPI.getRelations(_frameId)
-  const updatedRelations = getUpdateRelations(relationsAll)
-  const updated = await _dataSources.EntitiesAPI.replaceRelations(_frameId, updatedRelations)
+  const sortedRelationsAndMediafiles = sortRelationsInEntitiesAndMediafiles(relationsAll);
+  const updatedRelations = getUpdateRelations(sortedRelationsAndMediafiles.entities)
+  const updated = await _dataSources.EntitiesAPI.replaceRelations(_frameId, [...updatedRelations, ...sortedRelationsAndMediafiles.mediafiles])
   return updated
 }
 
@@ -64,6 +66,7 @@ export const prepareCustomStory = async (_dataSources: DataSources, _storyId: st
   if (frame) {
     frame = setIdAs_Key(frame) as Entity
     const updated = await updatedRelationsForFrame(_dataSources, frame.id)
-    await addScaleToAssets(_dataSources, updated, frame.id)
+    const sortedRelationsAndMediafiles = sortRelationsInEntitiesAndMediafiles(updated);
+    await addScaleToAssets(_dataSources, sortedRelationsAndMediafiles.entities, frame.id)
   }
 }

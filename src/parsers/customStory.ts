@@ -1,7 +1,6 @@
 import { ASSET_MARGIN, PADDING, wallFullWidth, zoneWidth } from '../resolvers/customStory';
 import { Position, Relation, RelationType } from '../type-defs';
 import { filterOutRelationTypes, filterByRelationTypes } from './entities';
-import { sortRelationsInEntitiesAndMediafiles } from './relations';
 import { createRelationTiming } from './storybox';
 
 const MINIMUM_DURATION = 5
@@ -117,11 +116,9 @@ const updateRelationsWithMinimumDuration = (_relations: Array<Relation>, _minimu
 export const getUpdateRelations = (_relations: Array<Relation>) => {
   let relationOthers = filterOutRelationTypes(_relations, [RelationType.Components])
   let relationComponents = filterByRelationTypes(_relations, [RelationType.Components])
-  const sortedRelationsAndMediafiles = sortRelationsInEntitiesAndMediafiles(relationComponents);
-  console.log(sortedRelationsAndMediafiles);
-  relationComponents = updatedComponentRelationsWithPositions(sortedRelationsAndMediafiles.entities)
-  relationComponents = updateRelationsWithMinimumDuration(sortedRelationsAndMediafiles.entities, MINIMUM_DURATION)
-  return [...relationOthers, ...relationComponents, ...sortedRelationsAndMediafiles.mediafiles]
+  relationComponents = updatedComponentRelationsWithPositions(relationComponents)
+  relationComponents = updateRelationsWithMinimumDuration(relationComponents, MINIMUM_DURATION)
+  return [...relationOthers, ...relationComponents]
 }
 
 export const calculateScale = async (_width: number, _height: number, _availableSpace: Dimension): Promise<number> => {
