@@ -41,7 +41,12 @@ export class SearchAPI extends AuthRESTDataSource<Context> {
     let body = searchValue;
 
     const data = await this.post(`${this.SEARCH}/relations?`, body);
-    data.results.forEach((element: any) => setId(element));
+    try {
+      data.results.forEach((element: any) => setId(element));
+    } catch (e) {
+      console.log(e);
+    }
+
     return data;
   }
 
@@ -53,7 +58,11 @@ export class SearchAPI extends AuthRESTDataSource<Context> {
       `${this.ADVANCED_SEARCH}?limit=${_limit}&skip=0`,
       _advancedFilters
     );
-    data = setIdsAs_Key(data) as EntitiesResults;
+    try {
+      data = setIdsAs_Key(data) as EntitiesResults;
+    } catch (e) {
+      console.log(e);
+    }
     return data;
   }
 }
