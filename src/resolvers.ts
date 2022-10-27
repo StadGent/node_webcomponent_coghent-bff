@@ -282,11 +282,6 @@ export const resolvers: Resolvers<Context> = {
     },
     GetMyUploadedAssets: async (_source, {}, { dataSources }) => {
       let uploadedEntities = await dataSources.UserAPI.myAssetCreations();
-      uploadedEntities
-        ? (uploadedEntities = filterOnEntityType(uploadedEntities, [
-            EntityTypes.Asset,
-          ]))
-        : null;
       return uploadedEntities;
     },
     UploadObjectFromEntity: async (_source, { entityId }, { dataSources }) => {
@@ -784,11 +779,15 @@ export const resolvers: Resolvers<Context> = {
             mediafile.mimetype &&
             getFileType(mediafile.mimetype as string) === 'audio'
           ) {
-            _relation['audioFile'] = `${proxyLinks.mediafiles}/${mediafile.filename}`;
+            _relation[
+              'audioFile'
+            ] = `${proxyLinks.mediafiles}/${mediafile.filename}`;
           }
 
           if (subtitleFileExtensions.includes(filename.extension)) {
-            _relation['subtitleFile'] = `${proxyLinks.mediafiles}/${mediafile.filename}`;
+            _relation[
+              'subtitleFile'
+            ] = `${proxyLinks.mediafiles}/${mediafile.filename}`;
           }
         }
       }
