@@ -482,7 +482,7 @@ type Query {
   GetvisiterOfEntity(id: String!): BoxVisiter
   GetUploadRelations(searchValue: String!): EntitiesResults
   BasketByCustomFrameId(frameId: String!): [Relation]
-  GetMyUploadedAssets(limit: Int): EntitiesResults
+  GetMyUploadedAssets(limit: Int, skip: Int): EntitiesResults
   UploadObjectFromEntity(entityId: String!): UploadComposable
   GetTestimoniesOfUser: [Entity]
   GetTestimoniesOfAsset(assetId: String!): [Entity]

@@ -32,10 +32,13 @@ export class UserAPI extends AuthRESTDataSource<Context> {
     return files;
   }
 
-  async myAssetCreations(limit: number | null = 10): Promise<EntitiesResults> {
+  async myAssetCreations(
+    limit: number | null = 10,
+    skip: number | null = 0
+  ): Promise<EntitiesResults> {
     let files = null;
     files = await this.get(
-      `${Collections.Entities}?type=asset&only_own=1&limit=${limit}`
+      `${Collections.Entities}?type=asset&only_own=1&limit=${limit}&skip=${skip}`
     );
     files = setIdsAs_Key(files) as EntitiesResults;
     return files;
