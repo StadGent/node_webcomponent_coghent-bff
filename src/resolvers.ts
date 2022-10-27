@@ -280,8 +280,8 @@ export const resolvers: Resolvers<Context> = {
       }
       return data;
     },
-    GetMyUploadedAssets: async (_source, {}, { dataSources }) => {
-      let uploadedEntities = await dataSources.UserAPI.myAssetCreations();
+    GetMyUploadedAssets: async (_source, { limit }, { dataSources }) => {
+      let uploadedEntities = await dataSources.UserAPI.myAssetCreations(limit);
       return uploadedEntities;
     },
     UploadObjectFromEntity: async (_source, { entityId }, { dataSources }) => {
