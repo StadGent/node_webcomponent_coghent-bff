@@ -45,8 +45,8 @@ if (environment.redisHost) {
 }
 
 export const app = express();
-app.use(bodyParser({ limit: '25mb' }));
 app.use(express.json());
+app.use(express.text({ limit: '30mb' }));
 app.use(
   cors({
     credentials: false,
