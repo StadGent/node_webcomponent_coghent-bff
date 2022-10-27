@@ -45,14 +45,7 @@ if (environment.redisHost) {
 }
 
 export const app = express();
-app.use(bodyParser.json({ limit: '25mb' }));
-app.use(
-  bodyParser.urlencoded({
-    limit: '25mb',
-    extended: true,
-    parameterLimit: 50000,
-  })
-);
+app.use(bodyParser({ limit: '25mb' }));
 app.use(express.json());
 app.use(
   cors({
