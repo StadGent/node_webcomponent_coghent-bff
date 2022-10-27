@@ -33,7 +33,7 @@ export class UserAPI extends AuthRESTDataSource<Context> {
   }
 
   async myAssetCreations(
-    limit: number | null = 10,
+    limit: number | null = 6,
     skip: number | null = 0
   ): Promise<EntitiesResults> {
     let files = null;
