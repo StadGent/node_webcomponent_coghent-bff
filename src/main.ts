@@ -1,6 +1,7 @@
 import { ApolloServer } from 'apollo-server-express';
 import { readFileSync } from 'fs';
 import express from 'express';
+import bodyParser from 'body-parser';
 import cors from 'cors';
 
 import {
@@ -44,8 +45,9 @@ if (environment.redisHost) {
 }
 
 export const app = express();
-app.use(express.json({ limit: '25mb' }));
-app.use(express.urlencoded({ limit: '25mb', extended: true }));
+app.use(bodyParser.json({ limit: '25mb' }));
+app.use(bodyParser.urlencoded({ limit: '25mb', extended: true }));
+app.use(express.json());
 app.use(
   cors({
     credentials: false,
