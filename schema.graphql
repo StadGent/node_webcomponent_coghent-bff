@@ -484,7 +484,7 @@ type Query {
   BasketByCustomFrameId(frameId: String!): [Relation]
   GetMyUploadedAssets(limit: Int, skip: Int): EntitiesResults
   UploadObjectFromEntity(entityId: String!): UploadComposable
-  GetTestimoniesOfUser: [Entity]
+  GetTestimoniesOfUser(limit: Int, skip: Int): EntitiesResults
   GetTestimoniesOfAsset(assetId: String!): [Entity]
   PublishStorybox(frameId: String!): BoxVisiter!
   CheckIfUploadIsDuplicate(base64Image: String!): StringResult!

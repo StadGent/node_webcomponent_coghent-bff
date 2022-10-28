@@ -224,17 +224,23 @@ export const resolvers: Resolvers<Context> = {
       );
       return relations;
     },
-    GetTestimoniesOfUser: async (_source, {}, { dataSources }) => {
-      const userTestimonies: Entity[] =
+    GetTestimoniesOfUser: async (_source, { limit, skip }, { dataSources }) => {
+      const userTestimonies: EntitiesResults =
         await dataSources.EntitiesAPI.getEntitiesByEntityType(
           EntityTypes.Testimony,
-          true
+          true,
+          limit,
+          skip
         );
-      await Promise.all(
-        userTestimonies.map(async (testimony) => {
-          await dataSources.TestimonyAPI.getParentEntityForTestimony(testimony);
-        })
-      );
+      if (userTestimonies && userTestimonies.results) {
+        await Promise.all(
+          userTestimonies.results.map(async (testimony) => {
+            await dataSources.TestimonyAPI.getParentEntityForTestimony(
+              testimony as Entity
+            );
+          })
+        );
+      }
       return userTestimonies;
     },
     GetTestimoniesOfAsset: async (_source, { assetId }, { dataSources }) => {
