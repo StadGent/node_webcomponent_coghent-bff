@@ -27,12 +27,14 @@ export class StoryBoxAPI extends EntitiesAPI {
   private STORY_BOX = 'story_box';
 
   async userStorybox(
-    limit: number | null = 6,
+    limit: number | null,
     skip: number | null = 0
   ): Promise<EntitiesResults> {
     // console.log(`\n CONTEXT`, this.context.session) // DEV:
     let storybox = await this.get(
-      `${this.STORY_BOX}?only_own=1&limit=${limit}&skip=${skip}`
+      `${this.STORY_BOX}?only_own=1${
+        limit ? '&limit=' + limit : ''
+      }&skip=${skip}`
     );
     storybox = setIdsAs_Key(storybox) as EntitiesResults;
     return storybox;
