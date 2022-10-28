@@ -196,8 +196,8 @@ export const resolvers: Resolvers<Context> = {
     },
     Storybox: async (_source, { limit, skip }, { dataSources }) => {
       const userStorybox = await dataSources.StoryBoxAPI.userStorybox(
-        limit,
-        skip
+        limit || null,
+        skip || null
       );
       return userStorybox;
     },

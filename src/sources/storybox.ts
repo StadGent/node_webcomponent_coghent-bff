@@ -32,9 +32,9 @@ export class StoryBoxAPI extends EntitiesAPI {
   ): Promise<EntitiesResults> {
     // console.log(`\n CONTEXT`, this.context.session) // DEV:
     let storybox = await this.get(
-      `${this.STORY_BOX}?only_own=1${
-        limit ? '&limit=' + limit : ''
-      }&skip=${skip}`
+      `${this.STORY_BOX}?only_own=1${limit ? '&limit=' + limit : ''}${
+        skip ? '&skip=' + skip : ''
+      }`
     );
     storybox = setIdsAs_Key(storybox) as EntitiesResults;
     return storybox;
