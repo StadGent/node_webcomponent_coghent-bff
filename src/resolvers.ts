@@ -194,8 +194,11 @@ export const resolvers: Resolvers<Context> = {
       frame != null ? (frame = setIdAs_Key(frame) as Entity) : null;
       return frame;
     },
-    Storybox: async (_source, _args, { dataSources }) => {
-      const userStorybox = await dataSources.StoryBoxAPI.userStorybox();
+    Storybox: async (_source, { limit, skip }, { dataSources }) => {
+      const userStorybox = await dataSources.StoryBoxAPI.userStorybox(
+        limit,
+        skip
+      );
       return userStorybox;
     },
     AddEntityAsRelation: async (

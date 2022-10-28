@@ -475,7 +475,7 @@ type Query {
   RelationsAsEntities(id: String!): [Entity]
   LinkStorybox(code: String!): Entity
   CreateStorybox(storyboxInfo: StoryboxBuildInput!): Entity
-  Storybox: EntitiesResults
+  Storybox(limit: Int, skip: Int): EntitiesResults
   AddEntityAsRelation(entityId: String!, entityRelationId: String!): [Relation]
   LinkTestimonyToAsset(assetId: String!, testimonyId: String!): [Relation]
   LinkFrameToVisiter(frameId: String!): BoxVisiter
