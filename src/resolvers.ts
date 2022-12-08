@@ -150,7 +150,6 @@ export const resolvers: Resolvers<Context> = {
       } catch (e) {
         console.log(e);
       }
-
       return result;
     },
     Entities: async (
@@ -728,7 +727,8 @@ export const resolvers: Resolvers<Context> = {
     },
     metadataCollection: async (parent, { key, label }, { dataSources }) => {
       const data: MetadataCollection[] = [];
-      const metaData = await await exlcudeMetaData(parent.metadata, key, label);
+      const metaData = await exlcudeMetaData(parent.metadata, key, label);
+      console.log(metaData);
       metaData.forEach((element) => {
         if (element.value) {
           const label = element.label || element.key;
@@ -791,9 +791,9 @@ export const resolvers: Resolvers<Context> = {
             mediafile.mimetype &&
             getFileType(mediafile.mimetype as string) === 'audio'
           ) {
-            _relation[
-              'audioFile'
-            ] = `${proxyLinks.mediafiles}/${mediafile.filename}`;
+            _relation['audioFile'] = `${proxyLinks.mediafiles}/${
+              mediafile.transcode_filename || mediafile.filename
+            }`;
           }
 
           if (subtitleFileExtensions.includes(filename.extension)) {
@@ -989,23 +989,27 @@ const getActiveStories = async (
   dataSources: DataSources,
   _id: string | null
 ) => {
-  const boxStories = await dataSources.EntitiesAPI.getRelations(
-    _id != null ? _id : environment.activeBoxEntity
-  );
-  let activeStories = boxStories.filter((_relation) => _relation?.active);
-  if (activeStories.length > Number(environment.maxStories)) {
-    activeStories = activeStories.slice(0, Number(environment.maxStories));
-  }
   let stories: Array<Entity> = [];
-  for (const story of activeStories) {
-    try {
-      const entity = await dataSources.EntitiesAPI.getEntity(
-        story.key.replace('entities/', '')
-      );
-      stories.push(entity);
-    } catch (error) {
-      console.error(`Couldn't find entity with id: ${story.key}`);
+  try {
+    const boxStories = await dataSources.EntitiesAPI.getRelations(
+      _id != null ? _id : environment.activeBoxEntity
+    );
+    let activeStories = boxStories.filter((_relation) => _relation?.active);
+    if (activeStories.length > Number(environment.maxStories)) {
+      activeStories = activeStories.slice(0, Number(environment.maxStories));
     }
+    for (const story of activeStories) {
+      try {
+        const entity = await dataSources.EntitiesAPI.getEntity(
+          story.key.replace('entities/', '')
+        );
+        stories.push(entity);
+      } catch (error) {
+        console.error(`Couldn't find entity with id: ${story.key}`);
+      }
+    }
+  } catch (e) {
+    console.log(e);
   }
   return stories;
 };
